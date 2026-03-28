@@ -1,7 +1,7 @@
 ---
 work_package_id: WP12
 title: Protective mode and session FSM
-lane: "doing"
+lane: "done"
 dependencies: [WP05, WP10, WP11]
 base_branch: 001-autonomous-deribit-options-robot-WP12-merge-base
 base_commit: b6cc43ea157d127313fae169b0714e7ab680ba06
@@ -16,8 +16,8 @@ phase: Phase 4 - Safety
 assignee: ''
 agent: "cursor"
 shell_pid: "54525"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -87,3 +87,4 @@ spec-kitty implement WP12 --base WP11
 - 2026-03-28T09:46:39Z – cursor – shell_pid=51298 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T09:49:20Z – cursor – shell_pid=51298 – lane=for_review – Ready for review: session FSM (running/paused/protective_flatten/frozen), market+WS+RPC triggers, Placer AllowSubmit guard, policy ws_down_grace_ms/max_flatten_wait_ms, WS OnHealth; SC-003 full E2E timing noted in session package comment
 - 2026-03-28T09:56:53Z – cursor – shell_pid=54525 – lane=doing – Started review via workflow command
+- 2026-03-28T09:57:11Z – cursor – shell_pid=54525 – lane=done – Review passed: session FSM matches transition table, Placer AllowSubmit guard, WS OnHealth for disconnect/reconnect, policy protective timers, tests green; SC-003 MVP gap documented in package doc. WP13 (for_review) should rebase onto WP12 after merge if stack shifts.
