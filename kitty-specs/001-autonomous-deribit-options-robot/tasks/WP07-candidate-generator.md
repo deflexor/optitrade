@@ -1,8 +1,11 @@
 ---
 work_package_id: WP07
 title: Playbooks liquidity and candidates
-lane: planned
+lane: "doing"
 dependencies: [WP05, WP06, WP02]
+base_branch: 001-autonomous-deribit-options-robot-WP07-merge-base
+base_commit: 923bd42415085bdc640a6524d2c4fd07e969307b
+created_at: '2026-03-28T09:19:59.704213+00:00'
 subtasks:
 - T030
 - T031
@@ -13,7 +16,7 @@ subtasks:
 phase: Phase 2 - Strategy
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "39382"
 review_status: ''
 reviewed_by: ''
 history:
