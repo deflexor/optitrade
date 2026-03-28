@@ -1,8 +1,11 @@
 ---
 work_package_id: WP06
 title: Regime classifier
-lane: planned
+lane: "doing"
 dependencies: [WP05, WP03]
+base_branch: 001-autonomous-deribit-options-robot-WP06-merge-base
+base_commit: 099e09b02498cd70c3852ac5a320e544dfb08bb2
+created_at: '2026-03-28T09:08:40.845179+00:00'
 subtasks:
 - T026
 - T027
@@ -11,7 +14,7 @@ subtasks:
 phase: Phase 2 - Strategy
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "37351"
 review_status: ''
 reviewed_by: ''
 history:
