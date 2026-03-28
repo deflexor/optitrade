@@ -1,7 +1,7 @@
 ---
 work_package_id: WP07
 title: Close preview and close execution
-lane: "doing"
+lane: "for_review"
 dependencies: [WP06]
 base_branch: 002-operator-trading-dashboard-WP06
 base_commit: 866a248244e064fcd8ffe6dcbbefbd37d8dc3f61
@@ -79,3 +79,4 @@ requirement_refs:
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
 - 2026-03-28T12:37:28Z – cursor-agent – shell_pid=81197 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T12:39:33Z – cursor-agent – shell_pid=81197 – lane=for_review – Ready for review: close-preview + close POST with executor hook, React modal and Zustand list refresh, httptest coverage
