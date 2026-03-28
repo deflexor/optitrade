@@ -1,12 +1,26 @@
 {
+  "accept_commit": null,
+  "acceptance_history": [
+    {
+      "accepted_at": "2026-03-28T12:58:47Z",
+      "accepted_by": "dfr",
+      "accepted_from_commit": "eb6cf59b0c1a7a0d8ff239d7b7e76e189fe93b45",
+      "branch": "master",
+      "mode": "pr"
+    }
+  ],
+  "acceptance_mode": "pr",
+  "accepted_at": "2026-03-28T12:58:47Z",
+  "accepted_by": "dfr",
+  "accepted_from_commit": "eb6cf59b0c1a7a0d8ff239d7b7e76e189fe93b45",
+  "base_branch": "master",
+  "created_at": "2026-03-28T10:33:03.411047+00:00",
   "feature_number": "002",
-  "slug": "002-operator-trading-dashboard",
   "feature_slug": "002-operator-trading-dashboard",
   "friendly_name": "Operator Trading Dashboard",
   "mission": "software-dev",
+  "slug": "002-operator-trading-dashboard",
   "source_description": "Web UI for bot health (uptime, RAM), Deribit mode (test vs live), balance, P/L chart, market mood, open and recent closed positions with strategy stats, position detail with Greeks, close and rebalance flows with modals and guidance. Operator stack preference: lightweight SPA.",
   "target_branch": "master",
-  "base_branch": "master",
-  "created_at": "2026-03-28T10:33:03.411047+00:00",
   "vcs": "git"
 }
