@@ -1,8 +1,11 @@
 ---
 work_package_id: WP01
 title: Web and Go dashboard scaffold
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: master
+base_commit: 8f31411cf266b93931932ed6a3aa2ea2be48141d
+created_at: '2026-03-28T11:46:07.800115+00:00'
 subtasks:
 - T001
 - T002
@@ -13,7 +16,7 @@ subtasks:
 phase: Phase 1 - Foundation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "66783"
 review_status: ''
 reviewed_by: ''
 history:
