@@ -123,10 +123,10 @@ Deribit round-trip too slow: use last cached account summary with age in DTO.
 **Requirements Refs**: FR-004, SC-007
 
 ### Implementation Subtasks
-- [ ] T021 Define P/L storage or query: new `dashboard_pnl_snapshot` table or reuse bot aggregates; seed minimal migration
-- [ ] T022 Implement `GET /api/v1/pl-series?range=` with `30d` default; validate enum per OpenAPI
-- [ ] T023 React: chart component (reuse lightweight lib or SVG) and Zustand fetch on interval aligned with dashboard poll
-- [ ] T024 UX: show active range; when history < 30d display helper text from API metadata
+- [x] T021 Define P/L storage or query: new `dashboard_pnl_snapshot` table or reuse bot aggregates; seed minimal migration
+- [x] T022 Implement `GET /api/v1/pl-series?range=` with `30d` default; validate enum per OpenAPI
+- [x] T023 React: chart component (reuse lightweight lib or SVG) and Zustand fetch on interval aligned with dashboard poll
+- [x] T024 UX: show active range; when history < 30d display helper text from API metadata
 
 ### Implementation Notes
 If bot has no history yet, return empty `points` plus `range_actual` metadata.
