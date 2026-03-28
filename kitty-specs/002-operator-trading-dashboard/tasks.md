@@ -94,13 +94,13 @@ Timing side channels: use constant-time compare for passwords; session timing sa
 **Requirements Refs**: FR-001, FR-002, FR-003, FR-005, FR-017, FR-019, SC-001, SC-002, SC-009, SC-008
 
 ### Included Subtasks
-- [ ] T014 Auth middleware: validate session; `401` on missing/invalid; attach `user_id` to context
-- [ ] T015 Implement snapshot assembler reading process stats (`runtime`, `memstats` or psutil-equivalent in Go), Deribit test/live from existing client config
-- [ ] T016 Read equity from existing account summary path or temporary stub with `TODO` bounded behind feature flag
-- [ ] T017 Read canonical regime from `internal/regime` or latest `regime_state`; set `regime_label` and `market_mood_label` identically
-- [ ] T018 Compute `stale`: true when `now - snapshot_utc > 5s` or subsystem freshness flags; document clock source
-- [ ] T019 Expose `GET /api/v1/snapshot`; return RFC3339 `snapshot_utc`
-- [ ] T020 [P] Tests: staleness threshold, paired labels equality, middleware 401
+- [x] T014 Auth middleware: validate session; `401` on missing/invalid; attach `user_id` to context
+- [x] T015 Implement snapshot assembler reading process stats (`runtime`, `memstats` or psutil-equivalent in Go), Deribit test/live from existing client config
+- [x] T016 Read equity from existing account summary path or temporary stub with `TODO` bounded behind feature flag
+- [x] T017 Read canonical regime from `internal/regime` or latest `regime_state`; set `regime_label` and `market_mood_label` identically
+- [x] T018 Compute `stale`: true when `now - snapshot_utc > 5s` or subsystem freshness flags; document clock source
+- [x] T019 Expose `GET /api/v1/snapshot`; return RFC3339 `snapshot_utc`
+- [x] T020 [P] Tests: staleness threshold, paired labels equality, middleware 401
 
 ### Implementation Notes
 Integrate without blocking trading hot path: snapshot build should read caches; if data missing return explicit `stale` or degraded fields per spec edge cases.
