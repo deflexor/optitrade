@@ -66,7 +66,7 @@ spec-kitty implement WP01
 ### T002 Go module
 
 - **Purpose**: Lock Go version for reproducible builds.
-- **Steps**: `go mod init` under `execution/` with module path chosen by team (e.g. `github.com/you/optitrade/execution`); set `Go 1.26`.
+- **Steps**: `go mod init` under `execution/` with module path chosen by team (e.g. `github.com/you/optitrade/execution`); set `go 1.22` in `go.mod`.
 - **Files**: `execution/go.mod`, optional `execution/go.sum` after first tidy.
 
 ### T003 Python project
