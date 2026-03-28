@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: Open and closed positions list API and UI
-lane: "doing"
+lane: "for_review"
 dependencies: [WP03]
 base_branch: 002-operator-trading-dashboard-WP03
 base_commit: 8e3f17ed1c7ece4fc5ca9857f62fcd4f3a6e4710
@@ -83,3 +83,4 @@ requirement_refs:
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
 - 2026-03-28T12:05:27Z – cursor – shell_pid=77003 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T12:07:58Z – cursor – shell_pid=77003 – lane=for_review – Ready for review: GET /positions/open and /closed, operator_position migration + sqlite repo, React tables with empty states and close-preview route hook
