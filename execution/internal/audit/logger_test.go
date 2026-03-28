@@ -33,7 +33,7 @@ func TestDecisionLoggerPersistAndLog(t *testing.T) {
 		DecisionType:     "risk_veto",
 		RegimeLabel:      "volatile",
 		CostModelVersion: "cm-v1",
-		GateResults:      map[string]bool{"delta_cap": false},
+		GateResults:      map[string]any{"delta_cap": false},
 		Reason:           ReasonRiskVeto,
 		TsMs:             time.UnixMilli(1700000000000).UnixMilli(),
 		ID:               "fixed-audit-id",
@@ -116,7 +116,7 @@ func TestLogDecisionDBFailureStillLogs(t *testing.T) {
 		CandidateID:      &badCand,
 		RegimeLabel:      "n",
 		CostModelVersion: "1",
-		GateResults:      map[string]bool{},
+		GateResults:      map[string]any{},
 		Reason:           ReasonApproved,
 	}
 

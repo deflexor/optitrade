@@ -9,6 +9,7 @@ const (
 	ReasonRiskVeto   DecisionReason = "risk_veto"
 	ReasonRegimeVeto DecisionReason = "regime_veto"
 	ReasonDataStale  DecisionReason = "data_stale"
+	ReasonIVStale    DecisionReason = "iv_stale"
 	ReasonConfig     DecisionReason = "config_error"
 )
 

@@ -18,7 +18,7 @@ type DecisionRecord struct {
 
 	RegimeLabel      string
 	CostModelVersion string
-	GateResults      map[string]bool
+	GateResults      map[string]any
 	Reason           DecisionReason
 
 	// EnvelopeEventType optionally overrides mapping from DecisionType for JSONL (T054).
