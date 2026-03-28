@@ -1,7 +1,7 @@
 ---
 work_package_id: WP08
 title: Rebalance preview and execution
-lane: "for_review"
+lane: "doing"
 dependencies: [WP06]
 base_branch: 002-operator-trading-dashboard-WP06
 base_commit: 866a248244e064fcd8ffe6dcbbefbd37d8dc3f61
@@ -14,7 +14,7 @@ subtasks:
 phase: Phase 4 - Rebalance
 assignee: ''
 agent: "cursor"
-shell_pid: "84200"
+shell_pid: "85109"
 review_status: "has_feedback"
 reviewed_by: "Dmitriy Knyazev"
 review_feedback_file: "/tmp/spec-kitty-review-feedback-WP08.md"
@@ -96,3 +96,4 @@ requirement_refs:
 - 2026-03-28T12:44:41Z – cursor – shell_pid=84200 – lane=doing – Started review via workflow command
 - 2026-03-28T12:44:54Z – cursor – shell_pid=84200 – lane=planned – Moved to planned
 - 2026-03-28T12:48:14Z – cursor – shell_pid=84200 – lane=for_review – POST rebalance-preview + Allow header; ready for re-review
+- 2026-03-28T12:48:37Z – cursor – shell_pid=85109 – lane=doing – Started review via workflow command
