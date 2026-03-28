@@ -77,3 +77,35 @@
 - Exact Deribit **combo / instrument name** conventions for each playbook leg set.
 - Default numeric thresholds for liquidity filters (min depth, max spread bps per underlying).
 - Whether MVP ships with **testnet-only** default in `quickstart.md` (recommended).
+
+## 9. Operational safety and "not getting bust" (trader-facing research)
+
+**Decision**: Treat **exchange margin and liquidation** as the hard outer boundary; the bot's risk gates are an **inner** control plane. Trader documentation MUST NOT promise profit or survival; it MUST emphasize residual risks and setup hygiene.
+
+**Rationale**: "Bust" in practice means (a) **account equity driven toward zero** through losses, fees, and tail moves, or (b) **forced liquidation / auction** when collateral no longer satisfies the exchange's maintenance requirement for the portfolio (including options, perps, and spot balances in the same margin universe, depending on account mode). Software bugs, stale data, and partial multi-leg fills add **operational tail risk** on top of market risk.
+
+**What improves odds (not guarantees)**:
+
+1. **Defined-risk structures only** (spec non-goals): Caps **theoretical** payoff scenarios per structure design vs naked short options, but **does not** cap fees, gap moves outside modeled slippage, or margin drift from correlated positions.
+2. **Conservative limits**: Per-trade max loss, daily max loss, premium at risk, portfolio delta/vega caps, and order-count caps reduce frequency and size of adverse outcomes when enforced correctly.
+3. **Protective mode** on feed loss, auth failure, and book gaps: Reduces trading **while blind** (spec FR-009), within detection latency (target SC-003).
+4. **Cost-aware vetoes** (FR-006): Avoids negative-expectancy churn after fees and spread, which otherwise grinds equity.
+5. **Operational isolation**: Dedicated **subaccount**, **limited capital**, API keys **without withdrawal** (where exchange supports), **IP allowlists**, and **testnet-first** validation.
+
+**What can still go wrong (explicit)**:
+
+- **Model and estimation risk**: Slippage, adverse selection, and regime labels are approximations; sharp moves can exceed buffers.
+- **Partial fills / leg risk**: Multi-leg structures can temporarily or permanently be **unbalanced**, creating exposure outside the intended template until reconciled.
+- **Margin regime mismatch**: Bot "max loss per trade" in policy JSON is **not** identical to **exchange maintenance margin**; large spot/vol moves can stress margin even when marked PnL looks bounded.
+- **Connectivity and race conditions**: Reconnect storms, duplicate orders, or delayed cancels remain engineering risks until proven by tests and incident drills.
+- **Counterparty and platform**: Exchange downtime, rule changes, or liquidations are external to the bot.
+
+**Deliverable**: Trader-facing checklist and setup guide: [trader-safety-cheatsheet.md](trader-safety-cheatsheet.md).
+
+**Evidence**: Logged in `research/evidence-log.csv` and `research/source-register.csv` for traceability.
+
+## 10. Follow-up questions for tasks / implementation
+
+- Add automated checks comparing **internal portfolio snapshot** to **exchange-reported margin** (warn before breach, not only after).
+- Document **incident runbook**: manual flatten sequence, cancel-by-label conventions, and who may restart trading.
+- Confirm Deribit **current** margin mode (portfolio vs standard) wording in KB for the cheatsheet (exchange UI changes over time).

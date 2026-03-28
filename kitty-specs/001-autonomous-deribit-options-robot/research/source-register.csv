@@ -1,0 +1,4 @@
+source_id,citation,url,accessed_date,relevance,status
+S001,"Deribit API documentation",https://docs.deribit.com/,2026-03-28,high,reviewed
+S002,"Deribit public marketing and help entry (verify margin pages)",https://www.deribit.com/,2026-03-28,medium,pending
+S003,"Optitrade feature specification Autonomous Deribit Options Robot",N/A,2026-03-28,high,reviewed
