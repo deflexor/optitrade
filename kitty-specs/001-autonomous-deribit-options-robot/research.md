@@ -100,7 +100,7 @@
 - **Connectivity and race conditions**: Reconnect storms, duplicate orders, or delayed cancels remain engineering risks until proven by tests and incident drills.
 - **Counterparty and platform**: Exchange downtime, rule changes, or liquidations are external to the bot.
 
-**Deliverable**: Trader-facing checklist and setup guide: [trader-safety-cheatsheet.md](trader-safety-cheatsheet.md).
+**Deliverable**: Trader-facing checklist and setup guide: [docs/trader-safety-cheatsheet.md](../../docs/trader-safety-cheatsheet.md) (canonical); feature pointer: [trader-safety-cheatsheet.md](trader-safety-cheatsheet.md).
 
 **Evidence**: Logged in `research/evidence-log.csv` and `research/source-register.csv` for traceability.
 

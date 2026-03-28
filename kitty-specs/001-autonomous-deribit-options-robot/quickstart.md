@@ -53,4 +53,4 @@ Use offline data or sanitized fixtures under `tests/fixtures/deribit/` only.
 
 - Spec: `kitty-specs/001-autonomous-deribit-options-robot/spec.md`
 - Plan: `kitty-specs/001-autonomous-deribit-options-robot/plan.md`
-- Trader safety and account setup: `kitty-specs/001-autonomous-deribit-options-robot/trader-safety-cheatsheet.md`
+- Trader safety and account setup: `docs/trader-safety-cheatsheet.md`
