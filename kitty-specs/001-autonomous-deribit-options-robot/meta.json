@@ -1,12 +1,26 @@
 {
+  "accept_commit": null,
+  "acceptance_history": [
+    {
+      "accepted_at": "2026-03-28T10:05:59Z",
+      "accepted_by": "dfr",
+      "accepted_from_commit": "d2f880b727245b2c2b093f3bbe3cfaae007b7844",
+      "branch": "master",
+      "mode": "local"
+    }
+  ],
+  "acceptance_mode": "local",
+  "accepted_at": "2026-03-28T10:05:59Z",
+  "accepted_by": "dfr",
+  "accepted_from_commit": "d2f880b727245b2c2b093f3bbe3cfaae007b7844",
+  "base_branch": "master",
+  "created_at": "2026-03-28T00:43:36.180117+00:00",
   "feature_number": "001",
-  "slug": "001-autonomous-deribit-options-robot",
   "feature_slug": "001-autonomous-deribit-options-robot",
   "friendly_name": "Autonomous Deribit Options Robot",
   "mission": "software-dev",
-  "target_branch": "master",
-  "base_branch": "master",
-  "created_at": "2026-03-28T00:43:36.180117+00:00",
+  "slug": "001-autonomous-deribit-options-robot",
   "source_description": "Derived from plan.md: autonomous Deribit options trading with regime classification, defined-risk strategies only, cost-aware execution, and strict risk/anomaly controls.",
+  "target_branch": "master",
   "vcs": "git"
 }
