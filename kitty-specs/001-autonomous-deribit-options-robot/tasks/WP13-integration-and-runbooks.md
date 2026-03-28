@@ -1,7 +1,7 @@
 ---
 work_package_id: WP13
 title: Integration examples and operator runbooks
-lane: "doing"
+lane: "for_review"
 dependencies: [WP12]
 base_branch: 001-autonomous-deribit-options-robot-WP12
 base_commit: cd6f070d4e58bcbd24852e7a184d7d3a4cf13779
@@ -116,3 +116,4 @@ spec-kitty implement WP13 --base WP12
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T09:53:53Z – cursor – shell_pid=53122 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T09:56:27Z – cursor – shell_pid=53122 – lane=for_review – Ready for review: optitrade observe/smoke-order CLI, quickstart + incident runbook, cheatsheet sync, SC-001–SC-005 automated tests + integration observe target
