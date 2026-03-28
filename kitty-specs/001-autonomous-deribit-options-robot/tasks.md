@@ -109,12 +109,12 @@ Migration ordering; backup story for ops (document in runbook in WP13).
 **Requirements Refs**: FR-001, FR-004
 
 ### Included Subtasks
-- [ ] T015 Implement `internal/deribit/rpc` request/response types, id mapping, error decode
-- [ ] T016 Implement OAuth/token refresh or key auth per current Deribit API (document in code comments)
-- [ ] T017 Implement `internal/deribit/ws` with ping/pong, reconnect with backoff, resubscribe
-- [ ] T018 [P] Map `private/get_positions`, `private/get_open_orders`, `private/get_account_summaries`
-- [ ] T019 [P] Map `public/get_instruments`, `public/get_order_book`, `public/ticker`
-- [ ] T020 Integration test: testnet login read-only (skipped if `-short` or missing env)
+- [x] T015 Implement `internal/deribit/rpc` request/response types, id mapping, error decode
+- [x] T016 Implement OAuth/token refresh or key auth per current Deribit API (document in code comments)
+- [x] T017 Implement `internal/deribit/ws` with ping/pong, reconnect with backoff, resubscribe
+- [x] T018 [P] Map `private/get_positions`, `private/get_open_orders`, `private/get_account_summaries`
+- [x] T019 [P] Map `public/get_instruments`, `public/get_order_book`, `public/ticker`
+- [x] T020 Integration test: testnet login read-only (skipped if `-short` or missing env)
 
 ### Implementation Notes
 Never log secrets; redact auth headers in debug.
