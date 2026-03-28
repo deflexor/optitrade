@@ -152,11 +152,11 @@ Precision: decimals as strings end-to-end.
 **Requirements Refs**: FR-006, FR-007, FR-008
 
 ### Included Subtasks
-- [ ] T025 `GET /api/v1/positions/open` mapping from internal position models to OpenAPI `PositionSummaryOpen`
-- [ ] T026 `GET /api/v1/positions/closed?limit=10` capped at 10, newest first
-- [ ] T027 Strategy stats: wire win rate and expected P/L fields from backend calculators or placeholders with clear `TODO` and feature flag
-- [ ] T028 React list views with loading and error states; **Close** button navigates or opens flow WP07
-- [ ] T029 Empty and partial-history states per spec edge cases
+- [x] T025 `GET /api/v1/positions/open` mapping from internal position models to OpenAPI `PositionSummaryOpen`
+- [x] T026 `GET /api/v1/positions/closed?limit=10` capped at 10, newest first
+- [x] T027 Strategy stats: wire win rate and expected P/L fields from backend calculators or placeholders with clear `TODO` and feature flag
+- [x] T028 React list views with loading and error states; **Close** button navigates or opens flow WP07
+- [x] T029 Empty and partial-history states per spec edge cases
 
 ### Implementation Notes
 Reuse `internal/risk` / execution reconciliation types where possible.
