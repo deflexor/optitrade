@@ -1,8 +1,11 @@
 ---
 work_package_id: WP03
 title: SQLite persistence
-lane: planned
+lane: "doing"
 dependencies: [WP01]
+base_branch: 001-autonomous-deribit-options-robot-WP01
+base_commit: 105fe0cb3edb429128ea3febdffc6218bd9a388c
+created_at: '2026-03-28T01:15:50.035691+00:00'
 subtasks:
 - T010
 - T011
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 1 - Foundation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "22986"
 review_status: ''
 reviewed_by: ''
 history:
