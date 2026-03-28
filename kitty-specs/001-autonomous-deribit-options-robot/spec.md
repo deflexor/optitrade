@@ -18,7 +18,7 @@ An operator runs the system against a live account and needs absolute certainty 
 **Acceptance Scenarios**:
 
 1. **Given** active positions and live connectivity, **when** a hypothetical new trade would breach max loss per trade, max portfolio delta, max portfolio vega, or max open premium at risk, **then** the trade is rejected and existing risk is unchanged by that decision.
-2. **Given** a running session, **when** market data feed is lost, authentication fails, or order book quality crosses a configured “gap” threshold, **then** the system enters a protective mode: no new risk-increasing orders, and flatten or freeze proceeds per operator policy.
+2. **Given** a running session, **when** market data feed is lost, authentication fails, or order book quality crosses a configured "gap" threshold, **then** the system enters a protective mode: no new risk-increasing orders, and flatten or freeze proceeds per operator policy.
 3. **Given** open orders, **when** max open orders per instrument is reached, **then** additional orders for that instrument are not submitted until capacity is freed.
 
 ---
@@ -41,7 +41,7 @@ An operator wants the system to open and close **only** liquid BTC/ETH option st
 
 ### User Story 3 - Regime-aware playbooks (Priority: P3)
 
-An operator wants volatility regime (low, normal, high) to drive which defined-risk playbook applies—for example income-style structures in calm markets and directional/vol structures appropriate for stressed markets—without manual intervention each session.
+An operator wants volatility regime (low, normal, high) to drive which defined-risk playbook applies---for example income-style structures in calm markets and directional/vol structures appropriate for stressed markets---without manual intervention each session.
 
 **Why this priority**: Adapts behavior to market conditions; builds on P1/P2.
 
@@ -73,7 +73,7 @@ An operator needs continuous visibility into positions, working orders, fills, e
 ### Edge Cases
 
 - Very fast volatility spikes: implied-vol-based quoting can lag; decisions must not rely solely on slowly updating vol quotes when the order book shows dislocation.
-- Wide spreads or thin depth at otherwise “listed” strikes: candidate generator must skip illiquid strikes/expiry even if nominally listed.
+- Wide spreads or thin depth at otherwise "listed" strikes: candidate generator must skip illiquid strikes/expiry even if nominally listed.
 - Partial fills on multi-leg structures: risk and hedge integrity must be monitored; legs may need coordinated cancel/replace.
 - Exchange partial outages: risk posture must default safe (no new risk) until health checks pass.
 - Clock skew or session rollover: expiry selection and time-in-trade limits must behave deterministically across session boundaries.
@@ -82,7 +82,7 @@ An operator needs continuous visibility into positions, working orders, fills, e
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST connect to the operator’s Deribit account using credentials and permissions supplied by the operator and MUST refuse to trade if authentication cannot be established securely.
+- **FR-001**: The system MUST connect to the operator's Deribit account using credentials and permissions supplied by the operator and MUST refuse to trade if authentication cannot be established securely.
 - **FR-002**: The system MUST discover tradable option expiries and strikes from the exchange and MUST restrict candidates to liquid BTC and ETH options only (per configurable liquidity thresholds).
 - **FR-003**: The system MUST ingest continuous pricing, order book, and volatility-index features sufficient to classify regime (low / normal / high) and to estimate transaction costs.
 - **FR-004**: The system MUST maintain authoritative views of open orders, positions, and account summaries sufficient for pre-trade and post-trade risk checks.
@@ -92,7 +92,7 @@ An operator needs continuous visibility into positions, working orders, fills, e
 - **FR-008**: The system MUST implement execution preferences: prioritize passive limit orders, use combination orders for spreads where supported, and use reduce-only semantics for exits where applicable.
 - **FR-009**: The system MUST detect anomaly conditions including feed loss, auth failure, and abnormal book gaps and MUST enter mandatory flatten or freeze behavior per operator policy without opening new risk.
 - **FR-010**: The system MUST provide operator-visible auditability: enough logged context to reconstruct regime, cost assumptions, risk gate outcomes, and order lifecycle for each trade (without logging secrets).
-- **FR-011**: The system MUST NOT increase position size using loss-recovery (“martingale”) rules, MUST NOT pursue cross-exchange arbitrage, MUST NOT optimize leverage beyond configured caps, and MUST NOT “trade every signal” without passing cost and risk gates.
+- **FR-011**: The system MUST NOT increase position size using loss-recovery ("martingale") rules, MUST NOT pursue cross-exchange arbitrage, MUST NOT optimize leverage beyond configured caps, and MUST NOT "trade every signal" without passing cost and risk gates.
 
 ### Key Entities
 
@@ -113,7 +113,7 @@ An operator needs continuous visibility into positions, working orders, fills, e
 
 - Primary market is Deribit; scope is BTC and ETH listed options as described in the input brief.
 - Operators are qualified to configure API keys, limits, and playbook parameters; regulatory and tax obligations remain with the operator.
-- A separate research/backtesting workflow may exist to validate strategies before live parameters are used, but this specification treats **live** risk and execution behavior as in scope for P1–P4.
+- A separate research/backtesting workflow may exist to validate strategies before live parameters are used, but this specification treats **live** risk and execution behavior as in scope for P1--P4.
 
 ## Success Criteria *(mandatory)*
 
@@ -123,7 +123,7 @@ An operator needs continuous visibility into positions, working orders, fills, e
 - **SC-002**: In stress scenarios where cumulative losses reach the configured daily cap, **100%** of test runs show no additional risk-increasing orders after the cap is hit until operator reset or the next defined session boundary.
 - **SC-003**: In feed-loss and auth-failure simulations, protective mode activates within **60 seconds** of detection and no new risk-increasing orders are confirmed afterward in **100%** of runs.
 - **SC-004**: Operators can reconcile positions and orders against the exchange after any trading window with **no unexplained orphan legs** beyond a bounded reconciliation procedure documented in runbooks (target: zero orphans in acceptance tests).
-- **SC-005**: Audit records tie at least **90%** of live entries/exits (by count) to a recorded regime label, cost model version, and risk gate outcome in acceptance sampling—rising to **100%** for trades that breached a soft warning threshold.
+- **SC-005**: Audit records tie at least **90%** of live entries/exits (by count) to a recorded regime label, cost model version, and risk gate outcome in acceptance sampling---rising to **100%** for trades that breached a soft warning threshold.
 
 ## Notes
 

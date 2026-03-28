@@ -1,108 +1,99 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: Autonomous Deribit Options Robot
 
+*Path: [.kittify/missions/software-dev/templates/plan-template.md](.kittify/missions/software-dev/templates/plan-template.md)*
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
+**Branch**: `master` (planning repo; feature slug `001-autonomous-deribit-options-robot`) | **Date**: 2026-03-28 | **Spec**: [spec.md](spec.md)
 
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `src/specify_cli/missions/software-dev/command-templates/plan.md` for the execution workflow.
-
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+**Input**: Feature specification at `kitty-specs/001-autonomous-deribit-options-robot/spec.md`, aligned with root `plan.md` technical brief.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Deliver an autonomous Deribit BTC/ETH **options** system that: (1) ingests exchange market and account state, (2) classifies **low / normal / high** vol regime and selects a **defined-risk** playbook per regime, (3) generates liquid candidates, scores **net edge after fees, spread, and slippage**, (4) enforces **hard Greek and loss limits** before any order, (5) executes with **post-only preference** and structured exits, and (6) enters **protective flatten or freeze** on feed, auth, or book-quality anomalies within the success-criteria time budget. Use a **two-layer** architecture: Python research/backtest vs **Go** execution, **SQLite** for durable positions/orders/audit, structured logging without secrets.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: Go 1.22+ (execution service); Python 3.12+ (research, backtests, regime playbook prototyping)  
+**Primary Dependencies**: Go: `net/http` or `resty` for HTTPS JSON-RPC; WebSocket client (`gorilla/websocket` or `nhooyr/websocket`); `zap` or `zerolog` for logs; `modernc.org/sqlite` or `sqlite` driver with parameterized queries. Python: `pandas`, `numpy`, `pytest` for research path.  
+**Storage**: SQLite (positions, orders, fills, daily PnL aggregates, audit decision records)  
+**Testing**: Go `go test` (table-driven for risk gates, cost model, regime labels with fake clock); Python `pytest` for research/backtest; integration tests against Deribit **testnet** or recorded **golden** JSON-RPC fixtures (no secrets in repo).  
+**Target Platform**: Linux (containers or bare metal); operator CLI or systemd-run binary for MVP.  
+**Project Type**: Single repo, **two deployable concern**s: `research/` (offline) and `execution/` (online).  
+**Performance Goals**: Protective mode within **60 seconds** of anomaly detection (per spec SC-003); decision tick and risk evaluation MUST NOT grow without bound (bounded worker pools, capped order-book depth ingestion per project constitution). Hot path: O(1) or O(legs) per candidate with documented max legs.  
+**Constraints**: No naked short options; no martingale; secrets via env or secret manager, never logged; IV-based quotes must be corroborated with order book under fast-move detection (spec edge case).  
+**Scale/Scope**: Single operator account per deployment MVP; BTC and ETH options only; liquid strikes per configurable depth/spread thresholds.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+| Principle (from `.kittify/memory/constitution.md`) | How this plan complies |
+|----------------------------------------------------|-------------------------|
+| Testing MUST cover critical paths (risk, auth, data integrity) | Risk gate matrix, cost model, regime classifier, and anomaly FSM have **automated** tests; integration suite for order lifecycle on testnet or fixtures. |
+| MUST NOT log secrets | Logging design uses redaction for API keys, client secrets, full tokens; audit logs store **decision metadata** only. |
+| Parameterized DB access | All SQLite access via prepared statements / ORM; no string-built SQL from config or exchange payloads. |
+| Performance: no unbounded hot-path work | Worker pools with fixed concurrency; bounded book depth; explicit caps on candidate enumeration documented in `research.md`. |
+| Public APIs documented | Exported Go packages and any CLI flags documented; config validated against `contracts/config-policy.schema.json`. |
+
+**Post-Phase 1 re-check**: PASS. No new MUST violations; operator UI is out of scope for MVP (CLI + logs) so UX consistency applies when/if a dashboard is added.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
+kitty-specs/001-autonomous-deribit-options-robot/
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── contracts/
+└── tasks.md             # Phase 2 only: created by /spec-kitty.tasks
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+execution/                    # Go: live connectivity, risk, execution
+├── go.mod
+├── cmd/optitrade/            # main binary
+└── internal/
+    ├── deribit/              # JSON-RPC + WS client
+    ├── market/               # book, ticker, vol index ingestion
+    ├── regime/               # classification (may start rule-based)
+    ├── strategy/             # playbooks, candidate gen
+    ├── risk/                 # gates, portfolio snapshot
+    ├── exec/                 # order placement, labels, reduce-only
+    ├── state/                # SQLite repos
+    └── audit/                # structured decision logs
 
-tests/
-├── contract/
-├── integration/
-└── unit/
+research/                     # Python: backtests, parameter studies
+├── pyproject.toml
+└── src/optitrade_research/
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+config/
+└── examples/                 # sample policy YAML validated by schema
 
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+tests/                        # optional top-level shared fixtures
+└── fixtures/deribit/         # recorded RPC (sanitized)
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: **Option 1 variant**: single repo with `execution/` (Go) and `research/` (Python). Research informs parameters and playbooks; execution is the only component that touches live keys for MVP.
 
 ## Complexity Tracking
 
-*Fill ONLY if Constitution Check has violations that must be justified*
+*No constitution violations requiring justification. Complexity (two languages) is inherited from product brief: Python for research velocity, Go for production execution.*
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| N/A | | |
+
+## Phase Outputs (this command)
+
+| Phase | Artifact | Path |
+|-------|-----------|------|
+| 0 | Research decisions | `kitty-specs/001-autonomous-deribit-options-robot/research.md` |
+| 1 | Data model | `kitty-specs/001-autonomous-deribit-options-robot/data-model.md` |
+| 1 | Contracts | `kitty-specs/001-autonomous-deribit-options-robot/contracts/` |
+| 1 | Quickstart | `kitty-specs/001-autonomous-deribit-options-robot/quickstart.md` |
+
+**Stop**: Task generation is **not** performed here. Run `/spec-kitty.tasks` next.

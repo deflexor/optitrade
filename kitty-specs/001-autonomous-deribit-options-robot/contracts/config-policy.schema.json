@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://optitrade.local/schemas/config-policy.json",
+  "title": "Optitrade Risk and Playbook Policy",
+  "type": "object",
+  "required": ["version", "limits", "liquidity", "playbooks"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "environment": {
+      "type": "string",
+      "enum": ["testnet", "mainnet"]
+    },
+    "limits": {
+      "type": "object",
+      "required": [
+        "max_loss_per_trade",
+        "max_daily_loss",
+        "max_open_premium_at_risk",
+        "max_portfolio_delta",
+        "max_portfolio_vega",
+        "max_open_orders_per_instrument",
+        "max_time_in_trade_seconds"
+      ],
+      "properties": {
+        "max_loss_per_trade": { "type": "string", "description": "Decimal string, quote currency" },
+        "max_daily_loss": { "type": "string" },
+        "max_open_premium_at_risk": { "type": "string" },
+        "max_portfolio_delta": { "type": "string" },
+        "max_portfolio_vega": { "type": "string" },
+        "max_open_orders_per_instrument": { "type": "integer", "minimum": 1 },
+        "max_time_in_trade_seconds": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "liquidity": {
+      "type": "object",
+      "required": ["min_top_size", "max_spread_bps"],
+      "properties": {
+        "min_top_size": { "type": "string", "description": "Min size at best bid/ask" },
+        "max_spread_bps": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "cost_model": {
+      "type": "object",
+      "properties": {
+        "taker_fee_bps": { "type": "integer", "minimum": 0 },
+        "maker_fee_bps": { "type": "integer" },
+        "slippage_bps": { "type": "integer", "minimum": 0 },
+        "adverse_selection_bps_low": { "type": "integer", "minimum": 0 },
+        "adverse_selection_bps_high": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "regime": {
+      "type": "object",
+      "properties": {
+        "classifier": { "type": "string", "enum": ["rules_v1"] },
+        "low_vol_threshold_index": { "type": "string" },
+        "high_vol_threshold_index": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "playbooks": {
+      "type": "object",
+      "required": ["low", "normal", "high"],
+      "properties": {
+        "low": { "$ref": "#/$defs/playbook" },
+        "normal": { "$ref": "#/$defs/playbook" },
+        "high": { "$ref": "#/$defs/playbook" }
+      },
+      "additionalProperties": false
+    },
+    "protective_mode": {
+      "type": "object",
+      "properties": {
+        "book_gap_spread_bps": { "type": "integer", "minimum": 0 },
+        "feed_stale_ms": { "type": "integer", "minimum": 1000 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "playbook": {
+      "type": "object",
+      "required": ["allowed_structures"],
+      "properties": {
+        "allowed_structures": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "credit_spread",
+              "debit_spread",
+              "iron_condor",
+              "other_defined_risk"
+            ]
+          },
+          "minItems": 1
+        },
+        "max_new_positions_per_day": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

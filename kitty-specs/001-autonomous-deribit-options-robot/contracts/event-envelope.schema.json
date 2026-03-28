@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://optitrade.local/schemas/event-envelope.json",
+  "title": "Audit Event Envelope",
+  "type": "object",
+  "required": ["schema_version", "ts_ms", "correlation_id", "event_type"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "ts_ms": { "type": "integer", "minimum": 0 },
+    "correlation_id": { "type": "string", "minLength": 8 },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "regime_changed",
+        "candidate_evaluated",
+        "risk_gate_result",
+        "order_submitted",
+        "order_terminal",
+        "protective_mode_entered",
+        "session_state_changed"
+      ]
+    },
+    "payload": { "type": "object" }
+  },
+  "additionalProperties": false
+}
