@@ -6,6 +6,7 @@ dependencies:
 - WP03
 - WP04
 - WP08
+- WP11
 subtasks:
 - T040
 - T041
