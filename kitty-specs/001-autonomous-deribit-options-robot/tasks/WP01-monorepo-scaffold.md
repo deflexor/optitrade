@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Monorepo scaffold and tooling
-lane: "doing"
+lane: "done"
 dependencies: []
 base_branch: master
 base_commit: 2bb50aaac87c962dcb122758c3cb3b2de7393b6b
@@ -16,8 +16,8 @@ phase: Phase 1 - Foundation
 assignee: ''
 agent: "cursor"
 shell_pid: "17945"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -100,3 +100,4 @@ spec-kitty implement WP01
 - 2026-03-28T01:00:26Z – cursor – shell_pid=15322 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T01:05:27Z – cursor – shell_pid=15322 – lane=for_review – Ready for review: monorepo scaffold, Makefile build/test/lint, .env.example, aligned with plan.md structure
 - 2026-03-28T01:07:38Z – cursor – shell_pid=17945 – lane=doing – Started review via workflow command
+- 2026-03-28T01:08:41Z – cursor – shell_pid=17945 – lane=done – Review passed: layout matches plan; go 1.22 module and Makefile build/lint/test OK; research smoke via uv+pytest; .env.example has no values.
