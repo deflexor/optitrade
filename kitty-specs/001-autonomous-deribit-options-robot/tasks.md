@@ -341,15 +341,15 @@ Race with execution: single-writer for session state or mutex documented.
 | SC-005 | T068 |
 
 ### Included Subtasks
-- [ ] T060 E2E harness: read-only session on testnet (positions, books) behind build tag or env
-- [ ] T061 Optional gated live order smoke on testnet with minimal size (explicit env `OPTITRADE_ALLOW_TESTNET_ORDERS`)
-- [ ] T062 Update `quickstart.md` and `docs/trader-safety-cheatsheet.md` with final binary names and flags
-- [ ] T063 Add `docs/runbook-incident.md` skeleton: kill, flatten, key rotation
-- [ ] T064 **SC-001**: Automated or scripted certification with seeded data: 100% of simulated fills are defined-risk templates allowed by active playbook (assert no naked short); document command under test/CI target
-- [ ] T065 **SC-002**: Stress test: after daily loss cap, assert no further risk-increasing intents (no new opening orders in harness); document session boundary alignment with WP09
-- [ ] T066 **SC-003**: Feed-loss or auth-failure simulation: assert protective/block path within 60s budget and zero new risk-increasing submits afterward; link to WP12 tests or extend
-- [ ] T067 **SC-004**: Reconciliation acceptance: after scripted window, assert no unexplained orphan legs vs exchange mock/fixture; reference bounded procedure in runbook
-- [ ] T068 **SC-005**: Audit sampling test: sample of decisions includes regime label, cost model version, and risk gate outcome; measure 90% threshold on fixture corpus (100% for mock "warning breach" cases)
+- [x] T060 E2E harness: read-only session on testnet (positions, books) behind build tag or env
+- [x] T061 Optional gated live order smoke on testnet with minimal size (explicit env `OPTITRADE_ALLOW_TESTNET_ORDERS`)
+- [x] T062 Update `quickstart.md` and `docs/trader-safety-cheatsheet.md` with final binary names and flags
+- [x] T063 Add `docs/runbook-incident.md` skeleton: kill, flatten, key rotation
+- [x] T064 **SC-001**: Automated or scripted certification with seeded data: 100% of simulated fills are defined-risk templates allowed by active playbook (assert no naked short); document command under test/CI target
+- [x] T065 **SC-002**: Stress test: after daily loss cap, assert no further risk-increasing intents (no new opening orders in harness); document session boundary alignment with WP09
+- [x] T066 **SC-003**: Feed-loss or auth-failure simulation: assert protective/block path within 60s budget and zero new risk-increasing submits afterward; link to WP12 tests or extend
+- [x] T067 **SC-004**: Reconciliation acceptance: after scripted window, assert no unexplained orphan legs vs exchange mock/fixture; reference bounded procedure in runbook
+- [x] T068 **SC-005**: Audit sampling test: sample of decisions includes regime label, cost model version, and risk gate outcome; measure 90% threshold on fixture corpus (100% for mock "warning breach" cases)
 
 ### Dependencies
 - Depends on WP12
