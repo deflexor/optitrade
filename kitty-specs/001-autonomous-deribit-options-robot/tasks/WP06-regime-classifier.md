@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: Regime classifier
-lane: "doing"
+lane: "done"
 dependencies: [WP05, WP03]
 base_branch: 001-autonomous-deribit-options-robot-WP06-merge-base
 base_commit: 099e09b02498cd70c3852ac5a320e544dfb08bb2
@@ -15,8 +15,8 @@ phase: Phase 2 - Strategy
 assignee: ''
 agent: "cursor-composer"
 shell_pid: "38474"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -85,3 +85,4 @@ spec-kitty implement WP06 --base WP05
 - 2026-03-28T09:08:40Z – cursor-composer – shell_pid=37351 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T09:10:00Z – cursor-composer – shell_pid=37351 – lane=for_review – Ready for review: rules_v1 regime, hysteresis, regime_state repo + tests
 - 2026-03-28T09:13:34Z – cursor-composer – shell_pid=38474 – lane=doing – Started review via workflow command
+- 2026-03-28T09:13:47Z – cursor-composer – shell_pid=38474 – lane=done – Review passed: rules_v1 thresholds + hysteresis match spec; classifier_version on Outcome; regime_state persisted with SHA256 inputs_digest; SQLite uses parameterized inserts; EvaluateSnapshot couples market snapshot to policy as required. Minor: hysteresis_minutes only applies when non-nil *Hysteresis is passed; invalid threshold strings fall back to normal (document or tighten later). WP07 should rebase on 001-autonomous-deribit-options-robot-WP06 after merge.
