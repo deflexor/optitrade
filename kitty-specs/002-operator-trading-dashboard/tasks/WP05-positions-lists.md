@@ -14,7 +14,7 @@ subtasks:
 - T029
 phase: Phase 3 - Lists
 assignee: ''
-agent: ''
+agent: "cursor"
 shell_pid: "77003"
 review_status: ''
 reviewed_by: ''
@@ -82,3 +82,4 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
+- 2026-03-28T12:05:27Z – cursor – shell_pid=77003 – lane=doing – Assigned agent via workflow command
