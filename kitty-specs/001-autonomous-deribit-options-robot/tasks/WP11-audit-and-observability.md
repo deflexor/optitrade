@@ -1,7 +1,7 @@
 ---
 work_package_id: WP11
 title: Audit trail and structured logging
-lane: "for_review"
+lane: "doing"
 dependencies: [WP07]
 base_branch: 001-autonomous-deribit-options-robot-WP07
 base_commit: 4fb4e6fa29238b31d36e9addd20fba6bba339f11
@@ -14,7 +14,7 @@ subtasks:
 phase: Phase 4 - Observability
 assignee: ''
 agent: "cursor"
-shell_pid: "45132"
+shell_pid: "52515"
 review_status: ''
 reviewed_by: ''
 history:
@@ -85,3 +85,4 @@ spec-kitty implement WP11 --base WP07
 - 2026-03-28T09:31:13Z – cursor – shell_pid=44076 – lane=for_review – Ready for review: audit DecisionLogger, redacting slog handler, JSONL envelopes
 - 2026-03-28T09:32:11Z – cursor – shell_pid=45132 – lane=doing – Started implementation via workflow command
 - 2026-03-28T09:32:25Z – cursor – shell_pid=45132 – lane=for_review – Ready for review: DecisionLogger (SQLite+slog), DecisionRecord + reasons, redacting JSON slog handler, optional JSONL event envelopes (FR-010)
+- 2026-03-28T09:50:08Z – cursor – shell_pid=52515 – lane=doing – Started review via workflow command
