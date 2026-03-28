@@ -31,5 +31,5 @@
 
 ## Notes
 
-- 2026-03-28: Clarify session started; auth allowlist and v1 credential rules added to spec. Re-validate checklist after final clarify round.
+- 2026-03-28: Clarify session complete (5 answers); auth, equity, 30d P/L default, 5s staleness, dual Regime/Mood labels. Re-run item checkboxes before `/spec-kitty.plan` if spec changes again.
 - Backend/API contracts for close, rebalance preview, and health metrics are dependencies; Assumptions state sibling delivery if missing.
