@@ -15,7 +15,7 @@ subtasks:
 - T006
 phase: Phase 1 - Foundation
 assignee: ''
-agent: ''
+agent: "cursor"
 shell_pid: "66783"
 review_status: ''
 reviewed_by: ''
@@ -122,6 +122,7 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
+- 2026-03-28T11:46:07Z – cursor – shell_pid=66783 – lane=doing – Assigned agent via workflow command
 
 ## Markdown Formatting
 
