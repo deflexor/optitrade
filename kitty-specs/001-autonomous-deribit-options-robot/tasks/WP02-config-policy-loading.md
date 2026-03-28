@@ -13,7 +13,7 @@ subtasks:
 - T009
 phase: Phase 1 - Foundation
 assignee: ''
-agent: ''
+agent: "cursor"
 shell_pid: "19720"
 review_status: ''
 reviewed_by: ''
@@ -89,3 +89,4 @@ spec-kitty implement WP02 --base WP01
 ## Activity Log
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
+- 2026-03-28T01:12:23Z – cursor – shell_pid=19720 – lane=doing – Assigned agent via workflow command
