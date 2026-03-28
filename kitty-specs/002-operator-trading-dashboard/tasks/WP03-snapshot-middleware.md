@@ -98,11 +98,11 @@ requirement_refs:
 
 ## Activity Log
 
-- 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T11:56:57Z -- composer -- shell_pid=72328 -- lane=doing -- Assigned agent via workflow command
-- 2026-03-28T11:58:47Z -- composer -- shell_pid=72328 -- lane=for_review -- Ready for review: snapshot API, auth helper, stale tests, deribit env from BASE_URL
-- 2026-03-28T11:59:31Z -- composer -- shell_pid=73439 -- lane=doing -- Started review via workflow command
-- 2026-03-28T12:00:00Z -- composer -- shell_pid=73439 -- lane=done -- Review passed: snapshot matches OpenAPI Snapshot; auth on GET /snapshot with session DB lookup; regime triple + Clock/stale tests; Deribit env from BASE_URL. Minor: replaced em-dashes in snapshot.go with ASCII hyphen (AGENTS.md). Note: default deribit_connected stays false so live dashboard snapshots are stale until bot wiring; unknown /api/v1/* hits unauthenticated 404 handler (consider protected mux in a later WP for strict FR-017). WP04/WP05 should rebase onto 002-operator-trading-dashboard-WP03.
+- 2026-03-28T11:05:00Z - system - lane=planned - Prompt created via /spec-kitty.tasks
+- 2026-03-28T11:56:57Z - composer - shell_pid=72328 - lane=doing - Assigned agent via workflow command
+- 2026-03-28T11:58:47Z - composer - shell_pid=72328 - lane=for_review - Ready for review: snapshot API, auth helper, stale tests, deribit env from BASE_URL
+- 2026-03-28T11:59:31Z - composer - shell_pid=73439 - lane=doing - Started review via workflow command
+- 2026-03-28T12:00:00Z - composer - shell_pid=73439 - lane=done - Review passed: snapshot matches OpenAPI Snapshot; auth on GET /snapshot with session DB lookup; regime triple + Clock/stale tests; Deribit env from BASE_URL. Minor: replaced em-dashes in snapshot.go with ASCII hyphen (AGENTS.md). Note: default deribit_connected stays false so live dashboard snapshots are stale until bot wiring; unknown /api/v1/* hits unauthenticated 404 handler (consider protected mux in a later WP for strict FR-017). WP04/WP05 should rebase onto 002-operator-trading-dashboard-WP03.
 
 ## Markdown Formatting
 

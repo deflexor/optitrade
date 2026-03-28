@@ -121,11 +121,11 @@ requirement_refs:
 
 ## Activity Log
 
-- 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T11:46:07Z -- cursor -- shell_pid=66783 -- lane=doing -- Assigned agent via workflow command
-- 2026-03-28T11:49:30Z -- cursor -- shell_pid=66783 -- lane=for_review -- Ready for review: Vite+Tailwind SPA, axios+zustand+router, /api dev proxy, dashboard BFF healthz+API 404 JSON + embed stub, optitrade dashboard command
-- 2026-03-28T11:49:51Z -- cursor -- shell_pid=68718 -- lane=doing -- Started review via workflow command
-- 2026-03-28T11:50:10Z -- cursor -- shell_pid=68718 -- lane=done -- Review passed: web stack + proxy + dashboard Server/healthz/API stub + optitrade dashboard cmd + graceful shutdown; go test and npm build verified. Note: WP02+ should rebase on master after WP01 merges.
+- 2026-03-28T11:05:00Z - system - lane=planned - Prompt created via /spec-kitty.tasks
+- 2026-03-28T11:46:07Z - cursor - shell_pid=66783 - lane=doing - Assigned agent via workflow command
+- 2026-03-28T11:49:30Z - cursor - shell_pid=66783 - lane=for_review - Ready for review: Vite+Tailwind SPA, axios+zustand+router, /api dev proxy, dashboard BFF healthz+API 404 JSON + embed stub, optitrade dashboard command
+- 2026-03-28T11:49:51Z - cursor - shell_pid=68718 - lane=doing - Started review via workflow command
+- 2026-03-28T11:50:10Z - cursor - shell_pid=68718 - lane=done - Review passed: web stack + proxy + dashboard Server/healthz/API stub + optitrade dashboard cmd + graceful shutdown; go test and npm build verified. Note: WP02+ should rebase on master after WP01 merges.
 
 ## Markdown Formatting
 

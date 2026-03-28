@@ -81,8 +81,8 @@ requirement_refs:
 
 ## Activity Log
 
-- 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T12:05:27Z -- cursor -- shell_pid=77003 -- lane=doing -- Assigned agent via workflow command
-- 2026-03-28T12:07:58Z -- cursor -- shell_pid=77003 -- lane=for_review -- Ready for review: GET /positions/open and /closed, operator_position migration + sqlite repo, React tables with empty states and close-preview route hook
-- 2026-03-28T12:32:52Z -- cursor -- shell_pid=78725 -- lane=doing -- Started review via workflow command
-- 2026-03-28T12:33:08Z -- cursor -- shell_pid=78725 -- lane=done -- Review passed: positions API/UI match FR-006--008; sqlite migration + repo; limit≤10 and closed_at sort verified; tests green. Note: realized_pnl_pct semantics for bot writers still TBD; WP06 can rebase onto 002-operator-trading-dashboard-WP05.
+- 2026-03-28T11:05:00Z - system - lane=planned - Prompt created via /spec-kitty.tasks
+- 2026-03-28T12:05:27Z - cursor - shell_pid=77003 - lane=doing - Assigned agent via workflow command
+- 2026-03-28T12:07:58Z - cursor - shell_pid=77003 - lane=for_review - Ready for review: GET /positions/open and /closed, operator_position migration + sqlite repo, React tables with empty states and close-preview route hook
+- 2026-03-28T12:32:52Z - cursor - shell_pid=78725 - lane=doing - Started review via workflow command
+- 2026-03-28T12:33:08Z - cursor - shell_pid=78725 - lane=done - Review passed: positions API/UI match FR-006--008; sqlite migration + repo; limit≤10 and closed_at sort verified; tests green. Note: realized_pnl_pct semantics for bot writers still TBD; WP06 can rebase onto 002-operator-trading-dashboard-WP05.

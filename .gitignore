@@ -1,4 +1,5 @@
 .env
+.kittify/workspaces/
 research/.venv/
 .venv/
 *.egg-info/

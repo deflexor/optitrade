@@ -139,11 +139,11 @@ requirement_refs:
 
 ## Activity Log
 
-- 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T11:52:00Z -- cursor -- shell_pid=70061 -- lane=doing -- Assigned agent via workflow command
-- 2026-03-28T11:55:00Z -- cursor -- shell_pid=70061 -- lane=for_review -- Ready for review: dashboard SQLite auth, bcrypt, sessions, allowlist login, httptest matrix
-- 2026-03-28T11:55:57Z -- cursor -- shell_pid=71594 -- lane=doing -- Started review via workflow command
-- 2026-03-28T11:56:32Z -- cursor -- shell_pid=71594 -- lane=done -- Review passed: migration 0003, bcrypt auth, allowlist login semantics, session cookies, httptest matrix; OpenAPI-aligned handlers. Merge WP02 branch before WP03 bases on master; rebase WP03+ if WP02 changes.
+- 2026-03-28T11:05:00Z - system - lane=planned - Prompt created via /spec-kitty.tasks
+- 2026-03-28T11:52:00Z - cursor - shell_pid=70061 - lane=doing - Assigned agent via workflow command
+- 2026-03-28T11:55:00Z - cursor - shell_pid=70061 - lane=for_review - Ready for review: dashboard SQLite auth, bcrypt, sessions, allowlist login, httptest matrix
+- 2026-03-28T11:55:57Z - cursor - shell_pid=71594 - lane=doing - Started review via workflow command
+- 2026-03-28T11:56:32Z - cursor - shell_pid=71594 - lane=done - Review passed: migration 0003, bcrypt auth, allowlist login semantics, session cookies, httptest matrix; OpenAPI-aligned handlers. Merge WP02 branch before WP03 bases on master; rebase WP03+ if WP02 changes.
 
 ## Markdown Formatting
 

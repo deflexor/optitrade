@@ -83,8 +83,8 @@ requirement_refs:
 
 ## Activity Log
 
-- 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T12:50:25Z -- cursor -- shell_pid=85625 -- lane=doing -- Assigned agent via workflow command
-- 2026-03-28T12:51:52Z – cursor – shell_pid=85625 – lane=for_review – Ready for review: go:embed SPA fallback + security headers; make web/build; login/register + protected bootstrap; dashboard-security.md; encoding validated
-- 2026-03-28T12:52:25Z – cursor – shell_pid=87172 – lane=doing – Started review via workflow command
-- 2026-03-28T12:52:45Z – cursor – shell_pid=87172 – lane=done – Review passed: embed+SPA fallback, make web/build, auth flows+CSRF doc, tests green; fixed open redirect in login ?next= (reject //)
+- 2026-03-28T11:05:00Z - system - lane=planned - Prompt created via /spec-kitty.tasks
+- 2026-03-28T12:50:25Z - cursor - shell_pid=85625 - lane=doing - Assigned agent via workflow command
+- 2026-03-28T12:51:52Z - cursor - shell_pid=85625 - lane=for_review - Ready for review: go:embed SPA fallback + security headers; make web/build; login/register + protected bootstrap; dashboard-security.md; encoding validated
+- 2026-03-28T12:52:25Z - cursor - shell_pid=87172 - lane=doing - Started review via workflow command
+- 2026-03-28T12:52:45Z - cursor - shell_pid=87172 - lane=done - Review passed: embed+SPA fallback, make web/build, auth flows+CSRF doc, tests green; fixed open redirect in login ?next= (reject //)
