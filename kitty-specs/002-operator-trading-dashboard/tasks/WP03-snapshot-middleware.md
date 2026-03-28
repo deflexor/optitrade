@@ -1,8 +1,11 @@
 ---
 work_package_id: WP03
 title: Auth middleware and summary snapshot API
-lane: planned
+lane: "doing"
 dependencies: [WP02]
+base_branch: 002-operator-trading-dashboard-WP02
+base_commit: f5c09086a84d2fad0f5a480ed0b33a062c3584ec
+created_at: '2026-03-28T11:56:57.654407+00:00'
 subtasks:
 - T014
 - T015
@@ -14,7 +17,7 @@ subtasks:
 phase: Phase 2 - Snapshot
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "72328"
 review_status: ''
 reviewed_by: ''
 history:
