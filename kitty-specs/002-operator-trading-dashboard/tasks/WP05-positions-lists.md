@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: Open and closed positions list API and UI
-lane: "doing"
+lane: "done"
 dependencies: [WP03]
 base_branch: 002-operator-trading-dashboard-WP03
 base_commit: 8e3f17ed1c7ece4fc5ca9857f62fcd4f3a6e4710
@@ -16,8 +16,8 @@ phase: Phase 3 - Lists
 assignee: ''
 agent: "cursor"
 shell_pid: "78725"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T11:05:00Z'
   lane: planned
@@ -85,3 +85,4 @@ requirement_refs:
 - 2026-03-28T12:05:27Z – cursor – shell_pid=77003 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T12:07:58Z – cursor – shell_pid=77003 – lane=for_review – Ready for review: GET /positions/open and /closed, operator_position migration + sqlite repo, React tables with empty states and close-preview route hook
 - 2026-03-28T12:32:52Z – cursor – shell_pid=78725 – lane=doing – Started review via workflow command
+- 2026-03-28T12:33:08Z – cursor – shell_pid=78725 – lane=done – Review passed: positions API/UI match FR-006–008; sqlite migration + repo; limit≤10 and closed_at sort verified; tests green. Note: realized_pnl_pct semantics for bot writers still TBD; WP06 can rebase onto 002-operator-trading-dashboard-WP05.
