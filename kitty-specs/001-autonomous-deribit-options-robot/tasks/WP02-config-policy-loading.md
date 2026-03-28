@@ -1,0 +1,88 @@
+---
+work_package_id: WP02
+title: Config load and policy validation
+lane: planned
+dependencies: [WP01]
+subtasks:
+- T006
+- T007
+- T008
+- T009
+phase: Phase 1 - Foundation
+assignee: ''
+agent: ''
+shell_pid: ''
+review_status: ''
+reviewed_by: ''
+history:
+- timestamp: '2026-03-28T00:49:20Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-007
+- FR-011
+---
+
+# Work Package Prompt: WP02 Config load and policy validation
+
+## Review Feedback
+
+*[Empty until review.]*
+
+---
+
+## Implementation command
+
+```bash
+spec-kitty implement WP02 --base WP01
+```
+
+## Objectives and success criteria
+
+- Runtime loads policy file and rejects valid-schema violations with clear errors.
+- Example policy file exists for testnet with conservative limits.
+
+## Context and constraints
+
+- Schema: `kitty-specs/001-autonomous-deribit-options-robot/contracts/config-policy.schema.json`
+- Constitution: treat file contents as untrusted; validate before use.
+
+## Subtasks and detailed guidance
+
+### T006 Schema integration
+
+- **Purpose**: Single validation path for policy JSON.
+- **Steps**: Choose embedded schema (go:embed) or load from path relative to repo; document production behavior (embed recommended).
+- **Files**: `execution/internal/config/schema.go` (suggested).
+
+### T007 Config loader
+
+- **Purpose**: Typed access to limits, playbooks, cost model, protective thresholds.
+- **Steps**: Parse JSON; map to structs with explicit types for decimals (string or shopspring decimal); env override only for paths and secrets, not for numeric limits unless you document.
+- **Files**: `execution/internal/config/load.go`
+
+### T008 Example policy
+
+- **Purpose**: Operators copy and edit.
+- **Steps**: Fill `config/examples/policy.example.json` with `environment: testnet`, tight limits, `rules_v1` regime placeholders.
+- **Files**: `config/examples/policy.example.json`
+
+### T009 Unit tests
+
+- **Purpose**: Gate bad configs.
+- **Steps**: Cases: missing `max_daily_loss`, wrong enum for playbook structure, extra field if `additionalProperties: false`.
+- **Files**: `execution/internal/config/load_test.go`
+
+## Risks and mitigations
+
+- JSON decimal precision: avoid `float64` for money fields.
+
+## Review guidance
+
+- Confirm schema version field enforced.
+
+## Activity Log
+
+- 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
