@@ -5,3 +5,4 @@ research/.venv/
 __pycache__/
 *.py[cod]
 execution/optitrade
+.worktrees/

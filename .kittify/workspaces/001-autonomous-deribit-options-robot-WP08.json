@@ -1,0 +1,15 @@
+{
+  "wp_id": "WP08",
+  "feature_slug": "001-autonomous-deribit-options-robot",
+  "worktree_path": ".worktrees/001-autonomous-deribit-options-robot-WP08",
+  "branch_name": "001-autonomous-deribit-options-robot-WP08",
+  "base_branch": "001-autonomous-deribit-options-robot-WP08-merge-base",
+  "base_commit": "cc7e18fac4037722e46fcb81b6b6978a02eb3e1b",
+  "dependencies": [
+    "WP07",
+    "WP11"
+  ],
+  "created_at": "2026-03-28T09:33:11.325009+00:00",
+  "created_by": "implement-command-multi-parent-merge",
+  "vcs_backend": "git"
+}
