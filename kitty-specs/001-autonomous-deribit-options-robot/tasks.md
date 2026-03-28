@@ -235,10 +235,10 @@ Logger on hot path: allow sync insert for MVP; batch later if needed.
 **Requirements Refs**: FR-006, FR-011
 
 ### Included Subtasks
-- [ ] T036 Implement fee and half-spread cost components from policy and live quotes
-- [ ] T037 Implement slippage and adverse-selection adders per regime
-- [ ] T038 Implement `ScoreCandidate` returning veto reason codes for audit
-- [ ] T039 Compare IV-based quotes vs book sanity check hook (defer full logic if IV orders off)
+- [x] T036 Implement fee and half-spread cost components from policy and live quotes
+- [x] T037 Implement slippage and adverse-selection adders per regime
+- [x] T038 Implement `ScoreCandidate` returning veto reason codes for audit
+- [x] T039 Compare IV-based quotes vs book sanity check hook (defer full logic if IV orders off)
 
 ### Dependencies
 - Depends on WP07, WP11
