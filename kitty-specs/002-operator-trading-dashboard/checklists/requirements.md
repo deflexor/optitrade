@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Validation: self-review 2026-03-28, all items pass. Ready for `/spec-kitty.clarify` or `/spec-kitty.plan`.
+- 2026-03-28: Clarify session started; auth allowlist and v1 credential rules added to spec. Re-validate checklist after final clarify round.
 - Backend/API contracts for close, rebalance preview, and health metrics are dependencies; Assumptions state sibling delivery if missing.

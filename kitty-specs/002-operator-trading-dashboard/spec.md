@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: lightweight web UI for the Deribit trading bot: uptime, RAM, connection mode (test vs live), balance, P/L chart, market mood, open positions with close actions, recently closed positions with USD and percent P/L, strategy metadata (expected P/L, win %), position detail with legs, liquidity, metrics, Greeks, close modal with estimated exit P/L and wait vs close guidance, rebalance modal with suggested adjustments and outcomes. Operator-stated preference for a small, debuggable SPA stack (implementation detail captured in Assumptions only).
 
+## Clarifications
+
+### Session 2026-03-28
+
+- Q: For this dashboard, how should access be secured in the first shipped version? -> A: Simple username/password registration and login only (no email, no verification codes). Login succeeds only for usernames on an operator-maintained allowlist (example: `opti`) after correct password verification; all other usernames receive the exact message `Sorry, feature not ready` and MUST NOT access dashboard data. Passwords MUST NOT be stored in plaintext.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - At-a-glance operational health (Priority: P1)
@@ -20,6 +26,10 @@ An operator opens the dashboard and immediately sees whether the bot process is 
 1. **Given** the bot is running, **when** the operator loads the dashboard, **then** they see process uptime and memory usage that track actual values within an agreed tolerance and update on a predictable schedule.
 2. **Given** Deribit connectivity, **when** the dashboard loads, **then** the operator sees explicit indication of test vs real-money mode with no ambiguity.
 3. **Given** a broken or missing exchange connection, **when** the dashboard refreshes, **then** the connection status shows degraded or disconnected and the operator can tell what failed without reading logs.
+4. **Given** an unauthenticated visitor, **when** they open any dashboard URL, **then** they are required to register or sign in before seeing health, balances, or positions.
+5. **Given** a username on the operator allowlist and correct password, **when** the user signs in, **then** they obtain a session and reach the main dashboard.
+6. **Given** a username not on the allowlist, **when** the user attempts sign-in after registration or login, **then** they see the message `Sorry, feature not ready` and MUST NOT see portfolio or health data.
+7. **Given** an allowlisted username and wrong password, **when** the user attempts sign-in, **then** access is denied with a generic failed-login outcome (MUST NOT display portfolio data; MUST NOT use the not-ready message reserved for non-allowlisted users).
 
 ---
 
@@ -79,6 +89,8 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - Very rapid updates: lists must not reorder confusingly; stable sort keys or brief loading states are acceptable.
 - Exchange or API errors during close/rebalance: operator sees failure message and book unchanged until reconciled.
 - Zero or fewer than ten historical closes: recent-closes section shows available rows and empty state messaging.
+- Auth: brute-force or credential-stuffing attempts SHOULD be rate-limited or delayed per deployment policy; session tokens MUST expire or be revocable on restart as documented for operators.
+- Auth: duplicate registration, weak passwords, or recovery: v1 has no email recovery; operators reset accounts via deployment procedures.
 
 ## Requirements *(mandatory)*
 
@@ -97,9 +109,16 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **FR-011**: The dashboard MUST offer a rebalance entry point on the position detail view that opens a dialog with ranked or numbered suggestions, each describing the adjustment and the likely effect on risk or P/L.
 - **FR-012**: Destructive actions (close, rebalance execution) MUST require explicit confirmation after the operator has seen the latest estimates in the dialog.
 - **FR-013**: The dashboard MUST reflect errors from the trading layer without implying success; after failures, displayed positions MUST reconcile to backend state within one full refresh cycle or show a reconciling state.
+- **FR-014**: The product MUST provide registration using username and password only; it MUST NOT require email addresses, SMS, or verification codes in v1.
+- **FR-015**: The product MUST provide sign-in that verifies password for allowlisted usernames only. Non-allowlisted usernames MUST receive the exact user-visible message `Sorry, feature not ready` and MUST NOT receive any authenticated session or protected API payload.
+- **FR-016**: Allowlisted usernames with incorrect passwords MUST be denied login without issuing a session; the response MUST NOT reveal allowlist membership to unauthenticated callers beyond the distinct not-ready message for non-allowlisted usernames at attempted login.
+- **FR-017**: All dashboard data and control actions (health, balances, positions, close, rebalance) MUST require an authenticated session established per FR-015.
+- **FR-018**: Passwords MUST be stored using a salted, slow, one-way password hash suitable for verifier-based login (MUST NOT store plaintext passwords).
 
 ### Key Entities
 
+- **Operator user**: Username, password verifier material, allowlist flag or allowlist source reference, registration timestamp; no email or phone in v1.
+- **Dashboard session**: Authenticated subject bound to one allowlisted operator user, issuance and expiry rules set in the implementation plan.
 - **Dashboard snapshot**: Timestamped bundle of health metrics, connection mode, balance, mood label, and freshness flags.
 - **P/L series**: Time-ordered points with currency and optional benchmark reference if provided by backend.
 - **Position summary**: Identifier, strategy name, open vs closed state, expected P/L at open, win-rate statistic source, unrealized or realized P/L.
@@ -110,14 +129,15 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 ## Out of scope
 
 - Mobile-native applications and push notifications.
-- Multi-tenant access control beyond what the deployment already provides (see Assumptions).
+- Enterprise IAM, OAuth2/OIDC providers, or multi-customer tenancy beyond username allowlist plus password auth in FR-014 to FR-018.
+- Email or SMS verification, multi-factor authentication, and self-service password recovery workflows in v1 (operators recover via deployment procedures).
 - Building a full general-purpose exchange front end or charting terminal beyond the described P/L and position views.
 - Guaranteeing profitable outcomes from rebalance or close recommendations (guidance is probabilistic or rule-based only).
 
 ## Assumptions
 
 - The trading engine and persistence layer expose stable operator APIs or events for health, balances, positions, closes, and rebalance proposals; this specification treats those contracts as deliverables of sibling work if not yet present.
-- The operator runs the dashboard in a trusted environment (for example localhost or private network). Fine-grained authentication and authorization are assumed to match the chosen deployment pattern documented in the implementation plan if remote access is required.
+- The operator maintains a username allowlist (including at least the exemplar `opti`) alongside credential storage; only allowlisted users may complete sign-in to the dashboard. Registration MAY accept credentials for usernames not yet allowlisted; those users remain blocked at login with the not-ready message until the operator adds them. Network exposure (localhost vs VPN vs public) is chosen in deployment; authentication in FR-014 to FR-018 is always required before protected data.
 - Win-rate and "expected P/L" strings use definitions published by the backend (e.g., win rate over last N closed trades per strategy); the UI displays engine-provided numbers without recomputing strategy analytics client-side.
 - The operator prefers a lightweight, easy-to-debug single-page client for the first version (stated preference: React with Tailwind, Zustand, Axios). Technology choices are not success criteria; they inform planning and implementation only.
 
@@ -130,3 +150,4 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **SC-003**: For scripted test accounts, open and close flows initiated from the UI succeed or fail with an explicit message in at least 95% of trials without silent inconsistency between UI and exchange state after a full refresh.
 - **SC-004**: Operators report they can locate strategy name, win rate, and expected P/L for any open position without leaving the dashboard (validated via acceptance checklist or supervised session).
 - **SC-005**: Close and rebalance dialogs always show when estimates were computed or when data is stale, so operators are not asked to confirm on unknown-age pricing (zero tolerance for missing freshness indicator during acceptance).
+- **SC-006**: In acceptance testing, every non-allowlisted username receives only the not-ready message and zero protected responses across API and UI probes; every allowlisted username with wrong password receives denial without session and without that not-ready message.
