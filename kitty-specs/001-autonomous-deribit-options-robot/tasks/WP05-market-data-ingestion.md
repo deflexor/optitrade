@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: Market data pipeline
-lane: "doing"
+lane: "for_review"
 dependencies: [WP04]
 base_branch: 001-autonomous-deribit-options-robot-WP04
 base_commit: c8fe1a26fefeabbf64c18f3a6718109a55efaf5b
@@ -89,3 +89,4 @@ spec-kitty implement WP05 --base WP04
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T08:57:30Z – cursor – shell_pid=33684 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T08:59:06Z – cursor – shell_pid=33684 – lane=for_review – Ready for review: market package (instruments, book cache, vol index REST, snapshot flags), Deribit get_volatility_index_data, fixtures tests without network
