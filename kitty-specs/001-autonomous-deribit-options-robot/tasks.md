@@ -29,11 +29,11 @@
 **Requirements Refs**: FR-001
 
 ### Included Subtasks
-- [ ] T001 Create directory layout: `execution/cmd/optitrade`, `execution/internal/...`, `research/`, `config/examples/` per plan.md
-- [ ] T002 Initialize `execution/go.mod` at Go 1.22+; add `toolchain` directive if needed
-- [ ] T003 [P] Initialize `research/pyproject.toml` with dev deps (`pytest`, `ruff` optional)
-- [ ] T004 Add root `Makefile` or `justfile` targets: `build`, `test`, `lint` (go vet, staticcheck optional)
-- [ ] T005 [P] Document local dev in `quickstart.md` cross-links; add `.env.example` without real secrets
+- [x] T001 Create directory layout: `execution/cmd/optitrade`, `execution/internal/...`, `research/`, `config/examples/` per plan.md
+- [x] T002 Initialize `execution/go.mod` at Go 1.22+; add `toolchain` directive if needed
+- [x] T003 [P] Initialize `research/pyproject.toml` with dev deps (`pytest`, `ruff` optional)
+- [x] T004 Add root `Makefile` or `justfile` targets: `build`, `test`, `lint` (go vet, staticcheck optional)
+- [x] T005 [P] Document local dev in `quickstart.md` cross-links; add `.env.example` without real secrets
 
 ### Implementation Notes
 Pin dependency versions; no secrets in repo. Follow `.kittify/AGENTS.md` UTF-8 rules for all new markdown.
