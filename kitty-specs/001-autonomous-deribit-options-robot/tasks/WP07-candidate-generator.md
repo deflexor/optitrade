@@ -1,7 +1,7 @@
 ---
 work_package_id: WP07
 title: Playbooks liquidity and candidates
-lane: "doing"
+lane: "for_review"
 dependencies: [WP05, WP06, WP02]
 base_branch: 001-autonomous-deribit-options-robot-WP07-merge-base
 base_commit: 923bd42415085bdc640a6524d2c4fd07e969307b
@@ -92,3 +92,4 @@ spec-kitty implement WP07 --base WP06
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T09:19:59Z – cursor – shell_pid=39382 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T09:20:49Z – cursor – shell_pid=39382 – lane=for_review – Ready for review: strategy package with liquidity gate, playbook resolver, vertical/IC templates, defined-risk validation, tests, docs/research.md
