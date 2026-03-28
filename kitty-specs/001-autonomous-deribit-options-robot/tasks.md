@@ -283,11 +283,11 @@ Exchange vs internal PnL mismatch: log diff; constitution suggests future margin
 **Requirements Refs**: FR-004, FR-008
 
 ### Included Subtasks
-- [ ] T046 Implement order placement path: post-only default, label assignment, idempotency key strategy
-- [ ] T047 Implement combo/multi-leg placement mapping from candidate legs
-- [ ] T048 Implement cancel-by-label and cancel-all-for-instrument wrappers
-- [ ] T049 Implement fill handler updating local `order_record` and exposure caches
-- [ ] T050 Reconciliation loop: periodic diff open orders vs exchange
+- [x] T046 Implement order placement path: post-only default, label assignment, idempotency key strategy
+- [x] T047 Implement combo/multi-leg placement mapping from candidate legs
+- [x] T048 Implement cancel-by-label and cancel-all-for-instrument wrappers
+- [x] T049 Implement fill handler updating local `order_record` and exposure caches
+- [x] T050 Reconciliation loop: periodic diff open orders vs exchange
 
 ### Dependencies
 - Depends on WP04, WP09, WP11
