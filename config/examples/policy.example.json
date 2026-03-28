@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "environment": "testnet",
+  "limits": {
+    "max_loss_per_trade": "500",
+    "max_daily_loss": "1500",
+    "max_open_premium_at_risk": "8000",
+    "max_portfolio_delta": "0.15",
+    "max_portfolio_vega": "0.02",
+    "max_open_orders_per_instrument": 2,
+    "max_time_in_trade_seconds": 28800
+  },
+  "liquidity": {
+    "min_top_size": "1.0",
+    "max_spread_bps": 25
+  },
+  "cost_model": {
+    "taker_fee_bps": 3,
+    "maker_fee_bps": 0,
+    "slippage_bps": 2,
+    "adverse_selection_bps_low": 1,
+    "adverse_selection_bps_high": 4
+  },
+  "regime": {
+    "classifier": "rules_v1",
+    "low_vol_threshold_index": "0.12",
+    "high_vol_threshold_index": "0.35"
+  },
+  "playbooks": {
+    "low": {
+      "allowed_structures": ["iron_condor", "credit_spread"],
+      "max_new_positions_per_day": 2
+    },
+    "normal": {
+      "allowed_structures": ["credit_spread", "debit_spread", "iron_condor"],
+      "max_new_positions_per_day": 4
+    },
+    "high": {
+      "allowed_structures": ["credit_spread"],
+      "max_new_positions_per_day": 1
+    }
+  },
+  "protective_mode": {
+    "book_gap_spread_bps": 80,
+    "feed_stale_ms": 5000
+  }
+}
