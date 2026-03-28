@@ -82,11 +82,11 @@ Constitution: validate all untrusted file input at boundary.
 **Requirements Refs**: FR-004, FR-010
 
 ### Included Subtasks
-- [ ] T010 Add migration framework (e.g. `goose` or embedded SQL files) under `execution/internal/state/migrations/`
-- [ ] T011 Create tables: `instrument`, `order_record`, `fill_record`, `position_snapshot`, `risk_policy`, `audit_decision`, `regime_state`, `trade_candidate` as in data-model
-- [ ] T012 Implement repository interfaces: orders, fills, audit, regime snapshots
-- [ ] T013 [P] WAL mode and busy_timeout configuration for SQLite
-- [ ] T014 Repository tests with in-memory or temp file DB
+- [x] T010 Add migration framework (e.g. `goose` or embedded SQL files) under `execution/internal/state/migrations/`
+- [x] T011 Create tables: `instrument`, `order_record`, `fill_record`, `position_snapshot`, `risk_policy`, `audit_decision`, `regime_state`, `trade_candidate` as in data-model
+- [x] T012 Implement repository interfaces: orders, fills, audit, regime snapshots
+- [x] T013 [P] WAL mode and busy_timeout configuration for SQLite
+- [x] T014 Repository tests with in-memory or temp file DB
 
 ### Implementation Notes
 No string concatenation for dynamic SQL from user content.
