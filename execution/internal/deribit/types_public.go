@@ -68,6 +68,20 @@ type TickerParams struct {
 	InstrumentName string `json:"instrument_name"`
 }
 
+// GetVolatilityIndexDataParams for public/get_volatility_index_data.
+type GetVolatilityIndexDataParams struct {
+	Currency         string `json:"currency"`
+	StartTimestamp   int64  `json:"start_timestamp"`
+	EndTimestamp     int64  `json:"end_timestamp"`
+	Resolution       string `json:"resolution"` // "1", "60", "3600", "43200", "1D"
+}
+
+// VolatilityIndexData is the result object from public/get_volatility_index_data.
+type VolatilityIndexData struct {
+	Data          [][]float64 `json:"data"`
+	Continuation  *int64      `json:"continuation"`
+}
+
 // Ticker is public/ticker result (subset used by options playbook).
 type Ticker struct {
 	InstrumentName  string   `json:"instrument_name"`

@@ -1,0 +1,26 @@
+[
+  {
+    "instrument_name": "BTC-31DEC99-50000-C",
+    "kind": "option",
+    "base_currency": "BTC",
+    "is_active": true
+  },
+  {
+    "instrument_name": "BTC-PERPETUAL",
+    "kind": "future",
+    "base_currency": "BTC",
+    "is_active": true
+  },
+  {
+    "instrument_name": "ETH-31DEC99-4000-C",
+    "kind": "option",
+    "base_currency": "ETH",
+    "is_active": true
+  },
+  {
+    "instrument_name": "ETH-31DEC99-4000-P",
+    "kind": "option",
+    "base_currency": "ETH",
+    "is_active": false
+  }
+]

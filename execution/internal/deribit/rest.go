@@ -112,6 +112,19 @@ func (r *REST) GetInstruments(ctx context.Context, params *GetInstrumentsParams)
 	return out, nil
 }
 
+// GetVolatilityIndexData calls public/get_volatility_index_data.
+func (r *REST) GetVolatilityIndexData(ctx context.Context, params GetVolatilityIndexDataParams) (*VolatilityIndexData, error) {
+	raw, err := r.public.Call(ctx, "public/get_volatility_index_data", params)
+	if err != nil {
+		return nil, err
+	}
+	var out VolatilityIndexData
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // GetOrderBook calls public/get_order_book.
 func (r *REST) GetOrderBook(ctx context.Context, params GetOrderBookParams) (*OrderBook, error) {
 	raw, err := r.public.Call(ctx, "public/get_order_book", params)
