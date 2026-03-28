@@ -37,12 +37,12 @@
 **Requirements Refs**: FR-017
 
 ### Included Subtasks
-- [ ] T001 Create `web/` with Vite, React 18, TS, Tailwind, `index.html`, `src/main.tsx`, `src/App.tsx`
-- [ ] T002 Add Zustand, React Router, Axios; `src/api/client.ts` with `withCredentials: true` and `/api/v1` baseURL from `import.meta.env`
-- [ ] T003 [P] Configure `vite.config.ts` `server.proxy` for `/api` -> `http://127.0.0.1:8080` (port documented)
-- [ ] T004 Create `src/internal/dashboard/` with `Server` struct, route registration stub, `go` doc pointing to OpenAPI
-- [ ] T005 Wire dashboard listen address into `src/cmd/optitrade/main.go` via flag or env (e.g. `OPTITRADE_DASHBOARD_LISTEN`); no-op when empty
-- [ ] T006 [P] Add minimal `embed` placeholder or `//go:embed` stub for future `web/dist` (can be empty FS until WP09)
+- [x] T001 Create `web/` with Vite, React 18, TS, Tailwind, `index.html`, `src/main.tsx`, `src/App.tsx`
+- [x] T002 Add Zustand, React Router, Axios; `src/api/client.ts` with `withCredentials: true` and `/api/v1` baseURL from `import.meta.env`
+- [x] T003 [P] Configure `vite.config.ts` `server.proxy` for `/api` -> `http://127.0.0.1:8080` (port documented)
+- [x] T004 Create `src/internal/dashboard/` with `Server` struct, route registration stub, `go` doc pointing to OpenAPI
+- [x] T005 Wire dashboard listen address into `src/cmd/optitrade/main.go` via flag or env (e.g. `OPTITRADE_DASHBOARD_LISTEN`); no-op when empty
+- [x] T006 [P] Add minimal `embed` placeholder or `//go:embed` stub for future `web/dist` (can be empty FS until WP09)
 
 ### Implementation Notes
 Follow `.kittify/AGENTS.md` UTF-8 rules. Do not commit `node_modules`.
@@ -65,13 +65,13 @@ Port clash: document in `quickstart.md` updates in WP09.
 **Requirements Refs**: FR-014, FR-015, FR-016, FR-018, SC-006
 
 ### Included Subtasks
-- [ ] T007 Add SQLite migrations for `dashboard_user` and `dashboard_session` per `data-model.md`; wire into existing migration runner
-- [ ] T008 Implement password set/verify with Argon2id or bcrypt; document cost params; never log passwords
-- [ ] T009 Implement `Register` (username normalize, unique constraint, reject empty weak patterns if minimal validation added)
-- [ ] T010 Load allowlist from env `OPTITRADE_DASHBOARD_ALLOWLIST` (comma-separated); document in plan/quickstart
-- [ ] T011 Session issue: random token, store hash only, httpOnly+Secure+SameSite=Lax cookie `optitrade_session`; expiry
-- [ ] T012 HTTP: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/logout` matching OpenAPI error shapes
-- [ ] T013 [P] Table-driven `httptest` tests for full auth matrix and rate-limit stub hook on login
+- [x] T007 Add SQLite migrations for `dashboard_user` and `dashboard_session` per `data-model.md`; wire into existing migration runner
+- [x] T008 Implement password set/verify with Argon2id or bcrypt; document cost params; never log passwords
+- [x] T009 Implement `Register` (username normalize, unique constraint, reject empty weak patterns if minimal validation added)
+- [x] T010 Load allowlist from env `OPTITRADE_DASHBOARD_ALLOWLIST` (comma-separated); document in plan/quickstart
+- [x] T011 Session issue: random token, store hash only, httpOnly+Secure+SameSite=Lax cookie `optitrade_session`; expiry
+- [x] T012 HTTP: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/logout` matching OpenAPI error shapes
+- [x] T013 [P] Table-driven `httptest` tests for full auth matrix and rate-limit stub hook on login
 
 ### Implementation Notes
 Constitution: parameterized SQL only; redact secrets in logs.

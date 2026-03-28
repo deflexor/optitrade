@@ -14,9 +14,12 @@
    From repo root, start the bot binary with dashboard listen address, for example:
 
    ```bash
-   # Placeholder: replace with actual flags from src/cmd/optitrade
-   go run ./src/cmd/optitrade --dashboard.listen=127.0.0.1:8080
+   export OPTITRADE_STATE_DB=/tmp/optitrade-state.db
+   export OPTITRADE_DASHBOARD_ALLOWLIST=your_username
+   cd src && go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080
    ```
+
+   `OPTITRADE_STATE_DB` must point at the shared SQLite file (migrations add `dashboard_*` tables). Use `-state-db` to override the env var.
 
 2. **SPA dev server**  
    From `web/`:

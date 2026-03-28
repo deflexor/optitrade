@@ -1,7 +1,7 @@
 ---
 work_package_id: WP02
 title: Dashboard SQLite auth and handlers
-lane: planned
+lane: done
 dependencies: [WP01]
 subtasks:
 - T007
@@ -23,6 +23,11 @@ history:
   agent: system
   shell_pid: ''
   action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2026-03-28T12:00:00Z'
+  lane: done
+  agent: cursor
+  shell_pid: ''
+  action: 'WP02 implemented: migration 0003, bcrypt auth, sessions, handlers, httptest matrix; go test ./... green'
 requirement_refs:
 - FR-014
 - FR-015
