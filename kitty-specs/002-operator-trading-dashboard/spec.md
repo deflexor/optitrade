@@ -12,6 +12,7 @@
 - Q: For this dashboard, how should access be secured in the first shipped version? -> A: Simple username/password registration and login only (no email, no verification codes). Login succeeds only for usernames on an operator-maintained allowlist (example: `opti`) after correct password verification; all other usernames receive the exact message `Sorry, feature not ready` and MUST NOT access dashboard data. Passwords MUST NOT be stored in plaintext.
 - Q: The main total balance figure on the dashboard should match which meaning for Deribit? -> A: **Equity** (portfolio value: cash plus unrealized profit and loss; not wallet cash alone). The UI label MUST identify this figure as equity so operators do not confuse it with isolated margin or cash-only balances.
 - Q: What should the default time range be for the P/L chart when the operator first opens the dashboard? -> A: **Last 30 days** (rolling calendar-day window ending at snapshot time). Other ranges remain optional if the backend supports them.
+- Q: For health and portfolio snapshots (uptime, RAM, connection, test vs live, equity, mood), what maximum age should a reading have before the UI treats it as stale? -> A: **5 seconds** after the snapshot timestamp (clock per server or agreed time source). Older data MUST show a visible stale or refreshing state for that summary strip.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -32,6 +33,7 @@ An operator opens the dashboard and immediately sees whether the bot process is 
 5. **Given** a username on the operator allowlist and correct password, **when** the user signs in, **then** they obtain a session and reach the main dashboard.
 6. **Given** a username not on the allowlist, **when** the user attempts sign-in after registration or login, **then** they see the message `Sorry, feature not ready` and MUST NOT see portfolio or health data.
 7. **Given** an allowlisted username and wrong password, **when** the user attempts sign-in, **then** access is denied with a generic failed-login outcome (MUST NOT display portfolio data; MUST NOT use the not-ready message reserved for non-allowlisted users).
+8. **Given** a signed-in operator and a snapshot whose timestamp is more than **5 seconds** old relative to the agreed time source, **when** they view the summary strip, **then** they see an explicit stale or refreshing indicator for health, connection mode, equity, and mood fields rather than silent presentation as fresh.
 
 ---
 
@@ -92,6 +94,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - Exchange or API errors during close/rebalance: operator sees failure message and book unchanged until reconciled.
 - Zero or fewer than ten historical closes: recent-closes section shows available rows and empty state messaging.
 - P/L chart: history shorter than 30 days MUST still render with correct span and MUST NOT imply missing data beyond the stated range.
+- Summary snapshots older than **5 seconds** MUST surface staleness; clock skew between client and server MUST be handled (for example by trusting server-emitted snapshot age or synchronized time) so operators are not falsely warned on every tick.
 - Auth: brute-force or credential-stuffing attempts SHOULD be rate-limited or delayed per deployment policy; session tokens MUST expire or be revocable on restart as documented for operators.
 - Auth: duplicate registration, weak passwords, or recovery: v1 has no email recovery; operators reset accounts via deployment procedures.
 
@@ -117,12 +120,13 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **FR-016**: Allowlisted usernames with incorrect passwords MUST be denied login without issuing a session; the response MUST NOT reveal allowlist membership to unauthenticated callers beyond the distinct not-ready message for non-allowlisted usernames at attempted login.
 - **FR-017**: All dashboard data and control actions (health, balances, positions, close, rebalance) MUST require an authenticated session established per FR-015.
 - **FR-018**: Passwords MUST be stored using a salted, slow, one-way password hash suitable for verifier-based login (MUST NOT store plaintext passwords).
+- **FR-019**: The UI MUST treat the **summary snapshot** (uptime, memory, Deribit connection and environment mode, equity, mood label) as **stale** when its bundled timestamp is more than **5 seconds** behind the current time on the agreed reference clock (normally server time supplied with the payload). Stale summaries MUST show a clear stale or refreshing state and MUST NOT be labeled or styled as live-current without that qualification.
 
 ### Key Entities
 
 - **Operator user**: Username, password verifier material, allowlist flag or allowlist source reference, registration timestamp; no email or phone in v1.
 - **Dashboard session**: Authenticated subject bound to one allowlisted operator user, issuance and expiry rules set in the implementation plan.
-- **Dashboard snapshot**: Timestamped bundle of health metrics, connection mode, **equity** (primary balance), mood label, and freshness flags.
+- **Dashboard snapshot**: Timestamped bundle of health metrics, connection mode, **equity** (primary balance), mood label, and freshness flags; **staleness threshold 5 seconds** on the reference clock for the summary strip.
 - **P/L series**: Time-ordered points with currency and optional benchmark reference if provided by backend; default request horizon **30 days** unless operator selects another supported window.
 - **Position summary**: Identifier, strategy name, open vs closed state, expected P/L at open, win-rate statistic source, unrealized or realized P/L.
 - **Position leg**: Instrument, side, size, entry context, liquidity indicator, and leg-level Greeks or references.
@@ -155,3 +159,4 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **SC-005**: Close and rebalance dialogs always show when estimates were computed or when data is stale, so operators are not asked to confirm on unknown-age pricing (zero tolerance for missing freshness indicator during acceptance).
 - **SC-006**: In acceptance testing, every non-allowlisted username receives only the not-ready message and zero protected responses across API and UI probes; every allowlisted username with wrong password receives denial without session and without that not-ready message.
 - **SC-007**: On first open of the P/L chart after sign-in, operators always see the **last 30 days** as the active range when at least that much history exists; when less history exists, they see the true shorter span called out (100% conformance in scripted acceptance checks).
+- **SC-008**: In fault-injection tests where the snapshot source stops updating, the summary strip shows stale or refreshing within **6 seconds** of the last good snapshot (allowing one client poll cycle) in 100% of trials.
