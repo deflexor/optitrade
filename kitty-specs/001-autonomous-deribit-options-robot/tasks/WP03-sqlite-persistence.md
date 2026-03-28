@@ -1,7 +1,7 @@
 ---
 work_package_id: WP03
 title: SQLite persistence
-lane: "doing"
+lane: "for_review"
 dependencies: [WP01]
 base_branch: 001-autonomous-deribit-options-robot-WP01
 base_commit: 105fe0cb3edb429128ea3febdffc6218bd9a388c
@@ -94,3 +94,4 @@ spec-kitty implement WP03 --base WP01
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T01:15:50Z – cursor – shell_pid=22986 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T01:17:15Z – cursor – shell_pid=22986 – lane=for_review – Ready for review: embed migrations, data-model tables+indexes, state repo interfaces, sqlite Store with WAL/5s busy_timeout, parameterized SQL, CRUD tests
