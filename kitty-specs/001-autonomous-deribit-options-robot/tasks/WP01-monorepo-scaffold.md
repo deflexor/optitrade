@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Monorepo scaffold and tooling
-lane: "doing"
+lane: "done"
 dependencies: []
 base_branch: master
 base_commit: 6d1722aa28d3a54d10886473ee8e16951b5a93d3
@@ -102,3 +102,4 @@ spec-kitty implement WP01
 - 2026-03-28T01:07:38Z – cursor – shell_pid=17945 – lane=doing – Started review via workflow command
 - 2026-03-28T01:08:41Z – cursor – shell_pid=17945 – lane=done – Review passed: layout matches plan; go 1.22 module and Makefile build/lint/test OK; research smoke via uv+pytest; .env.example has no values.
 - 2026-03-28T01:33:45Z – cursor – shell_pid=26382 – lane=doing – Started implementation via workflow command
+- 2026-03-28T10:01:05Z – cursor – shell_pid=26382 – lane=done – Review passed: T001-T005 verified on master; WP01 worktree had no unique commits (implementation integrated via mainline). make build && make test green. Forced lane close after substantive review.
