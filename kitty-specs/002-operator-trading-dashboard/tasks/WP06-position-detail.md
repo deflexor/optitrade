@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: Position detail legs and Greeks
-lane: "doing"
+lane: "done"
 dependencies: [WP05]
 base_branch: 002-operator-trading-dashboard-WP05
 base_commit: 5c02eeb233606dc6a4162eace95668954c80966c
@@ -16,8 +16,8 @@ phase: Phase 3 - Detail
 assignee: ''
 agent: "cursor-reviewer"
 shell_pid: "80593"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T11:05:00Z'
   lane: planned
@@ -81,3 +81,4 @@ requirement_refs:
 - 2026-03-28T12:33:35Z – cursor-implementer – shell_pid=79296 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T12:35:40Z – cursor-implementer – shell_pid=79296 – lane=for_review – Position detail GET /api/v1/positions/{id}, SQLite detail JSON columns, React detail page and list row navigation
 - 2026-03-28T12:36:01Z – cursor-reviewer – shell_pid=80593 – lane=doing – Started review via workflow command
+- 2026-03-28T12:36:16Z – cursor-reviewer – shell_pid=80593 – lane=done – Review passed: API shape matches FR-009, SQLite detail JSON + GetByID, golden test OK, React detail + row navigation; WP05 dependency satisfied. Minor: GET-only mux makes in-handler Method checks redundant.
