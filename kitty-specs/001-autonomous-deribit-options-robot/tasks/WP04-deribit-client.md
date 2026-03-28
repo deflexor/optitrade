@@ -15,7 +15,7 @@ subtasks:
 - T020
 phase: Phase 2 - Connectivity
 assignee: ''
-agent: ''
+agent: "cursor"
 shell_pid: "26989"
 review_status: ''
 reviewed_by: ''
@@ -99,3 +99,4 @@ spec-kitty implement WP04 --base WP02
 ## Activity Log
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
+- 2026-03-28T01:34:09Z – cursor – shell_pid=26989 – lane=doing – Assigned agent via workflow command
