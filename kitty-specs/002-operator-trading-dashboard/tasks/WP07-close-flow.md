@@ -1,7 +1,7 @@
 ---
 work_package_id: WP07
 title: Close preview and close execution
-lane: "doing"
+lane: "done"
 dependencies: [WP06]
 base_branch: 002-operator-trading-dashboard-WP06
 base_commit: 866a248244e064fcd8ffe6dcbbefbd37d8dc3f61
@@ -15,8 +15,8 @@ phase: Phase 4 - Close
 assignee: ''
 agent: "cursor-agent"
 shell_pid: "82489"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T11:05:00Z'
   lane: planned
@@ -81,3 +81,4 @@ requirement_refs:
 - 2026-03-28T12:37:28Z – cursor-agent – shell_pid=81197 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T12:39:33Z – cursor-agent – shell_pid=81197 – lane=for_review – Ready for review: close-preview + close POST with executor hook, React modal and Zustand list refresh, httptest coverage
 - 2026-03-28T12:40:23Z – cursor-agent – shell_pid=82489 – lane=doing – Started review via workflow command
+- 2026-03-28T12:40:41Z – cursor-agent – shell_pid=82489 – lane=done – Review passed: API/UI match FR-010/012/13 and SC-005; executor hook + 501; httptest coverage; stacked on WP06 (not on master until stack merge).
