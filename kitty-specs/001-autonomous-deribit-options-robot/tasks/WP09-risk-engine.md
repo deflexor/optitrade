@@ -1,12 +1,15 @@
 ---
 work_package_id: WP09
 title: Risk engine
-lane: planned
+lane: "doing"
 dependencies:
 - WP03
 - WP04
 - WP08
 - WP11
+base_branch: 001-autonomous-deribit-options-robot-WP09-merge-base
+base_commit: 08376742cb7fa06c79109bd77a148daddbadd646
+created_at: '2026-03-28T09:37:22.714751+00:00'
 subtasks:
 - T040
 - T041
@@ -17,7 +20,7 @@ subtasks:
 phase: Phase 3 - Risk
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "47476"
 review_status: ''
 reviewed_by: ''
 history:
