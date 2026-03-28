@@ -16,7 +16,7 @@ subtasks:
 - T020
 phase: Phase 2 - Snapshot
 assignee: ''
-agent: ''
+agent: "composer"
 shell_pid: "72328"
 review_status: ''
 reviewed_by: ''
@@ -99,6 +99,7 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
+- 2026-03-28T11:56:57Z – composer – shell_pid=72328 – lane=doing – Assigned agent via workflow command
 
 ## Markdown Formatting
 
