@@ -179,11 +179,11 @@ Multi-leg partial fills: list row shows aggregate state; detail in WP06.
 **Requirements Refs**: FR-009
 
 ### Included Subtasks
-- [ ] T030 Implement position detail handler with stable `position_id` scheme matching list endpoints
-- [ ] T031 Map each leg: instrument, side, size, liquidity string from book cache or stub
-- [ ] T032 Populate leg and summary greeks when available from risk engine or exchange
-- [ ] T033 React route `/positions/:id` with sections for legs and metrics
-- [ ] T034 Navigation from list rows; deep-link refresh
+- [x] T030 Implement position detail handler with stable `position_id` scheme matching list endpoints
+- [x] T031 Map each leg: instrument, side, size, liquidity string from book cache or stub
+- [x] T032 Populate leg and summary greeks when available from risk engine or exchange
+- [x] T033 React route `/positions/:id` with sections for legs and metrics
+- [x] T034 Navigation from list rows; deep-link refresh
 
 ### Implementation Notes
 502/503 when exchange disconnected: show degraded message, no fake numbers.
