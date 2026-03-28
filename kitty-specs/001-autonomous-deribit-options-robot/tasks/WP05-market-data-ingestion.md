@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: Market data pipeline
-lane: "doing"
+lane: "done"
 dependencies: [WP04]
 base_branch: 001-autonomous-deribit-options-robot-WP04
 base_commit: c8fe1a26fefeabbf64c18f3a6718109a55efaf5b
@@ -16,8 +16,8 @@ phase: Phase 2 - Market
 assignee: ''
 agent: "cursor"
 shell_pid: "35553"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -91,3 +91,4 @@ spec-kitty implement WP05 --base WP04
 - 2026-03-28T08:57:30Z – cursor – shell_pid=33684 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T08:59:06Z – cursor – shell_pid=33684 – lane=for_review – Ready for review: market package (instruments, book cache, vol index REST, snapshot flags), Deribit get_volatility_index_data, fixtures tests without network
 - 2026-03-28T09:00:22Z – cursor – shell_pid=35553 – lane=doing – Started review via workflow command
+- 2026-03-28T09:00:49Z – cursor – shell_pid=35553 – lane=done – Review passed: WP04(c8fe1a2) on master; stacked diff adds market package (discover/options-only, book cache, vol index REST+stub tests), snapshot quality flags, fixtures under tests/fixtures/deribit; go test -short ./... OK. Minor nits: duplicate BaseCurrencies could double-fetch; ParseVolIndex uses value==0 fallback (true zero edge case); Gap flag reserved for later gap detector. Dependents WP06/WP07/WP12: rebase onto this branch after merge if needed.
