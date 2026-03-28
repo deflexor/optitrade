@@ -2,7 +2,7 @@
 work_package_id: WP11
 title: Audit trail and structured logging
 lane: planned
-dependencies: [WP02, WP03]
+dependencies: [WP07]
 subtasks:
 - T051
 - T052
