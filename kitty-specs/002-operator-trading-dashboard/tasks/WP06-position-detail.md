@@ -1,8 +1,11 @@
 ---
 work_package_id: WP06
 title: Position detail legs and Greeks
-lane: planned
+lane: "doing"
 dependencies: [WP05]
+base_branch: 002-operator-trading-dashboard-WP05
+base_commit: 5c02eeb233606dc6a4162eace95668954c80966c
+created_at: '2026-03-28T12:33:35.817316+00:00'
 subtasks:
 - T030
 - T031
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 3 - Detail
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "79296"
 review_status: ''
 reviewed_by: ''
 history:
