@@ -161,10 +161,10 @@ Bounded memory: cap number of subscribed instruments.
 **Requirements Refs**: FR-005
 
 ### Included Subtasks
-- [ ] T026 Implement `rules_v1` classifier using config thresholds from policy
-- [ ] T027 Persist `regime_state` row on each evaluation tick (or significant change only; document)
-- [ ] T028 Deterministic tests: synthetic vol index series -> label
-- [ ] T029 Wire classifier to market snapshot interface from WP05
+- [x] T026 Implement `rules_v1` classifier using config thresholds from policy
+- [x] T027 Persist `regime_state` row on each evaluation tick (or significant change only; document)
+- [x] T028 Deterministic tests: synthetic vol index series -> label
+- [x] T029 Wire classifier to market snapshot interface from WP05
 
 ### Dependencies
 - Depends on WP05, WP03
