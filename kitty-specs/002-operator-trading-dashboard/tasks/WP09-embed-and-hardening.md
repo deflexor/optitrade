@@ -1,8 +1,11 @@
 ---
 work_package_id: WP09
 title: SPA embed build pipeline and hardening
-lane: planned
+lane: "doing"
 dependencies: [WP08]
+base_branch: 002-operator-trading-dashboard-WP08
+base_commit: 95e4029a6bb5797c22d9328b1ae300b26fb30ccd
+created_at: '2026-03-28T12:50:25.068285+00:00'
 subtasks:
 - T043
 - T044
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 5 - Release
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "85625"
 review_status: ''
 reviewed_by: ''
 history:
