@@ -2,7 +2,7 @@
 work_package_id: WP10
 title: Order execution and reconciliation
 lane: planned
-dependencies: [WP04, WP09]
+dependencies: [WP04, WP09, WP11]
 subtasks:
 - T046
 - T047
@@ -39,6 +39,8 @@ requirement_refs:
 ```bash
 spec-kitty implement WP10 --base WP09
 ```
+
+(Base already includes WP11 from the WP08/WP09 chain; explicit WP11 dependency for audit on submits and fills.)
 
 ## Objectives and success criteria
 

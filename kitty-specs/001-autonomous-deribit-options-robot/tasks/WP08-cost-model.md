@@ -2,7 +2,7 @@
 work_package_id: WP08
 title: Cost model and edge scoring
 lane: planned
-dependencies: [WP07]
+dependencies: [WP07, WP11]
 subtasks:
 - T036
 - T037
@@ -36,12 +36,14 @@ requirement_refs:
 ## Implementation command
 
 ```bash
-spec-kitty implement WP08 --base WP07
+spec-kitty implement WP08 --base WP11
 ```
+
+(Use a branch that already includes WP07 and **WP11** merged; WP11 provides `DecisionLogger` for FR-010 on cost vetoes.)
 
 ## Objectives and success criteria
 
-- Veto reasons enumerated for audit when edge after costs non-positive.
+- Veto reasons enumerated for audit when edge after costs non-positive; **each veto calls `DecisionLogger`** with correlation ID (FR-010).
 - IV vs book sanity hook stub or full implementation per `research.md` section 7.
 
 ## Context and constraints

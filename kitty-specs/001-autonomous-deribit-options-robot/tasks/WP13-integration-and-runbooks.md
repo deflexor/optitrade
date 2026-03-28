@@ -8,6 +8,11 @@ subtasks:
 - T061
 - T062
 - T063
+- T064
+- T065
+- T066
+- T067
+- T068
 phase: Phase 5 - Ship
 assignee: ''
 agent: ''
@@ -52,6 +57,7 @@ spec-kitty implement WP13 --base WP12
 
 - New operator can run testnet read-only path using only repo docs.
 - Incident kill/flatten steps documented.
+- **G2**: spec.md **SC-001 through SC-005** each have a mapped subtask (T064-T068) with automated test, scripted check, or explicitly documented manual acceptance where automation is infeasible.
 
 ## Context and constraints
 
@@ -74,6 +80,26 @@ spec-kitty implement WP13 --base WP12
 ### T063 Runbook
 
 - **Purpose**: Create `docs/runbook-incident.md`: kill switch order (systemctl stop, cancel-all), key rotation, who to ping.
+
+### T064 SC-001 defined-risk certification
+
+- **Purpose**: Per spec SC-001: with seeded market data or mocks, assert 100% of structures that would complete (simulated fills) are allowed defined-risk templates for the active playbook; no naked short legs.
+
+### T065 SC-002 daily loss cap
+
+- **Purpose**: Per SC-002: stress scenario where cumulative loss hits daily cap; assert no additional risk-increasing orders until reset or session rule; align with WP09 session boundary.
+
+### T066 SC-003 protective timing
+
+- **Purpose**: Per SC-003: simulate feed loss or auth failure; protective mode blocks new risk within 60s detection budget; cross-reference WP12 T058-T059.
+
+### T067 SC-004 reconciliation / orphans
+
+- **Purpose**: Per SC-004: scripted trading window against mock or testnet; reconciliation leaves zero unexplained orphan legs per runbook procedure.
+
+### T068 SC-005 audit completeness sampling
+
+- **Purpose**: Per SC-005: on fixture corpus of decisions, measure fraction of rows with regime + cost model version + risk gate outcome; assert >=90% on sample; 100% on injected warning-breach cases.
 
 ## Risks and mitigations
 

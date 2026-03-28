@@ -2,7 +2,7 @@
 work_package_id: WP11
 title: Audit trail and structured logging
 lane: planned
-dependencies: [WP03, WP02, WP10]
+dependencies: [WP02, WP03]
 subtasks:
 - T051
 - T052
@@ -35,12 +35,14 @@ requirement_refs:
 ## Implementation command
 
 ```bash
-spec-kitty implement WP11 --base WP10
+spec-kitty implement WP11 --base WP03
 ```
+
+(Schedule **before** WP08: merge WP01-03 first; WP02+WP03 satisfied. May merge in parallel with WP04-WP07 on separate agents.)
 
 ## Objectives and success criteria
 
-- Every veto and submit path can emit structured audit row + log line with shared `correlation_id`.
+- **FR-010 before execution**: Cost vetoes (WP08) and risk vetoes (WP09) emit structured audit rows + log lines with shared `correlation_id`. Submit/fill paths (WP10) reuse the same logger.
 - Secrets never appear in logs (constitution).
 
 ## Context and constraints

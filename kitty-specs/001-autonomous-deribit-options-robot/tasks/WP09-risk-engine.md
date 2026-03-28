@@ -2,7 +2,10 @@
 work_package_id: WP09
 title: Risk engine
 lane: planned
-dependencies: [WP03, WP04, WP08]
+dependencies:
+- WP03
+- WP04
+- WP08
 subtasks:
 - T040
 - T041
@@ -42,9 +45,12 @@ requirement_refs:
 spec-kitty implement WP09 --base WP08
 ```
 
+(Base branch must include **WP11** so risk vetoes persist via `DecisionLogger`.)
+
 ## Objectives and success criteria
 
 - Each gate independently testable; combined pre-trade check blocks bad candidates.
+- **FR-010**: Every gate failure writes an `audit_decision` (or equivalent) via WP11 logger with gate map and correlation ID.
 
 ## Context and constraints
 
