@@ -1,8 +1,11 @@
 ---
 work_package_id: WP04
 title: Deribit JSON-RPC and WebSocket client
-lane: planned
+lane: "doing"
 dependencies: [WP01, WP02]
+base_branch: 001-autonomous-deribit-options-robot-WP04-merge-base
+base_commit: 6d1722aa28d3a54d10886473ee8e16951b5a93d3
+created_at: '2026-03-28T01:34:09.547621+00:00'
 subtasks:
 - T015
 - T016
@@ -13,7 +16,7 @@ subtasks:
 phase: Phase 2 - Connectivity
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "26989"
 review_status: ''
 reviewed_by: ''
 history:
