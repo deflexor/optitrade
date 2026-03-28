@@ -1,7 +1,7 @@
 ---
 work_package_id: WP02
 title: Config load and policy validation
-lane: "doing"
+lane: "for_review"
 dependencies: [WP01]
 base_branch: 001-autonomous-deribit-options-robot-WP01
 base_commit: 105fe0cb3edb429128ea3febdffc6218bd9a388c
@@ -90,3 +90,4 @@ spec-kitty implement WP02 --base WP01
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T01:12:23Z – cursor – shell_pid=19720 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T01:13:17Z – cursor – shell_pid=19720 – lane=for_review – Ready for review: embedded JSON Schema policy validation, LoadFile/LoadBytes, testnet example policy, unit tests for schema violations
