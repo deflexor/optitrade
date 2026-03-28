@@ -206,10 +206,10 @@ Large books: cap leg list display with expand if ever needed (YAGNI for BTC/ETH 
 **Requirements Refs**: FR-010, FR-012, FR-013, SC-005, SC-003
 
 ### Included Subtasks
-- [ ] T035 `POST /api/v1/positions/{id}/close-preview` calling execution layer or simulator; include `recommendation` enum
-- [ ] T036 `POST /api/v1/positions/{id}/close` with `confirm` body; idempotent guard; return 409 on conflict
-- [ ] T037 React modal: show P/L, recommendation, rationale; disable confirm if preview stale vs FR-019 freshness rules for quotes
-- [ ] T038 Error display and list reconciliation after mutation
+- [x] T035 `POST /api/v1/positions/{id}/close-preview` calling execution layer or simulator; include `recommendation` enum
+- [x] T036 `POST /api/v1/positions/{id}/close` with `confirm` body; idempotent guard; return 409 on conflict
+- [x] T037 React modal: show P/L, recommendation, rationale; disable confirm if preview stale vs FR-019 freshness rules for quotes
+- [x] T038 Error display and list reconciliation after mutation
 
 ### Implementation Notes
 Destructive path must mirror spec: no silent success.
