@@ -1,8 +1,11 @@
 ---
 work_package_id: WP12
 title: Protective mode and session FSM
-lane: planned
+lane: "doing"
 dependencies: [WP05, WP10, WP11]
+base_branch: 001-autonomous-deribit-options-robot-WP12-merge-base
+base_commit: b6cc43ea157d127313fae169b0714e7ab680ba06
+created_at: '2026-03-28T09:46:39.367103+00:00'
 subtasks:
 - T055
 - T056
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 4 - Safety
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "51298"
 review_status: ''
 reviewed_by: ''
 history:
