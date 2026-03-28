@@ -1,7 +1,7 @@
 ---
 work_package_id: WP04
 title: P/L series API and chart UI
-lane: "doing"
+lane: "for_review"
 dependencies: [WP03]
 base_branch: 002-operator-trading-dashboard-WP03
 base_commit: 8e3f17ed1c7ece4fc5ca9857f62fcd4f3a6e4710
@@ -77,3 +77,4 @@ requirement_refs:
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
 - 2026-03-28T12:00:21Z – cursor – shell_pid=74094 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T12:03:32Z – cursor – shell_pid=74094 – lane=for_review – Ready for review: P/L migration, GET /api/v1/pl-series, Zustand + SVG chart, Vitest empty state
