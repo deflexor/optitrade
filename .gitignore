@@ -6,3 +6,6 @@ __pycache__/
 *.py[cod]
 src/optitrade
 .worktrees/
+web/node_modules/
+web/dist/*
+!web/dist/.gitkeep
