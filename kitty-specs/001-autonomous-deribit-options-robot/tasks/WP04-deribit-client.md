@@ -1,7 +1,7 @@
 ---
 work_package_id: WP04
 title: Deribit JSON-RPC and WebSocket client
-lane: "doing"
+lane: "done"
 dependencies: [WP01, WP02]
 base_branch: 001-autonomous-deribit-options-robot-WP04-merge-base
 base_commit: 6d1722aa28d3a54d10886473ee8e16951b5a93d3
@@ -17,8 +17,8 @@ phase: Phase 2 - Connectivity
 assignee: ''
 agent: "cursor"
 shell_pid: "26989"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -100,3 +100,4 @@ spec-kitty implement WP04 --base WP02
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T01:34:09Z – cursor – shell_pid=26989 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T10:01:31Z – cursor – shell_pid=26989 – lane=done – Review passed: JSON-RPC client (rpc/), auth w/ mutex+refresh, REST facade (private+public maps), WS reconnect+resubscribe, integration test skips w/o creds; no secret logging in error paths beyond redacted bodies. Verified on master: make test green. WP04 branch had no unique commits vs base.
