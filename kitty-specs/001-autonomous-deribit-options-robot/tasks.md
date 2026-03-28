@@ -137,11 +137,11 @@ Rate limits: centralize RPC scheduler if needed.
 **Requirements Refs**: FR-002, FR-003
 
 ### Included Subtasks
-- [ ] T021 Implement instrument discovery and filter (BTC/ETH options only)
-- [ ] T022 Implement depth-limited order book cache per instrument
-- [ ] T023 Wire `public/get_volatility_index_data` (or equivalent) for regime inputs
-- [ ] T024 Expose `MarketSnapshot` view with `quality_flags` (stale, gap) for downstream
-- [ ] T025 Unit tests with golden JSON fixtures under `tests/fixtures/deribit/`
+- [x] T021 Implement instrument discovery and filter (BTC/ETH options only)
+- [x] T022 Implement depth-limited order book cache per instrument
+- [x] T023 Wire `public/get_volatility_index_data` (or equivalent) for regime inputs
+- [x] T024 Expose `MarketSnapshot` view with `quality_flags` (stale, gap) for downstream
+- [x] T025 Unit tests with golden JSON fixtures under `tests/fixtures/deribit/`
 
 ### Dependencies
 - Depends on WP04
