@@ -1,0 +1,7 @@
+.env
+research/.venv/
+.venv/
+*.egg-info/
+__pycache__/
+*.py[cod]
+execution/optitrade
