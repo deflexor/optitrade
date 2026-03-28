@@ -1,8 +1,11 @@
 ---
 work_package_id: WP05
 title: Open and closed positions list API and UI
-lane: planned
+lane: "doing"
 dependencies: [WP03]
+base_branch: 002-operator-trading-dashboard-WP03
+base_commit: 8e3f17ed1c7ece4fc5ca9857f62fcd4f3a6e4710
+created_at: '2026-03-28T12:05:27.446381+00:00'
 subtasks:
 - T025
 - T026
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 3 - Lists
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "77003"
 review_status: ''
 reviewed_by: ''
 history:
