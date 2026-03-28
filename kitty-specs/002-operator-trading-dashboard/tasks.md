@@ -258,11 +258,11 @@ Over-promising outcomes: copy as "estimated" per spec.
 **Requirements Refs**: FR-017, SC-001, SC-003, SC-004, constitution UX and security
 
 ### Included Subtasks
-- [ ] T043 `//go:embed all:dist` (or build tag) bundle `web/dist` into binary; fallback 404 message if embed empty in dev
-- [ ] T044 Root Makefile or CI step: `npm ci && npm run build --prefix web` before `go build` for release
-- [ ] T045 React auth pages: register, login, route guard for protected layout; **User Story 1** acceptance scenarios 4-7
-- [ ] T046 Document CSRF strategy (SameSite, POST-only mutations); security self-review checklist
-- [ ] T047 Run encoding validator; align copy with exact `Sorry, feature not ready` string
+- [x] T043 `//go:embed all:dist` (or build tag) bundle `web/dist` into binary; fallback 404 message if embed empty in dev
+- [x] T044 Root Makefile or CI step: `npm ci && npm run build --prefix web` before `go build` for release
+- [x] T045 React auth pages: register, login, route guard for protected layout; **User Story 1** acceptance scenarios 4-7
+- [x] T046 Document CSRF strategy (SameSite, POST-only mutations); security self-review checklist
+- [x] T047 Run encoding validator; align copy with exact `Sorry, feature not ready` string
 
 ### Implementation Notes
 Cross-link repo `docs/quickstart.md` only if product owner wants duplication; prefer feature `quickstart.md`.
