@@ -1,7 +1,7 @@
 ---
 work_package_id: WP10
 title: Order execution and reconciliation
-lane: "doing"
+lane: "for_review"
 dependencies: [WP04, WP09, WP11]
 base_branch: 001-autonomous-deribit-options-robot-WP10-merge-base
 base_commit: 071378c129c0f4421a08ac04ca2599140ffe7c0e
@@ -88,3 +88,4 @@ spec-kitty implement WP10 --base WP09
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T09:40:55Z – cursor-composer – shell_pid=49744 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T09:43:49Z – cursor-composer – shell_pid=49744 – lane=for_review – Ready for review: Deribit buy/sell/cancel/trades REST, execution placer (dry-run + idempotency + audit submit), multileg sequential MVP, fill ingest + exposure, reconcile + poll
