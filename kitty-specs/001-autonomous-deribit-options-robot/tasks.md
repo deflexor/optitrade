@@ -307,11 +307,11 @@ Partial fills: document handling; MVP may flatten-on-partial policy flag.
 **Requirements Refs**: FR-009
 
 ### Included Subtasks
-- [ ] T055 Implement session FSM: `running`, `paused`, `protective_flatten`, `frozen`
-- [ ] T056 Wire triggers from WS health, RPC auth errors, book gap detector from WP05
-- [ ] T057 Block new risk-increasing submissions while in protective paths; allow reduce-only per policy
-- [ ] T058 Integration test: feed staleness threshold breaches -> state transition
-- [ ] T059 Document 60s detection target from spec SC-003 as NFR test where measurable
+- [x] T055 Implement session FSM: `running`, `paused`, `protective_flatten`, `frozen`
+- [x] T056 Wire triggers from WS health, RPC auth errors, book gap detector from WP05
+- [x] T057 Block new risk-increasing submissions while in protective paths; allow reduce-only per policy
+- [x] T058 Integration test: feed staleness threshold breaches -> state transition
+- [x] T059 Document 60s detection target from spec SC-003 as NFR test where measurable
 
 ### Dependencies
 - Depends on WP05, WP10, WP11
