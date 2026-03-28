@@ -1,8 +1,11 @@
 ---
 work_package_id: WP08
 title: Rebalance preview and execution
-lane: planned
+lane: "doing"
 dependencies: [WP06]
+base_branch: 002-operator-trading-dashboard-WP06
+base_commit: 866a248244e064fcd8ffe6dcbbefbd37d8dc3f61
+created_at: '2026-03-28T12:40:54.617192+00:00'
 subtasks:
 - T039
 - T040
@@ -11,7 +14,7 @@ subtasks:
 phase: Phase 4 - Rebalance
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "83071"
 review_status: ''
 reviewed_by: ''
 history:
