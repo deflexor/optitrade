@@ -1,8 +1,11 @@
 ---
 work_package_id: WP08
 title: Cost model and edge scoring
-lane: planned
+lane: "doing"
 dependencies: [WP07, WP11]
+base_branch: 001-autonomous-deribit-options-robot-WP08-merge-base
+base_commit: cc7e18fac4037722e46fcb81b6b6978a02eb3e1b
+created_at: '2026-03-28T09:33:11.325009+00:00'
 subtasks:
 - T036
 - T037
@@ -11,7 +14,7 @@ subtasks:
 phase: Phase 3 - Decisions
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "45738"
 review_status: ''
 reviewed_by: ''
 history:
