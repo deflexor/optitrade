@@ -1,7 +1,7 @@
 ---
 work_package_id: WP12
 title: Protective mode and session FSM
-lane: "doing"
+lane: "for_review"
 dependencies: [WP05, WP10, WP11]
 base_branch: 001-autonomous-deribit-options-robot-WP12-merge-base
 base_commit: b6cc43ea157d127313fae169b0714e7ab680ba06
@@ -85,3 +85,4 @@ spec-kitty implement WP12 --base WP11
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T09:46:39Z – cursor – shell_pid=51298 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T09:49:20Z – cursor – shell_pid=51298 – lane=for_review – Ready for review: session FSM (running/paused/protective_flatten/frozen), market+WS+RPC triggers, Placer AllowSubmit guard, policy ws_down_grace_ms/max_flatten_wait_ms, WS OnHealth; SC-003 full E2E timing noted in session package comment
