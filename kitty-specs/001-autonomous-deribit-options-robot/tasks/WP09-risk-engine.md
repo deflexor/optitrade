@@ -1,7 +1,7 @@
 ---
 work_package_id: WP09
 title: Risk engine
-lane: "for_review"
+lane: "doing"
 dependencies:
 - WP03
 - WP04
@@ -20,7 +20,7 @@ subtasks:
 phase: Phase 3 - Risk
 assignee: ''
 agent: "cursor"
-shell_pid: "47476"
+shell_pid: "48875"
 review_status: ''
 reviewed_by: ''
 history:
@@ -99,3 +99,4 @@ spec-kitty implement WP09 --base WP08
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T09:37:22Z – cursor – shell_pid=47476 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T09:39:17Z – cursor – shell_pid=47476 – lane=for_review – Ready for review: risk engine (snapshot, limit/daily/per-trade/time gates, tests, FR-010 audit on veto)
+- 2026-03-28T09:40:22Z – cursor – shell_pid=48875 – lane=doing – Started review via workflow command
