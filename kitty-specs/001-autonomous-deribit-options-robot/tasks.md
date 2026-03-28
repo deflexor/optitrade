@@ -258,12 +258,12 @@ Over-optimistic slippage: default conservative bps.
 **Requirements Refs**: FR-004, FR-007, FR-011
 
 ### Included Subtasks
-- [ ] T040 Build `PortfolioRiskSnapshot` from exchange positions + optional local reconciliation
-- [ ] T041 Implement gates: max portfolio delta/vega, max open premium, max orders per instrument
-- [ ] T042 Implement daily loss tracker using fills and mark prices (define session boundary)
-- [ ] T043 Implement max loss per trade on hypothetical candidate before submit
-- [ ] T044 Implement max time-in-trade tracking for open strategies
-- [ ] T045 Property or table tests: veto when any limit exceeded
+- [x] T040 Build `PortfolioRiskSnapshot` from exchange positions + optional local reconciliation
+- [x] T041 Implement gates: max portfolio delta/vega, max open premium, max orders per instrument
+- [x] T042 Implement daily loss tracker using fills and mark prices (define session boundary)
+- [x] T043 Implement max loss per trade on hypothetical candidate before submit
+- [x] T044 Implement max time-in-trade tracking for open strategies
+- [x] T045 Property or table tests: veto when any limit exceeded
 
 ### Dependencies
 - Depends on WP03, WP04, WP08, WP11
