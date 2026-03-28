@@ -1,8 +1,11 @@
 ---
 work_package_id: WP11
 title: Audit trail and structured logging
-lane: planned
+lane: "doing"
 dependencies: [WP07]
+base_branch: 001-autonomous-deribit-options-robot-WP07
+base_commit: 4fb4e6fa29238b31d36e9addd20fba6bba339f11
+created_at: '2026-03-28T09:29:53.657594+00:00'
 subtasks:
 - T051
 - T052
@@ -11,7 +14,7 @@ subtasks:
 phase: Phase 4 - Observability
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "44076"
 review_status: ''
 reviewed_by: ''
 history:
