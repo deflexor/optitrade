@@ -184,12 +184,12 @@ Label flapping: add hysteresis window in config if needed.
 **Requirements Refs**: FR-002, FR-005, FR-011
 
 ### Included Subtasks
-- [ ] T030 Implement liquidity gate: min top size, max spread bps from policy
-- [ ] T031 Implement playbook resolver: `low`/`normal`/`high` -> allowed structure types
-- [ ] T032 Implement candidate templates for vertical spreads and iron condor skeletons (BTC/ETH)
-- [ ] T033 Reject naked short legs always; assert defined-risk invariants
-- [ ] T034 Unit tests for generator edge cases (empty book, boundary strikes)
-- [ ] T035 [P] Document Deribit instrument naming for legs in `research.md` appendix or code doc
+- [x] T030 Implement liquidity gate: min top size, max spread bps from policy
+- [x] T031 Implement playbook resolver: `low`/`normal`/`high` -> allowed structure types
+- [x] T032 Implement candidate templates for vertical spreads and iron condor skeletons (BTC/ETH)
+- [x] T033 Reject naked short legs always; assert defined-risk invariants
+- [x] T034 Unit tests for generator edge cases (empty book, boundary strikes)
+- [x] T035 [P] Document Deribit instrument naming for legs in `research.md` appendix or code doc
 
 ### Dependencies
 - Depends on WP05, WP06, WP02
