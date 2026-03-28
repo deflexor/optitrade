@@ -58,13 +58,13 @@ spec-kitty implement WP02 --base WP01
 
 - **Purpose**: Single validation path for policy JSON.
 - **Steps**: Choose embedded schema (go:embed) or load from path relative to repo; document production behavior (embed recommended).
-- **Files**: `execution/internal/config/schema.go` (suggested).
+- **Files**: `src/internal/config/schema.go` (suggested).
 
 ### T007 Config loader
 
 - **Purpose**: Typed access to limits, playbooks, cost model, protective thresholds.
 - **Steps**: Parse JSON; map to structs with explicit types for decimals (string or shopspring decimal); env override only for paths and secrets, not for numeric limits unless you document.
-- **Files**: `execution/internal/config/load.go`
+- **Files**: `src/internal/config/load.go`
 
 ### T008 Example policy
 
@@ -76,7 +76,7 @@ spec-kitty implement WP02 --base WP01
 
 - **Purpose**: Gate bad configs.
 - **Steps**: Cases: missing `max_daily_loss`, wrong enum for playbook structure, extra field if `additionalProperties: false`.
-- **Files**: `execution/internal/config/load_test.go`
+- **Files**: `src/internal/config/load_test.go`
 
 ## Risks and mitigations
 

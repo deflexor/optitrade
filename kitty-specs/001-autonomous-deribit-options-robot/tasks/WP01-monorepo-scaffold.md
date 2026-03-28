@@ -45,29 +45,29 @@ spec-kitty implement WP01
 ## Objectives and success criteria
 
 - Repository matches `kitty-specs/001-autonomous-deribit-options-robot/plan.md` project structure.
-- `go build ./...` from `execution/` passes (may be minimal `main` stub).
+- `go build ./...` from `src/` passes (may be minimal `main` stub).
 - `pytest` from `research/` passes (may be empty smoke).
 - No secrets committed; `.env.example` documents variable names only.
 
 ## Context and constraints
 
 - Constitution: ASCII-safe markdown in docs; pin deps; no agent credential dirs in git.
-- Paths: `/home/dfr/optitrade/execution/`, `/home/dfr/optitrade/research/`, `/home/dfr/optitrade/config/examples/`.
+- Paths: `/home/dfr/optitrade/src/`, `/home/dfr/optitrade/research/`, `/home/dfr/optitrade/config/examples/`.
 
 ## Subtasks and detailed guidance
 
 ### T001 Directory layout
 
 - **Purpose**: Establish physical structure before other WPs land code.
-- **Steps**: Create `execution/cmd/optitrade/main.go` stub printing version; `execution/internal/` placeholders; `research/src/` or flat package; `config/examples/` empty placeholder `.gitkeep` if needed.
-- **Files**: `execution/cmd/optitrade/main.go`, `research/pyproject.toml` parent dirs.
+- **Steps**: Create `src/cmd/optitrade/main.go` stub printing version; `src/internal/` placeholders; `research/src/` or flat package; `config/examples/` empty placeholder `.gitkeep` if needed.
+- **Files**: `src/cmd/optitrade/main.go`, `research/pyproject.toml` parent dirs.
 - **Validation**: Tree matches plan.md "Source Code" section.
 
 ### T002 Go module
 
 - **Purpose**: Lock Go version for reproducible builds.
-- **Steps**: `go mod init` under `execution/` with module path chosen by team (e.g. `github.com/you/optitrade/execution`); set `go 1.26` in `go.mod`.
-- **Files**: `execution/go.mod`, optional `execution/go.sum` after first tidy.
+- **Steps**: `go mod init` under `src/` with module path chosen by team (e.g. `github.com/you/optitrade/src`); set `go 1.26` in `go.mod`.
+- **Files**: `src/go.mod`, optional `src/go.sum` after first tidy.
 
 ### T003 Python project
 
@@ -78,7 +78,7 @@ spec-kitty implement WP01
 ### T004 Makefile
 
 - **Purpose**: Single entry for CI and humans.
-- **Steps**: Targets: `build` (cd execution && go build), `test` (go test + pytest), `lint` (go vet).
+- **Steps**: Targets: `build` (cd src && go build), `test` (go test + pytest), `lint` (go vet).
 - **Files**: `/home/dfr/optitrade/Makefile`.
 
 ### T005 Env example and quickstart touchpoint
@@ -88,7 +88,7 @@ spec-kitty implement WP01
 
 ## Risks and mitigations
 
-- Wrong working directory in Makefile: use `$(CURDIR)` and explicit `cd execution`.
+- Wrong working directory in Makefile: use `$(CURDIR)` and explicit `cd src`.
 
 ## Review guidance
 

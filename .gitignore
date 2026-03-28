@@ -4,5 +4,5 @@ research/.venv/
 *.egg-info/
 __pycache__/
 *.py[cod]
-execution/optitrade
+src/optitrade
 .worktrees/

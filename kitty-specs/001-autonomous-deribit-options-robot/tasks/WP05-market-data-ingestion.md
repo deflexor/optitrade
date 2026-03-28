@@ -57,7 +57,7 @@ spec-kitty implement WP05 --base WP04
 ### T021 Instrument discovery
 
 - **Purpose**: Call `get_instruments`, filter `kind`, `base_currency`, active flag.
-- **Files**: `execution/internal/market/instruments.go`
+- **Files**: `src/internal/market/instruments.go`
 
 ### T022 Order book cache
 
@@ -70,7 +70,7 @@ spec-kitty implement WP05 --base WP04
 ### T024 MarketSnapshot type
 
 - **Purpose**: Struct with ts, quality_flags slice or bitmask: `StaleBook`, `WideSpread`, `Gap`.
-- **Files**: `execution/internal/market/snapshot.go`
+- **Files**: `src/internal/market/snapshot.go`
 
 ### T025 Fixtures tests
 

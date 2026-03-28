@@ -32,9 +32,9 @@ artifacts:
 
 # Path conventions for this mission (repo-specific overrides).
 # Default kit assumes src/ + root contracts/. This monorepo uses plan.md layout:
-# execution/ (Go), research/ (Python), kitty-specs/*/contracts/ (JSON schemas).
+# src/ (Go), research/ (Python), kitty-specs/*/contracts/ (JSON schemas).
 paths:
-  workspace: "execution/"
+  workspace: "src/"
   tests: "tests/"
   deliverables: "kitty-specs/"
   documentation: "docs/"

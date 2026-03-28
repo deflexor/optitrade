@@ -7,7 +7,7 @@ This directory holds **machine-readable contracts** at trust boundaries for the 
 | [config-policy.schema.json](config-policy.schema.json) | JSON Schema for operator risk and playbook configuration loaded at startup. |
 | [event-envelope.schema.json](event-envelope.schema.json) | Optional: normalized audit/event envelope for logs or future streaming consumers. |
 
-Internal Deribit JSON-RPC method mapping and type definitions live in Go package `execution/internal/deribit` (implementation), not duplicated here.
+Internal Deribit JSON-RPC method mapping and type definitions live in Go package `github.com/dfr/optitrade/src/internal/deribit` (implementation), not duplicated here.
 
 ## Versioning
 

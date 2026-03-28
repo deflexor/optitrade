@@ -17,7 +17,7 @@ Deliver an autonomous Deribit BTC/ETH **options** system that: (1) ingests excha
 **Storage**: SQLite (positions, orders, fills, daily PnL aggregates, audit decision records)  
 **Testing**: Go `go test` (table-driven for risk gates, cost model, regime labels with fake clock); Python `pytest` for research/backtest; integration tests against Deribit **testnet** or recorded **golden** JSON-RPC fixtures (no secrets in repo).  
 **Target Platform**: Linux (containers or bare metal); operator CLI or systemd-run binary for MVP.  
-**Project Type**: Single repo, **two deployable concern**s: `research/` (offline) and `execution/` (online).  
+**Project Type**: Single repo, **two deployable concern**s: `research/` (offline) and `src/` (online).  
 **Performance Goals**: Protective mode within **60 seconds** of anomaly detection (per spec SC-003); decision tick and risk evaluation MUST NOT grow without bound (bounded worker pools, capped order-book depth ingestion per project constitution). Hot path: O(1) or O(legs) per candidate with documented max legs.  
 **Constraints**: No naked short options; no martingale; secrets via env or secret manager, never logged; IV-based quotes must be corroborated with order book under fast-move detection (spec edge case).  
 **Scale/Scope**: Single operator account per deployment MVP; BTC and ETH options only; liquid strikes per configurable depth/spread thresholds.
@@ -53,7 +53,7 @@ kitty-specs/001-autonomous-deribit-options-robot/
 ### Source Code (repository root)
 
 ```
-execution/                    # Go: live connectivity, risk, execution
+src/                          # Go: live connectivity, risk, order execution
 ├── go.mod
 ├── cmd/optitrade/            # main binary
 └── internal/
@@ -62,7 +62,7 @@ execution/                    # Go: live connectivity, risk, execution
     ├── regime/               # classification (may start rule-based)
     ├── strategy/             # playbooks, candidate gen
     ├── risk/                 # gates, portfolio snapshot
-    ├── exec/                 # order placement, labels, reduce-only
+    ├── execution/             # order placement, labels, reduce-only
     ├── state/                # SQLite repos
     └── audit/                # structured decision logs
 
@@ -77,7 +77,7 @@ tests/                        # optional top-level shared fixtures
 └── fixtures/deribit/         # recorded RPC (sanitized)
 ```
 
-**Structure Decision**: **Option 1 variant**: single repo with `execution/` (Go) and `research/` (Python). Research informs parameters and playbooks; execution is the only component that touches live keys for MVP.
+**Structure Decision**: **Option 1 variant**: single repo with `src/` (Go) and `research/` (Python). Research informs parameters and playbooks; the Go service under `src/` is the only component that touches live keys for MVP.
 
 ## Complexity Tracking
 

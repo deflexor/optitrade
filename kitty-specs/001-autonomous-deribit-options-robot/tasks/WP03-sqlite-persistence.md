@@ -59,7 +59,7 @@ spec-kitty implement WP03 --base WP01
 ### T010 Migration framework
 
 - **Purpose**: Versioned schema evolution.
-- **Steps**: Pick goose / golang-migrate / hand-rolled version table; store SQL files under `execution/internal/state/migrations/`.
+- **Steps**: Pick goose / golang-migrate / hand-rolled version table; store SQL files under `src/internal/state/migrations/`.
 - **Files**: `001_initial.sql` (or numbered).
 
 ### T011 Tables

@@ -10,7 +10,7 @@ This guide targets operators who want a **read-only testnet** path first. Defaul
 From the repository root (this worktree):
 
 ```bash
-cd execution
+cd src
 go build -o optitrade ./cmd/optitrade
 ```
 
@@ -42,7 +42,7 @@ Exits **0** when `-duration` elapses. Requires valid testnet credentials.
 **CI / integration**: with the same env vars set:
 
 ```bash
-cd execution && go test -tags=integration ./internal/observe/...
+cd src && go test -tags=integration ./internal/observe/...
 ```
 
 ## 4. Optional: tiny testnet order smoke (T061)
@@ -63,7 +63,7 @@ This places a **deep out-of-the-market post-only** bid, then **cancels all order
 ## 5. Policy and schema
 
 - Example policy: `config/examples/policy.example.json`
-- JSON Schema (embedded in the binary for validation): `execution/internal/config/policy.schema.json`
+- JSON Schema (embedded in the binary for validation): `src/internal/config/policy.schema.json`
 
 ## 6. Spec success criteria tests (G2 / SC-001–SC-005)
 

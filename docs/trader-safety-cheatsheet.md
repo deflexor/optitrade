@@ -47,7 +47,7 @@
 
 ## 3. Bot configuration checklist (before mainnet)
 
-Work through policy JSON validated against the embedded schema in-tree: `execution/internal/config/policy.schema.json` (validated via `config.LoadFile`). Start from `config/examples/policy.example.json` (**testnet** `environment` only for examples in this repo).
+Work through policy JSON validated against the embedded schema in-tree: `src/internal/config/policy.schema.json` (validated via `config.LoadFile`). Start from `config/examples/policy.example.json` (**testnet** `environment` only for examples in this repo).
 
 - [ ] **max_loss_per_trade** and **max_daily_loss** are small relative to subaccount equity.  
 - [ ] **max_open_premium_at_risk** and **max_portfolio_delta / vega** reflect your real pain tolerance, not optimistic backtests.  

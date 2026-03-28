@@ -26,7 +26,7 @@
 
 ## 3. Exchange integration pattern
 
-**Decision**: Deribit **JSON-RPC 2.0** over HTTPS for request/response; **WebSocket** for subscriptions (ticker, book, user events) with a single **reconnect + state reconciliation** policy documented in execution code.
+**Decision**: Deribit **JSON-RPC 2.0** over HTTPS for request/response; **WebSocket** for subscriptions (ticker, book, user events) with a single **reconnect + state reconciliation** policy documented in Go code under `src/`.
 
 **Rationale**: Matches Deribit API model; WS required for low-latency book updates relative to polling.
 

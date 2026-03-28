@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-- Go 1.26+ (execution)
+- Go 1.26+ (`src/`)
 - Python 3.12+ (research)
 - SQLite 3
 - Deribit **testnet** account and API key with trade permission (use testnet for all first runs)
@@ -19,10 +19,10 @@ Never commit secrets. Use:
 
 (Optional) `OPTITRADE_CONFIG_PATH` pointing to a JSON file validated by `contracts/config-policy.schema.json`.
 
-## Build execution (when code exists)
+## Build Go binary (when code exists)
 
 ```bash
-cd execution
+cd src
 go build -o ../bin/optitrade ./cmd/optitrade
 ```
 
@@ -45,7 +45,7 @@ Use offline data or sanitized fixtures under `tests/fixtures/deribit/` only.
 
 ## Verify constitution-aligned checks
 
-- Run `go test ./...` in `execution/` before any PR.
+- Run `go test ./...` in `src/` before any PR.
 - Confirm logs redact secrets (manual spot check).
 - Run schema validation on config in CI when wired.
 

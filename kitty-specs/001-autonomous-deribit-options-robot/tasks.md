@@ -6,7 +6,7 @@
 
 **Organization**: Subtasks `T001`..`T068` roll into work packages `WP01`..`WP13`. Prompts live in `kitty-specs/001-autonomous-deribit-options-robot/tasks/` (flat directory).
 
-**Path conventions** (from plan): `execution/` (Go), `research/` (Python), `config/examples/`, repo `docs/`.
+**Path conventions** (from plan): `src/` (Go), `research/` (Python), `config/examples/`, repo `docs/`.
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## Work Package WP01: Monorepo scaffold and tooling (Priority: P0)
 
-**Goal**: Create `execution/` Go module, `research/` Python package layout, shared `Makefile` or `task` runner, and editor/lint baseline per constitution.  
+**Goal**: Create `src/` Go module, `research/` Python package layout, shared `Makefile` or `task` runner, and editor/lint baseline per constitution.  
 **Independent Test**: `go build ./...` and `pytest` (empty or smoke) succeed from clean checkout.  
 **Prompt**: [tasks/WP01-monorepo-scaffold.md](tasks/WP01-monorepo-scaffold.md)  
 **Estimated prompt size**: ~320 lines
@@ -29,8 +29,8 @@
 **Requirements Refs**: FR-001
 
 ### Included Subtasks
-- [x] T001 Create directory layout: `execution/cmd/optitrade`, `execution/internal/...`, `research/`, `config/examples/` per plan.md
-- [x] T002 Initialize `execution/go.mod` at Go 1.26+; add `toolchain` directive if needed
+- [x] T001 Create directory layout: `src/cmd/optitrade`, `src/internal/...`, `research/`, `config/examples/` per plan.md
+- [x] T002 Initialize `src/go.mod` at Go 1.26+; add `toolchain` directive if needed
 - [x] T003 [P] Initialize `research/pyproject.toml` with dev deps (`pytest`, `ruff` optional)
 - [x] T004 Add root `Makefile` or `justfile` targets: `build`, `test`, `lint` (go vet, staticcheck optional)
 - [x] T005 [P] Document local dev in `quickstart.md` cross-links; add `.env.example` without real secrets
@@ -82,7 +82,7 @@ Constitution: validate all untrusted file input at boundary.
 **Requirements Refs**: FR-004, FR-010
 
 ### Included Subtasks
-- [x] T010 Add migration framework (e.g. `goose` or embedded SQL files) under `execution/internal/state/migrations/`
+- [x] T010 Add migration framework (e.g. `goose` or embedded SQL files) under `src/internal/state/migrations/`
 - [x] T011 Create tables: `instrument`, `order_record`, `fill_record`, `position_snapshot`, `risk_policy`, `audit_decision`, `regime_state`, `trade_candidate` as in data-model
 - [x] T012 Implement repository interfaces: orders, fills, audit, regime snapshots
 - [x] T013 [P] WAL mode and busy_timeout configuration for SQLite

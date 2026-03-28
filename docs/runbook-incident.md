@@ -41,7 +41,7 @@ After any window where the bot placed or managed orders:
 
 1. Export or snapshot **open orders** and **positions** from the exchange UI.
 2. Compare to local `order_record` / audit outputs your deployment persists (SQLite path is deployment-specific).
-3. For each **local open** order, expect a matching exchange `order_id`, or a **terminal** state reached via `get_order_state` (see `internal/execution/reconcile.go`).
+3. For each **local open** order, expect a matching exchange `order_id`, or a **terminal** state reached via `get_order_state` (see `src/internal/execution/reconcile.go`).
 4. **Unexplained orphan legs** (position leg not attributable to a known fill or order) must be triaged manually; file a bug if the bounded procedure in code cannot explain the drift.
 
 ---

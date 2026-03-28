@@ -61,18 +61,18 @@ spec-kitty implement WP04 --base WP02
 ### T015 JSON-RPC core
 
 - **Purpose**: Typed requests with `id`, method, params; parse error object.
-- **Files**: `execution/internal/deribit/rpc/client.go`
+- **Files**: `src/internal/deribit/rpc/client.go`
 
 ### T016 Authentication
 
 - **Purpose**: Implement current Deribit auth (client credentials / refresh); store token in memory; mutex for refresh.
 - **Steps**: Read official auth flow; redact errors before log.
-- **Files**: `execution/internal/deribit/auth.go`
+- **Files**: `src/internal/deribit/auth.go`
 
 ### T017 WebSocket client
 
 - **Purpose**: Subscribe channels; heartbeat; exponential backoff reconnect; resubscribe list.
-- **Files**: `execution/internal/deribit/ws/client.go`
+- **Files**: `src/internal/deribit/ws/client.go`
 
 ### T018 Private REST maps
 
@@ -86,7 +86,7 @@ spec-kitty implement WP04 --base WP02
 ### T020 Integration test
 
 - **Purpose**: Guard live test with env vars; skip in CI without credentials.
-- **Files**: `execution/internal/deribit/integration_test.go` build tag `integration` optional.
+- **Files**: `src/internal/deribit/integration_test.go` build tag `integration` optional.
 
 ## Risks and mitigations
 
