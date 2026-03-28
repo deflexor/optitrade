@@ -1,7 +1,7 @@
 ---
 work_package_id: WP08
 title: Cost model and edge scoring
-lane: "for_review"
+lane: "doing"
 dependencies: [WP07, WP11]
 base_branch: 001-autonomous-deribit-options-robot-WP08-merge-base
 base_commit: cc7e18fac4037722e46fcb81b6b6978a02eb3e1b
@@ -14,7 +14,7 @@ subtasks:
 phase: Phase 3 - Decisions
 assignee: ''
 agent: "cursor"
-shell_pid: "45738"
+shell_pid: "46850"
 review_status: ''
 reviewed_by: ''
 history:
@@ -84,3 +84,4 @@ spec-kitty implement WP08 --base WP11
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
 - 2026-03-28T09:33:11Z – cursor – shell_pid=45738 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T09:35:55Z – cursor – shell_pid=45738 – lane=for_review – Ready for review: cost scorer ScoreCandidate, policy fees/spread/slip/adverse, IV-book sanity, LogCostVeto + audit ReasonIVStale
+- 2026-03-28T09:36:21Z – cursor – shell_pid=46850 – lane=doing – Started review via workflow command
