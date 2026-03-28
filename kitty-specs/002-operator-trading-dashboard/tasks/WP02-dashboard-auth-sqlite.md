@@ -1,8 +1,11 @@
 ---
 work_package_id: WP02
 title: Dashboard SQLite auth and handlers
-lane: done
+lane: "doing"
 dependencies: [WP01]
+base_branch: 002-operator-trading-dashboard-WP01
+base_commit: 61e422219340fff0245fdc94a495fd33ca211817
+created_at: '2026-03-28T11:52:00.867416+00:00'
 subtasks:
 - T007
 - T008
@@ -14,7 +17,7 @@ subtasks:
 phase: Phase 1 - Auth
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "70061"
 review_status: ''
 reviewed_by: ''
 history:
@@ -23,11 +26,11 @@ history:
   agent: system
   shell_pid: ''
   action: Prompt generated via /spec-kitty.tasks
-- timestamp: '2026-03-28T12:00:00Z'
-  lane: done
+- timestamp: '2026-03-28T15:00:00Z'
+  lane: planned
   agent: cursor
   shell_pid: ''
-  action: 'WP02 implemented: migration 0003, bcrypt auth, sessions, handlers, httptest matrix; go test ./... green'
+  action: 'Reverted mistaken done: no branch 002-operator-trading-dashboard-WP02 existed; WP03 implement requires present WP02 branch or merge. Re-queue WP02.'
 requirement_refs:
 - FR-014
 - FR-015
