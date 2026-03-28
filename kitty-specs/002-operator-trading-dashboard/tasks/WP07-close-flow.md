@@ -13,7 +13,7 @@ subtasks:
 - T038
 phase: Phase 4 - Close
 assignee: ''
-agent: ''
+agent: "cursor-agent"
 shell_pid: "81197"
 review_status: ''
 reviewed_by: ''
@@ -78,3 +78,4 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
+- 2026-03-28T12:37:28Z – cursor-agent – shell_pid=81197 – lane=doing – Assigned agent via workflow command
