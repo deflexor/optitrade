@@ -1,8 +1,11 @@
 ---
 work_package_id: WP04
 title: P/L series API and chart UI
-lane: planned
+lane: "doing"
 dependencies: [WP03]
+base_branch: 002-operator-trading-dashboard-WP03
+base_commit: 8e3f17ed1c7ece4fc5ca9857f62fcd4f3a6e4710
+created_at: '2026-03-28T12:00:21.276342+00:00'
 subtasks:
 - T021
 - T022
@@ -11,7 +14,7 @@ subtasks:
 phase: Phase 2 - P/L
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "74094"
 review_status: ''
 reviewed_by: ''
 history:
