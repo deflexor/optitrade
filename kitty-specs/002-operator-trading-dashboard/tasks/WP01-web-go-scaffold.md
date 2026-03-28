@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Web and Go dashboard scaffold
-lane: "doing"
+lane: "for_review"
 dependencies: []
 base_branch: master
 base_commit: 8f31411cf266b93931932ed6a3aa2ea2be48141d
@@ -123,6 +123,7 @@ requirement_refs:
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
 - 2026-03-28T11:46:07Z – cursor – shell_pid=66783 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T11:49:30Z – cursor – shell_pid=66783 – lane=for_review – Ready for review: Vite+Tailwind SPA, axios+zustand+router, /api dev proxy, dashboard BFF healthz+API 404 JSON + embed stub, optitrade dashboard command
 
 ## Markdown Formatting
 
