@@ -1,7 +1,7 @@
 ---
 work_package_id: WP07
 title: Playbooks liquidity and candidates
-lane: "doing"
+lane: "done"
 dependencies: [WP05, WP06, WP02]
 base_branch: 001-autonomous-deribit-options-robot-WP07-merge-base
 base_commit: 923bd42415085bdc640a6524d2c4fd07e969307b
@@ -17,8 +17,8 @@ phase: Phase 2 - Strategy
 assignee: ''
 agent: "cursor"
 shell_pid: "40328"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -94,3 +94,4 @@ spec-kitty implement WP07 --base WP06
 - 2026-03-28T09:19:59Z – cursor – shell_pid=39382 – lane=doing – Assigned agent via workflow command
 - 2026-03-28T09:20:49Z – cursor – shell_pid=39382 – lane=for_review – Ready for review: strategy package with liquidity gate, playbook resolver, vertical/IC templates, defined-risk validation, tests, docs/research.md
 - 2026-03-28T09:27:20Z – cursor – shell_pid=40328 – lane=doing – Started review via workflow command
+- 2026-03-28T09:27:51Z – cursor – shell_pid=40328 – lane=done – Review passed: liquidity gate (mid spread bps + min touch size), playbook resolver by regime label, put credit / call debit / iron condor templates with dev-gated invariants, unit tests, docs/research.md + package doc. WP08/WP11: rebase onto branch 001-autonomous-deribit-options-robot-WP07 if already checked out.
