@@ -1,7 +1,7 @@
 ---
 work_package_id: WP11
 title: Audit trail and structured logging
-lane: "doing"
+lane: "done"
 dependencies: [WP07]
 base_branch: 001-autonomous-deribit-options-robot-WP07
 base_commit: 4fb4e6fa29238b31d36e9addd20fba6bba339f11
@@ -15,8 +15,8 @@ phase: Phase 4 - Observability
 assignee: ''
 agent: "cursor"
 shell_pid: "52515"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T00:49:20Z'
   lane: planned
@@ -86,3 +86,4 @@ spec-kitty implement WP11 --base WP07
 - 2026-03-28T09:32:11Z – cursor – shell_pid=45132 – lane=doing – Started implementation via workflow command
 - 2026-03-28T09:32:25Z – cursor – shell_pid=45132 – lane=for_review – Ready for review: DecisionLogger (SQLite+slog), DecisionRecord + reasons, redacting JSON slog handler, optional JSONL event envelopes (FR-010)
 - 2026-03-28T09:50:08Z – cursor – shell_pid=52515 – lane=doing – Started review via workflow command
+- 2026-03-28T09:50:37Z – cursor – shell_pid=52515 – lane=done – Review passed: DecisionLogger+SQLite+redacting slog JSON handler+optional JSONL envelopes aligned with event schema; DB fail still logs; tests green. Note: map order_submit to order_submitted in envelopeEventTypeFor or set EnvelopeEventType when wiring WP10/WP12.
