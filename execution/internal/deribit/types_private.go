@@ -36,6 +36,7 @@ type GetOpenOrdersParams struct {
 type OpenOrder struct {
 	OrderID            string   `json:"order_id"`
 	InstrumentName     string   `json:"instrument_name"`
+	Label              *string  `json:"label,omitempty"`
 	Direction          *string  `json:"direction,omitempty"`
 	Price              *float64 `json:"price,omitempty"`
 	Amount             *float64 `json:"amount,omitempty"`
@@ -43,6 +44,7 @@ type OpenOrder struct {
 	AveragePrice       *float64 `json:"average_price,omitempty"`
 	OrderState         *string  `json:"order_state,omitempty"`
 	OrderType          *string  `json:"order_type,omitempty"`
+	PostOnly           *bool    `json:"post_only,omitempty"`
 	TimeInForce        *string  `json:"time_in_force,omitempty"`
 	CreationTimestamp  *int64   `json:"creation_timestamp,omitempty"`
 	LastUpdateTimestamp *int64  `json:"last_update_timestamp,omitempty"`

@@ -12,6 +12,14 @@ var ErrNoRegimeState = errors.New("no regime_state rows")
 type OrderRepository interface {
 	InsertOrder(ctx context.Context, o *OrderRecord) error
 	GetOrder(ctx context.Context, internalID string) (*OrderRecord, error)
+	UpdateOrder(ctx context.Context, o *OrderRecord) error
+	ListOrdersByStates(ctx context.Context, states []string) ([]OrderRecord, error)
+}
+
+// FillRepository persists executed trades linked to internal orders.
+type FillRepository interface {
+	// InsertFill inserts a fill unless trade_id already exists (unique index); inserted is false on duplicate.
+	InsertFill(ctx context.Context, f *FillRecord) (inserted bool, err error)
 }
 
 // AuditRepository persists and loads audit decisions.

@@ -5,6 +5,7 @@ type DecisionReason string
 
 const (
 	ReasonApproved   DecisionReason = "approved"
+	ReasonOrderSubmit DecisionReason = "order_submit"
 	ReasonCostVeto   DecisionReason = "cost_veto"
 	ReasonRiskVeto   DecisionReason = "risk_veto"
 	ReasonRegimeVeto DecisionReason = "regime_veto"

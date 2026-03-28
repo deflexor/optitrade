@@ -23,8 +23,8 @@ func TestOpenAppliesMigrationsEmptyDB(t *testing.T) {
 	if err := db.QueryRow(`SELECT COUNT(1) FROM schema_migrations`).Scan(&n); err != nil {
 		t.Fatal(err)
 	}
-	if n != 1 {
-		t.Fatalf("migrations recorded: got %d want 1", n)
+	if n != 2 {
+		t.Fatalf("migrations recorded: got %d want 2", n)
 	}
 
 	if err := db.QueryRow(`SELECT COUNT(1) FROM order_record`).Scan(&n); err != nil {
@@ -52,8 +52,8 @@ func TestMigrationsIdempotent(t *testing.T) {
 	if err := db2.QueryRow(`SELECT COUNT(1) FROM schema_migrations`).Scan(&versions); err != nil {
 		t.Fatal(err)
 	}
-	if versions != 1 {
-		t.Fatalf("want 1 migration row, got %d", versions)
+	if versions != 2 {
+		t.Fatalf("want 2 migration rows, got %d", versions)
 	}
 }
 
@@ -181,5 +181,83 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 	}
 	if got.CandidateID == nil || *got.CandidateID != candID {
 		t.Fatalf("candidate: %+v", got.CandidateID)
+	}
+}
+
+func TestOrderUpdateListFills(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	db, err := Open(filepath.Join(dir, "upd.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	store := NewStore(db)
+	ctx := context.Background()
+	ts := time.Now().UnixMilli()
+	o := &state.OrderRecord{
+		InternalOrderID: "i1",
+		InstrumentName:  "BTC-PERPETUAL",
+		Label:           "L",
+		Side:            "buy",
+		OrderType:       "limit",
+		Amount:          "1",
+		PostOnly:        true,
+		ReduceOnly:      false,
+		State:           state.OrderStateNew,
+		CreatedAt:       ts,
+		UpdatedAt:       ts,
+	}
+	if err := store.InsertOrder(ctx, o); err != nil {
+		t.Fatal(err)
+	}
+	ex := "X-1"
+	o.ExchangeOrderID = &ex
+	o.State = state.OrderStateOpen
+	o.UpdatedAt = ts + 1
+	if err := store.UpdateOrder(ctx, o); err != nil {
+		t.Fatal(err)
+	}
+	got, err := store.GetOrder(ctx, "i1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.ExchangeOrderID == nil || *got.ExchangeOrderID != ex || got.State != state.OrderStateOpen {
+		t.Fatalf("after update: %+v", got)
+	}
+
+	rows, err := store.ListOrdersByStates(ctx, []string{state.OrderStateOpen})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 || rows[0].InternalOrderID != "i1" {
+		t.Fatalf("list: %+v", rows)
+	}
+
+	f := &state.FillRecord{
+		ID:             "f1",
+		OrderID:        "i1",
+		TradeID:        "T-1",
+		InstrumentName: "BTC-PERPETUAL",
+		Qty:            "1",
+		Price:          "100",
+		Fee:            "0.0001",
+		FilledAt:       ts + 2,
+	}
+	inserted, err := store.InsertFill(ctx, f)
+	if err != nil || !inserted {
+		t.Fatalf("first insert: inserted=%v err=%v", inserted, err)
+	}
+	inserted, err = store.InsertFill(ctx, f)
+	if err != nil || inserted {
+		t.Fatalf("second insert: inserted=%v err=%v", inserted, err)
+	}
+	var n int
+	if err := db.QueryRow(`SELECT COUNT(1) FROM fill_record WHERE trade_id = ?`, "T-1").Scan(&n); err != nil {
+		t.Fatal(err)
+	}
+	if n != 1 {
+		t.Fatalf("duplicate trade insert ignored: count=%d", n)
 	}
 }

@@ -27,6 +27,18 @@ type RegimeState struct {
 	InputsDigest      string
 }
 
+// FillRecord matches fill_record (data-model.md).
+type FillRecord struct {
+	ID             string
+	OrderID        string
+	TradeID        string
+	InstrumentName string
+	Qty            string
+	Price          string
+	Fee            string
+	FilledAt       int64
+}
+
 // AuditDecision matches audit_decision (data-model.md).
 type AuditDecision struct {
 	ID               string

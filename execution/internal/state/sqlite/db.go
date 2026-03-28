@@ -51,6 +51,7 @@ func NewStore(db *sql.DB) *Store {
 
 var (
 	_ state.OrderRepository  = (*Store)(nil)
+	_ state.FillRepository   = (*Store)(nil)
 	_ state.AuditRepository  = (*Store)(nil)
 	_ state.RegimeRepository = (*Store)(nil)
 )
@@ -122,6 +123,118 @@ FROM order_record WHERE internal_order_id = ?`, internalID)
 	o.PostOnly = postOnly != 0
 	o.ReduceOnly = reduceOnly != 0
 	return &o, nil
+}
+
+func (s *Store) UpdateOrder(ctx context.Context, o *state.OrderRecord) error {
+	if o == nil {
+		return fmt.Errorf("nil order")
+	}
+	_, err := s.db.ExecContext(ctx, `
+UPDATE order_record SET
+  exchange_order_id = ?, instrument_name = ?, label = ?, side = ?, order_type = ?,
+  price = ?, amount = ?, post_only = ?, reduce_only = ?, state = ?,
+  created_at = ?, updated_at = ?, candidate_id = ?
+WHERE internal_order_id = ?`,
+		nullString(o.ExchangeOrderID),
+		o.InstrumentName,
+		o.Label,
+		o.Side,
+		o.OrderType,
+		nullString(o.Price),
+		o.Amount,
+		boolInt(o.PostOnly),
+		boolInt(o.ReduceOnly),
+		o.State,
+		o.CreatedAt,
+		o.UpdatedAt,
+		nullString(o.CandidateID),
+		o.InternalOrderID,
+	)
+	if err != nil {
+		return fmt.Errorf("update order: %w", err)
+	}
+	return nil
+}
+
+func (s *Store) ListOrdersByStates(ctx context.Context, states []string) ([]state.OrderRecord, error) {
+	if len(states) == 0 {
+		return nil, nil
+	}
+	args := make([]any, len(states))
+	placeholders := make([]string, len(states))
+	for i, s := range states {
+		args[i] = s
+		placeholders[i] = "?"
+	}
+	q := `SELECT internal_order_id, exchange_order_id, instrument_name, label, side, order_type,
+       price, amount, post_only, reduce_only, state, created_at, updated_at, candidate_id
+FROM order_record WHERE state IN (` + strings.Join(placeholders, ",") + `) ORDER BY created_at ASC`
+	rows, err := s.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, fmt.Errorf("list orders: %w", err)
+	}
+	defer rows.Close()
+
+	var out []state.OrderRecord
+	for rows.Next() {
+		var o state.OrderRecord
+		var exchangeID, price, candidateID sql.NullString
+		var postOnly, reduceOnly int
+		if err := rows.Scan(
+			&o.InternalOrderID,
+			&exchangeID,
+			&o.InstrumentName,
+			&o.Label,
+			&o.Side,
+			&o.OrderType,
+			&price,
+			&o.Amount,
+			&postOnly,
+			&reduceOnly,
+			&o.State,
+			&o.CreatedAt,
+			&o.UpdatedAt,
+			&candidateID,
+		); err != nil {
+			return nil, fmt.Errorf("scan order: %w", err)
+		}
+		o.ExchangeOrderID = ptrFromNullString(exchangeID)
+		o.Price = ptrFromNullString(price)
+		o.CandidateID = ptrFromNullString(candidateID)
+		o.PostOnly = postOnly != 0
+		o.ReduceOnly = reduceOnly != 0
+		out = append(out, o)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (s *Store) InsertFill(ctx context.Context, f *state.FillRecord) (bool, error) {
+	if f == nil {
+		return false, fmt.Errorf("nil fill")
+	}
+	res, err := s.db.ExecContext(ctx, `
+INSERT OR IGNORE INTO fill_record (id, order_id, trade_id, instrument_name, qty, price, fee, filled_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		f.ID,
+		f.OrderID,
+		f.TradeID,
+		f.InstrumentName,
+		f.Qty,
+		f.Price,
+		f.Fee,
+		f.FilledAt,
+	)
+	if err != nil {
+		return false, fmt.Errorf("insert fill: %w", err)
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	return n > 0, nil
 }
 
 func (s *Store) InsertAudit(ctx context.Context, a *state.AuditDecision) error {
