@@ -14,7 +14,7 @@ subtasks:
 - T025
 phase: Phase 2 - Market
 assignee: ''
-agent: ''
+agent: "cursor"
 shell_pid: "33684"
 review_status: ''
 reviewed_by: ''
@@ -88,3 +88,4 @@ spec-kitty implement WP05 --base WP04
 ## Activity Log
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
+- 2026-03-28T08:57:30Z – cursor – shell_pid=33684 – lane=doing – Assigned agent via workflow command
