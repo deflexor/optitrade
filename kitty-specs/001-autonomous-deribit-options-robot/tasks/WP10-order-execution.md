@@ -1,8 +1,11 @@
 ---
 work_package_id: WP10
 title: Order execution and reconciliation
-lane: planned
+lane: "doing"
 dependencies: [WP04, WP09, WP11]
+base_branch: 001-autonomous-deribit-options-robot-WP10-merge-base
+base_commit: 071378c129c0f4421a08ac04ca2599140ffe7c0e
+created_at: '2026-03-28T09:40:55.860168+00:00'
 subtasks:
 - T046
 - T047
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 4 - Execution
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "49744"
 review_status: ''
 reviewed_by: ''
 history:
