@@ -13,7 +13,7 @@ subtasks:
 - T029
 phase: Phase 2 - Strategy
 assignee: ''
-agent: ''
+agent: "cursor-composer"
 shell_pid: "37351"
 review_status: ''
 reviewed_by: ''
@@ -82,3 +82,4 @@ spec-kitty implement WP06 --base WP05
 ## Activity Log
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
+- 2026-03-28T09:08:40Z – cursor-composer – shell_pid=37351 – lane=doing – Assigned agent via workflow command
