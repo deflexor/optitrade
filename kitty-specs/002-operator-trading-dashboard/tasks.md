@@ -232,10 +232,10 @@ Exchange reject: surface message; audit log if available.
 **Requirements Refs**: FR-011, FR-012, FR-013
 
 ### Included Subtasks
-- [ ] T039 `POST /api/v1/positions/{id}/rebalance-preview` returning ranked items
-- [ ] T040 `POST /api/v1/positions/{id}/rebalance` with validation and async-friendly response
-- [ ] T041 React modal listing suggestions with expected_effect text
-- [ ] T042 Confirm step and post-condition UI refresh
+- [x] T039 `POST /api/v1/positions/{id}/rebalance-preview` returning ranked items
+- [x] T040 `POST /api/v1/positions/{id}/rebalance` with validation and async-friendly response
+- [x] T041 React modal listing suggestions with expected_effect text
+- [x] T042 Confirm step and post-condition UI refresh
 
 ### Implementation Notes
 If engine lacks rebalance v1, return empty suggestions with clear copy (still satisfies structural API; wire real logic when bot supports).
