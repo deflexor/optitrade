@@ -78,7 +78,7 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T12:37:28Z – cursor-agent – shell_pid=81197 – lane=doing – Assigned agent via workflow command
-- 2026-03-28T12:39:33Z – cursor-agent – shell_pid=81197 – lane=for_review – Ready for review: close-preview + close POST with executor hook, React modal and Zustand list refresh, httptest coverage
-- 2026-03-28T12:40:23Z – cursor-agent – shell_pid=82489 – lane=doing – Started review via workflow command
-- 2026-03-28T12:40:41Z – cursor-agent – shell_pid=82489 – lane=done – Review passed: API/UI match FR-010/012/13 and SC-005; executor hook + 501; httptest coverage; stacked on WP06 (not on master until stack merge).
+- 2026-03-28T12:37:28Z -- cursor-agent -- shell_pid=81197 -- lane=doing -- Assigned agent via workflow command
+- 2026-03-28T12:39:33Z -- cursor-agent -- shell_pid=81197 -- lane=for_review -- Ready for review: close-preview + close POST with executor hook, React modal and Zustand list refresh, httptest coverage
+- 2026-03-28T12:40:23Z -- cursor-agent -- shell_pid=82489 -- lane=doing -- Started review via workflow command
+- 2026-03-28T12:40:41Z -- cursor-agent -- shell_pid=82489 -- lane=done -- Review passed: API/UI match FR-010/012/13 and SC-005; executor hook + 501; httptest coverage; stacked on WP06 (not on master until stack merge).

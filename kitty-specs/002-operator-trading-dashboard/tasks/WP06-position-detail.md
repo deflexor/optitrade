@@ -78,7 +78,7 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T12:33:35Z – cursor-implementer – shell_pid=79296 – lane=doing – Assigned agent via workflow command
-- 2026-03-28T12:35:40Z – cursor-implementer – shell_pid=79296 – lane=for_review – Position detail GET /api/v1/positions/{id}, SQLite detail JSON columns, React detail page and list row navigation
-- 2026-03-28T12:36:01Z – cursor-reviewer – shell_pid=80593 – lane=doing – Started review via workflow command
-- 2026-03-28T12:36:16Z – cursor-reviewer – shell_pid=80593 – lane=done – Review passed: API shape matches FR-009, SQLite detail JSON + GetByID, golden test OK, React detail + row navigation; WP05 dependency satisfied. Minor: GET-only mux makes in-handler Method checks redundant.
+- 2026-03-28T12:33:35Z -- cursor-implementer -- shell_pid=79296 -- lane=doing -- Assigned agent via workflow command
+- 2026-03-28T12:35:40Z -- cursor-implementer -- shell_pid=79296 -- lane=for_review -- Position detail GET /api/v1/positions/{id}, SQLite detail JSON columns, React detail page and list row navigation
+- 2026-03-28T12:36:01Z -- cursor-reviewer -- shell_pid=80593 -- lane=doing -- Started review via workflow command
+- 2026-03-28T12:36:16Z -- cursor-reviewer -- shell_pid=80593 -- lane=done -- Review passed: API shape matches FR-009, SQLite detail JSON + GetByID, golden test OK, React detail + row navigation; WP05 dependency satisfied. Minor: GET-only mux makes in-handler Method checks redundant.

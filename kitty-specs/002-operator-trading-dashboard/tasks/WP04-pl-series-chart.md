@@ -76,7 +76,7 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T12:00:21Z – cursor – shell_pid=74094 – lane=doing – Assigned agent via workflow command
-- 2026-03-28T12:03:32Z – cursor – shell_pid=74094 – lane=for_review – Ready for review: P/L migration, GET /api/v1/pl-series, Zustand + SVG chart, Vitest empty state
-- 2026-03-28T12:04:23Z – cursor – shell_pid=76273 – lane=doing – Started review via workflow command
-- 2026-03-28T12:04:41Z – cursor – shell_pid=76273 – lane=done – Review passed: migration 0004, parameterized pl-series handler + tests, Zustand/SVG chart + Vitest empty state, FR-004 defaults and short-history UX; WP03 stacked base noted for merge
+- 2026-03-28T12:00:21Z -- cursor -- shell_pid=74094 -- lane=doing -- Assigned agent via workflow command
+- 2026-03-28T12:03:32Z -- cursor -- shell_pid=74094 -- lane=for_review -- Ready for review: P/L migration, GET /api/v1/pl-series, Zustand + SVG chart, Vitest empty state
+- 2026-03-28T12:04:23Z -- cursor -- shell_pid=76273 -- lane=doing -- Started review via workflow command
+- 2026-03-28T12:04:41Z -- cursor -- shell_pid=76273 -- lane=done -- Review passed: migration 0004, parameterized pl-series handler + tests, Zustand/SVG chart + Vitest empty state, FR-004 defaults and short-history UX; WP03 stacked base noted for merge

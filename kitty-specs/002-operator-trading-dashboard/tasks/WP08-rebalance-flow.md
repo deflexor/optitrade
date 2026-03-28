@@ -91,10 +91,10 @@ requirement_refs:
 ## Activity Log
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
-- 2026-03-28T12:40:54Z – cursor – shell_pid=83071 – lane=doing – Assigned agent via workflow command
-- 2026-03-28T12:44:27Z – cursor – shell_pid=83071 – lane=for_review – Ready for review: rebalance GET preview, confirmed POST 202, modal UI with poll
-- 2026-03-28T12:44:41Z – cursor – shell_pid=84200 – lane=doing – Started review via workflow command
-- 2026-03-28T12:44:54Z – cursor – shell_pid=84200 – lane=planned – Moved to planned
-- 2026-03-28T12:48:14Z – cursor – shell_pid=84200 – lane=for_review – POST rebalance-preview + Allow header; ready for re-review
-- 2026-03-28T12:48:37Z – cursor – shell_pid=85109 – lane=doing – Started review via workflow command
-- 2026-03-28T12:48:49Z – cursor – shell_pid=85109 – lane=done – Review passed: POST rebalance-preview matches OpenAPI; execute confirm+202; tests green; modal+polling per WP08
+- 2026-03-28T12:40:54Z -- cursor -- shell_pid=83071 -- lane=doing -- Assigned agent via workflow command
+- 2026-03-28T12:44:27Z -- cursor -- shell_pid=83071 -- lane=for_review -- Ready for review: rebalance GET preview, confirmed POST 202, modal UI with poll
+- 2026-03-28T12:44:41Z -- cursor -- shell_pid=84200 -- lane=doing -- Started review via workflow command
+- 2026-03-28T12:44:54Z -- cursor -- shell_pid=84200 -- lane=planned -- Moved to planned
+- 2026-03-28T12:48:14Z -- cursor -- shell_pid=84200 -- lane=for_review -- POST rebalance-preview + Allow header; ready for re-review
+- 2026-03-28T12:48:37Z -- cursor -- shell_pid=85109 -- lane=doing -- Started review via workflow command
+- 2026-03-28T12:48:49Z -- cursor -- shell_pid=85109 -- lane=done -- Review passed: POST rebalance-preview matches OpenAPI; execute confirm+202; tests green; modal+polling per WP08
