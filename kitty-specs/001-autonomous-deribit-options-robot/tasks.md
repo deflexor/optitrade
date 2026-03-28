@@ -56,10 +56,10 @@ Pin dependency versions; no secrets in repo. Follow `.kittify/AGENTS.md` UTF-8 r
 **Requirements Refs**: FR-007, FR-011
 
 ### Included Subtasks
-- [ ] T006 Implement schema embed or load from `kitty-specs/001-autonomous-deribit-options-robot/contracts/config-policy.schema.json` at build or runtime (document choice)
-- [ ] T007 Implement `internal/config` loader: env overrides for `DERIBIT_*`, `OPTITRADE_CONFIG_PATH`
-- [ ] T008 Add `config/examples/policy.example.json` aligned with schema (testnet defaults, conservative limits)
-- [ ] T009 Unit tests: reject unknown fields if schema disallows; reject missing required limits
+- [x] T006 Implement schema embed or load from `kitty-specs/001-autonomous-deribit-options-robot/contracts/config-policy.schema.json` at build or runtime (document choice)
+- [x] T007 Implement `internal/config` loader: env overrides for `DERIBIT_*`, `OPTITRADE_CONFIG_PATH`
+- [x] T008 Add `config/examples/policy.example.json` aligned with schema (testnet defaults, conservative limits)
+- [x] T009 Unit tests: reject unknown fields if schema disallows; reject missing required limits
 
 ### Implementation Notes
 Constitution: validate all untrusted file input at boundary.
