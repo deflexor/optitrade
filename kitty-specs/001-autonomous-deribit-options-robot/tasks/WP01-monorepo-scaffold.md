@@ -1,8 +1,11 @@
 ---
 work_package_id: WP01
 title: Monorepo scaffold and tooling
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: master
+base_commit: 2bb50aaac87c962dcb122758c3cb3b2de7393b6b
+created_at: '2026-03-28T01:00:26.355374+00:00'
 subtasks:
 - T001
 - T002
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 1 - Foundation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "15322"
 review_status: ''
 reviewed_by: ''
 history:
