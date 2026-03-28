@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dfr/optitrade/execution/internal/deribit"
+	"github.com/dfr/optitrade/execution/internal/session"
 	"github.com/dfr/optitrade/execution/internal/state"
 	"github.com/dfr/optitrade/execution/internal/state/sqlite"
 )
@@ -101,6 +102,45 @@ func TestPlacerDryRunUpdatesRow(t *testing.T) {
 	}
 	if got.State != state.OrderStateOpen || got.ExchangeOrderID == nil || *got.ExchangeOrderID != "dry-run" {
 		t.Fatalf("got %+v", got)
+	}
+}
+
+func TestPlacerBlockedWhenSessionProtectiveNonReduceOnly(t *testing.T) {
+	t.Parallel()
+	db, err := sqlite.Open(filepath.Join(t.TempDir(), "guard.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	store := sqlite.NewStore(db)
+	ctx := context.Background()
+	rec := &state.OrderRecord{
+		InternalOrderID: "cl-g",
+		InstrumentName:  "BTC-PERPETUAL",
+		Label:           "L",
+		Side:            "buy",
+		OrderType:       "limit",
+		Amount:          "1",
+		PostOnly:        true,
+		ReduceOnly:      false,
+		State:           state.OrderStateNew,
+		CreatedAt:       1,
+		UpdatedAt:       1,
+	}
+	if err := store.InsertOrder(ctx, rec); err != nil {
+		t.Fatal(err)
+	}
+	sess := session.NewFSM()
+	sess.NotifyRPCAuthFailure()
+	p := NewPlacer(&stubREST{
+		buyRes: &deribit.PlacedOrderResponse{
+			Order: deribit.OrderDetail{OrderID: "should-not-run"},
+		},
+	}, store)
+	p.Session = sess
+	price := 1.0
+	if _, err := p.PlaceLimit(ctx, rec, 1, &price, nil, "corr-12345678"); err == nil {
+		t.Fatal("expected session guard error")
 	}
 }
 

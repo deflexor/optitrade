@@ -84,3 +84,39 @@ func TestReconnectResubscribes(t *testing.T) {
 		t.Fatalf("expected 2 subscribe RPCs after reconnect, got %d", serverSubs.Load())
 	}
 }
+
+func TestOnHealthUpAfterConnectDownAfterClose(t *testing.T) {
+	var health []ConnHealth
+	upgr := websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c, err := upgr.Upgrade(w, r, nil)
+		if err != nil {
+			return
+		}
+		defer c.Close()
+		for {
+			if _, _, err := c.ReadMessage(); err != nil {
+				return
+			}
+		}
+	}))
+	defer srv.Close()
+
+	u := "ws" + strings.TrimPrefix(srv.URL, "http")
+	cli := NewClient(u, nil, nil)
+	cli.OnHealth = func(h ConnHealth) {
+		health = append(health, h)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if err := cli.Connect(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if err := cli.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if len(health) < 2 || health[0] != ConnUp || health[len(health)-1] != ConnDown {
+		t.Fatalf("health sequence: %+v (want ConnUp then ... ConnDown)", health)
+	}
+}

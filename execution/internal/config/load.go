@@ -65,6 +65,8 @@ type Playbook struct {
 type ProtectiveMode struct {
 	BookGapSpreadBps *int `json:"book_gap_spread_bps,omitempty"`
 	FeedStaleMs      *int `json:"feed_stale_ms,omitempty"`
+	WSDownGraceMs    *int `json:"ws_down_grace_ms,omitempty"`
+	MaxFlattenWaitMs *int `json:"max_flatten_wait_ms,omitempty"`
 }
 
 const envPolicyPath = "OPTITRADE_POLICY_PATH"

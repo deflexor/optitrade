@@ -1,5 +1,14 @@
 package state
 
+// SessionState mirrors the session FSM in data-model.md (state machine session).
+// Runtime state lives in execution/internal/session.FSM; persist to SQLite in a
+// follow-up if multi-process or restarts require continuity.
+type SessionState struct {
+	Label     string
+	UpdatedAt int64
+	Reason    string
+}
+
 // OrderRecord matches order_record (data-model.md).
 type OrderRecord struct {
 	InternalOrderID string

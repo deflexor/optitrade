@@ -26,12 +26,27 @@ type Credentials struct {
 // NotificationHandler is invoked for subscription pushes (method "subscription").
 type NotificationHandler func(channel string, data json.RawMessage)
 
+// ConnHealth reports logical socket connectivity for protective mode (WP12 / FR-009).
+type ConnHealth int
+
+const (
+	// ConnDown indicates the reader stopped or dial failed (reconnect pending or closed).
+	ConnDown ConnHealth = iota
+	// ConnUp indicates a successful connect or resubscribe after (re)dial.
+	ConnUp
+)
+
+// HealthHandler is optional; invoked on disconnect before reconnect and after a successful (re)dial.
+type HealthHandler func(ConnHealth)
+
 // Client manages one JSON-RPC WebSocket with reconnect and resubscribed channels.
 type Client struct {
 	URL    string
 	Creds  *Credentials
 	OnNote NotificationHandler
-	Dialer *websocket.Dialer
+	// OnHealth notifies session FSM of connectivity (staleness / disconnect duration triggers).
+	OnHealth HealthHandler
+	Dialer   *websocket.Dialer
 
 	minBackoff time.Duration
 	maxBackoff time.Duration
@@ -98,6 +113,7 @@ func (c *Client) Connect(ctx context.Context) error {
 			return fmt.Errorf("ws auth: %w", err)
 		}
 	}
+	c.notifyHealth(ConnUp)
 	return nil
 }
 
@@ -112,6 +128,7 @@ func (c *Client) armReadDeadline(conn *websocket.Conn) {
 // Close stops reconnects and closes the socket.
 func (c *Client) Close() error {
 	c.closed.Store(true)
+	c.notifyHealth(ConnDown)
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.conn != nil {
@@ -120,6 +137,13 @@ func (c *Client) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (c *Client) notifyHealth(h ConnHealth) {
+	if c == nil || c.OnHealth == nil {
+		return
+	}
+	c.OnHealth(h)
 }
 
 // Subscribe remembers channels and sends public/subscribe.
@@ -186,6 +210,7 @@ func (c *Client) readLoop() {
 			if c.closed.Load() {
 				return
 			}
+			c.notifyHealth(ConnDown)
 			_ = conn.Close()
 			c.reconnectWithBackoff(&backoff)
 			continue
@@ -302,6 +327,7 @@ func (c *Client) redial(ctx context.Context) error {
 			return err
 		}
 	}
+	c.notifyHealth(ConnUp)
 	return nil
 }
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/dfr/optitrade/execution/internal/audit"
 	"github.com/dfr/optitrade/execution/internal/deribit"
+	"github.com/dfr/optitrade/execution/internal/session"
 	"github.com/dfr/optitrade/execution/internal/state"
 )
 
@@ -20,6 +21,8 @@ type Placer struct {
 	// Audit, when non-nil, logs a row for each successful RPC submit (WP11).
 	Audit  audit.DecisionLogger
 	DryRun bool
+	// Session, when non-nil, enforces protective mode before RPC submit (WP12 / FR-009).
+	Session *session.FSM
 }
 
 // NewPlacer returns a placer; callers should set OrderRecord.PostOnly true for entries (Deribit maker default).
@@ -32,6 +35,11 @@ func NewPlacer(api PrivateREST, orders state.OrderRepository) *Placer {
 func (p *Placer) PlaceLimit(ctx context.Context, rec *state.OrderRecord, amount float64, price *float64, advanced *string, correlationID string) (*deribit.PlacedOrderResponse, error) {
 	if p == nil || p.API == nil || p.Orders == nil || rec == nil {
 		return nil, errors.New("execution: nil placer or order")
+	}
+	if p.Session != nil {
+		if err := p.Session.AllowSubmit(rec.ReduceOnly); err != nil {
+			return nil, err
+		}
 	}
 	if existing, err := p.Orders.GetOrder(ctx, rec.InternalOrderID); err == nil {
 		if existing.ExchangeOrderID != nil && *existing.ExchangeOrderID != "" {
