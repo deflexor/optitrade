@@ -50,8 +50,9 @@ func NewStore(db *sql.DB) *Store {
 }
 
 var (
-	_ state.OrderRepository = (*Store)(nil)
-	_ state.AuditRepository = (*Store)(nil)
+	_ state.OrderRepository  = (*Store)(nil)
+	_ state.AuditRepository  = (*Store)(nil)
+	_ state.RegimeRepository = (*Store)(nil)
 )
 
 func (s *Store) InsertOrder(ctx context.Context, o *state.OrderRecord) error {
@@ -146,6 +147,40 @@ INSERT INTO audit_decision (
 		return fmt.Errorf("insert audit: %w", err)
 	}
 	return nil
+}
+
+func (s *Store) InsertRegimeState(ctx context.Context, r *state.RegimeState) error {
+	if r == nil {
+		return fmt.Errorf("nil regime state")
+	}
+	_, err := s.db.ExecContext(ctx, `
+INSERT INTO regime_state (effective_at, label, classifier_version, inputs_digest)
+VALUES (?, ?, ?, ?)`,
+		r.EffectiveAt,
+		r.Label,
+		r.ClassifierVersion,
+		r.InputsDigest,
+	)
+	if err != nil {
+		return fmt.Errorf("insert regime_state: %w", err)
+	}
+	return nil
+}
+
+func (s *Store) LatestRegimeState(ctx context.Context) (*state.RegimeState, error) {
+	row := s.db.QueryRowContext(ctx, `
+SELECT id, effective_at, label, classifier_version, inputs_digest
+FROM regime_state ORDER BY effective_at DESC, id DESC LIMIT 1`)
+
+	var r state.RegimeState
+	err := row.Scan(&r.ID, &r.EffectiveAt, &r.Label, &r.ClassifierVersion, &r.InputsDigest)
+	if err == sql.ErrNoRows {
+		return nil, state.ErrNoRegimeState
+	}
+	if err != nil {
+		return nil, fmt.Errorf("scan regime_state: %w", err)
+	}
+	return &r, nil
 }
 
 func (s *Store) GetAudit(ctx context.Context, id string) (*state.AuditDecision, error) {

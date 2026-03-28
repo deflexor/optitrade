@@ -60,7 +60,9 @@
       "properties": {
         "classifier": { "type": "string", "enum": ["rules_v1"] },
         "low_vol_threshold_index": { "type": "string" },
-        "high_vol_threshold_index": { "type": "string" }
+        "high_vol_threshold_index": { "type": "string" },
+        "hysteresis_minutes": { "type": "integer", "minimum": 0 },
+        "on_missing_vol": { "type": "string", "enum": ["normal", "hold_last"] }
       },
       "additionalProperties": false
     },
