@@ -19,7 +19,7 @@ subtasks:
 - T045
 phase: Phase 3 - Risk
 assignee: ''
-agent: ''
+agent: "cursor"
 shell_pid: "47476"
 review_status: ''
 reviewed_by: ''
@@ -97,3 +97,4 @@ spec-kitty implement WP09 --base WP08
 ## Activity Log
 
 - 2026-03-28T00:49:20Z - system - lane=planned - Prompt created.
+- 2026-03-28T09:37:22Z – cursor – shell_pid=47476 – lane=doing – Assigned agent via workflow command
