@@ -1,7 +1,7 @@
 ---
 work_package_id: WP09
 title: SPA embed build pipeline and hardening
-lane: "doing"
+lane: "done"
 dependencies: [WP08]
 base_branch: 002-operator-trading-dashboard-WP08
 base_commit: 95e4029a6bb5797c22d9328b1ae300b26fb30ccd
@@ -16,8 +16,8 @@ phase: Phase 5 - Release
 assignee: ''
 agent: "cursor"
 shell_pid: "87172"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Dmitriy Knyazev"
 history:
 - timestamp: '2026-03-28T11:05:00Z'
   lane: planned
@@ -87,3 +87,4 @@ requirement_refs:
 - 2026-03-28T12:50:25Z -- cursor -- shell_pid=85625 -- lane=doing -- Assigned agent via workflow command
 - 2026-03-28T12:51:52Z – cursor – shell_pid=85625 – lane=for_review – Ready for review: go:embed SPA fallback + security headers; make web/build; login/register + protected bootstrap; dashboard-security.md; encoding validated
 - 2026-03-28T12:52:25Z – cursor – shell_pid=87172 – lane=doing – Started review via workflow command
+- 2026-03-28T12:52:45Z – cursor – shell_pid=87172 – lane=done – Review passed: embed+SPA fallback, make web/build, auth flows+CSRF doc, tests green; fixed open redirect in login ?next= (reject //)
