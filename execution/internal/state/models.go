@@ -18,6 +18,15 @@ type OrderRecord struct {
 	CandidateID     *string
 }
 
+// RegimeState matches regime_state (data-model.md).
+type RegimeState struct {
+	ID                int64
+	EffectiveAt       int64
+	Label             string
+	ClassifierVersion string
+	InputsDigest      string
+}
+
 // AuditDecision matches audit_decision (data-model.md).
 type AuditDecision struct {
 	ID               string

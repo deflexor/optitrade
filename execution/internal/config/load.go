@@ -44,9 +44,11 @@ type CostModel struct {
 }
 
 type Regime struct {
-	Classifier             string `json:"classifier,omitempty"`
-	LowVolThresholdIndex   string `json:"low_vol_threshold_index,omitempty"`
-	HighVolThresholdIndex  string `json:"high_vol_threshold_index,omitempty"`
+	Classifier            string `json:"classifier,omitempty"`
+	LowVolThresholdIndex  string `json:"low_vol_threshold_index,omitempty"`
+	HighVolThresholdIndex string `json:"high_vol_threshold_index,omitempty"`
+	HysteresisMinutes     *int   `json:"hysteresis_minutes,omitempty"`
+	OnMissingVol          string `json:"on_missing_vol,omitempty"`
 }
 
 type Playbooks struct {
