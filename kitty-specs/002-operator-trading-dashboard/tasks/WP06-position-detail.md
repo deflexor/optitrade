@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: Position detail legs and Greeks
-lane: "doing"
+lane: "for_review"
 dependencies: [WP05]
 base_branch: 002-operator-trading-dashboard-WP05
 base_commit: 5c02eeb233606dc6a4162eace95668954c80966c
@@ -79,3 +79,4 @@ requirement_refs:
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
 - 2026-03-28T12:33:35Z – cursor-implementer – shell_pid=79296 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T12:35:40Z – cursor-implementer – shell_pid=79296 – lane=for_review – Position detail GET /api/v1/positions/{id}, SQLite detail JSON columns, React detail page and list row navigation
