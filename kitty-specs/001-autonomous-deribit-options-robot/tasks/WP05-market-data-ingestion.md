@@ -1,8 +1,11 @@
 ---
 work_package_id: WP05
 title: Market data pipeline
-lane: planned
+lane: "doing"
 dependencies: [WP04]
+base_branch: 001-autonomous-deribit-options-robot-WP04
+base_commit: c8fe1a26fefeabbf64c18f3a6718109a55efaf5b
+created_at: '2026-03-28T08:57:30.174730+00:00'
 subtasks:
 - T021
 - T022
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 2 - Market
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "33684"
 review_status: ''
 reviewed_by: ''
 history:
