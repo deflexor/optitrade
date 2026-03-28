@@ -10,6 +10,7 @@
 ### Session 2026-03-28
 
 - Q: For this dashboard, how should access be secured in the first shipped version? -> A: Simple username/password registration and login only (no email, no verification codes). Login succeeds only for usernames on an operator-maintained allowlist (example: `opti`) after correct password verification; all other usernames receive the exact message `Sorry, feature not ready` and MUST NOT access dashboard data. Passwords MUST NOT be stored in plaintext.
+- Q: The main total balance figure on the dashboard should match which meaning for Deribit? -> A: **Equity** (portfolio value: cash plus unrealized profit and loss; not wallet cash alone). The UI label MUST identify this figure as equity so operators do not confuse it with isolated margin or cash-only balances.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -43,7 +44,7 @@ An operator wants total account balance, a profit and loss view over time, and t
 
 **Acceptance Scenarios**:
 
-1. **Given** an authenticated exchange session, **when** the operator views the dashboard, **then** total balance reflects the same sourcing the bot uses for trading decisions (per documented definition: equity, wallet balance, or margin balance).
+1. **Given** the bot has a live Deribit session and the operator is authenticated to the dashboard, **when** the operator views the summary, **then** the primary balance shown is **account equity** (cash plus unrealized P/L) reconciled to the exchange at the same timestamp as the rest of the snapshot, and the label makes clear it is equity rather than cash-only.
 2. **Given** historical P/L snapshots exist, **when** the operator views the chart, **then** they can read P/L over a clear time window with labeled axes and a sensible default range.
 3. **Given** the classifier produces a mood or regime, **when** the operator views the dashboard, **then** the displayed mood matches the bot's current classification label (or explicitly shows unknown if data is stale).
 
@@ -98,7 +99,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 
 - **FR-001**: The dashboard MUST present bot process uptime and memory usage on each visit and on periodic refresh.
 - **FR-002**: The dashboard MUST show Deribit connection status and MUST distinguish test environment from real-money trading in a single unambiguous indicator or label pair.
-- **FR-003**: The dashboard MUST show total balance using the same balance definition the trading engine documents for operator-facing totals.
+- **FR-003**: The dashboard MUST show the operator's primary total as **account equity** (portfolio value including unrealized P/L, not wallet cash alone), reconciled to the same Deribit-sourced snapshot as other portfolio fields, and MUST label it clearly as equity on screen.
 - **FR-004**: The dashboard MUST render a profit-and-loss time series for an operator-relevant default window, with capability to adjust range if the backend exposes multiple windows.
 - **FR-005**: The dashboard MUST display current market mood or regime consistent with the bot's published classification for the same moment.
 - **FR-006**: The dashboard MUST list all currently open positions with strategy name, modeled expected P/L at open, and strategy win-rate statistic (per operator-configured statistics window defined by the backend).
@@ -119,7 +120,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 
 - **Operator user**: Username, password verifier material, allowlist flag or allowlist source reference, registration timestamp; no email or phone in v1.
 - **Dashboard session**: Authenticated subject bound to one allowlisted operator user, issuance and expiry rules set in the implementation plan.
-- **Dashboard snapshot**: Timestamped bundle of health metrics, connection mode, balance, mood label, and freshness flags.
+- **Dashboard snapshot**: Timestamped bundle of health metrics, connection mode, **equity** (primary balance), mood label, and freshness flags.
 - **P/L series**: Time-ordered points with currency and optional benchmark reference if provided by backend.
 - **Position summary**: Identifier, strategy name, open vs closed state, expected P/L at open, win-rate statistic source, unrealized or realized P/L.
 - **Position leg**: Instrument, side, size, entry context, liquidity indicator, and leg-level Greeks or references.
@@ -146,7 +147,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 ### Measurable Outcomes
 
 - **SC-001**: Operators can identify test vs live mode and connection health in under 5 seconds of opening the dashboard when the bot is running.
-- **SC-002**: Balance and open position counts shown on the dashboard match backend reconciliation sources in 100% of sampled checks during acceptance testing.
+- **SC-002**: **Equity** and open position counts shown on the dashboard match backend or exchange reconciliation sources in 100% of sampled checks during acceptance testing.
 - **SC-003**: For scripted test accounts, open and close flows initiated from the UI succeed or fail with an explicit message in at least 95% of trials without silent inconsistency between UI and exchange state after a full refresh.
 - **SC-004**: Operators report they can locate strategy name, win rate, and expected P/L for any open position without leaving the dashboard (validated via acceptance checklist or supervised session).
 - **SC-005**: Close and rebalance dialogs always show when estimates were computed or when data is stale, so operators are not asked to confirm on unknown-age pricing (zero tolerance for missing freshness indicator during acceptance).
