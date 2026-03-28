@@ -30,7 +30,7 @@
 
 ### Included Subtasks
 - [x] T001 Create directory layout: `execution/cmd/optitrade`, `execution/internal/...`, `research/`, `config/examples/` per plan.md
-- [x] T002 Initialize `execution/go.mod` at Go 1.22+; add `toolchain` directive if needed
+- [x] T002 Initialize `execution/go.mod` at Go 1.26+; add `toolchain` directive if needed
 - [x] T003 [P] Initialize `research/pyproject.toml` with dev deps (`pytest`, `ruff` optional)
 - [x] T004 Add root `Makefile` or `justfile` targets: `build`, `test`, `lint` (go vet, staticcheck optional)
 - [x] T005 [P] Document local dev in `quickstart.md` cross-links; add `.env.example` without real secrets

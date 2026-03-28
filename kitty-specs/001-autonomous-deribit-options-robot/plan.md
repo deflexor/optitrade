@@ -12,7 +12,7 @@ Deliver an autonomous Deribit BTC/ETH **options** system that: (1) ingests excha
 
 ## Technical Context
 
-**Language/Version**: Go 1.22+ (execution service); Python 3.12+ (research, backtests, regime playbook prototyping)  
+**Language/Version**: Go 1.26+ (execution service); Python 3.12+ (research, backtests, regime playbook prototyping)  
 **Primary Dependencies**: Go: `net/http` or `resty` for HTTPS JSON-RPC; WebSocket client (`gorilla/websocket` or `nhooyr/websocket`); `zap` or `zerolog` for logs; `modernc.org/sqlite` or `sqlite` driver with parameterized queries. Python: `pandas`, `numpy`, `pytest` for research path.  
 **Storage**: SQLite (positions, orders, fills, daily PnL aggregates, audit decision records)  
 **Testing**: Go `go test` (table-driven for risk gates, cost model, regime labels with fake clock); Python `pytest` for research/backtest; integration tests against Deribit **testnet** or recorded **golden** JSON-RPC fixtures (no secrets in repo).  

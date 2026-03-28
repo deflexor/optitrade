@@ -5,7 +5,7 @@
 
 ## 1. Execution language and runtime
 
-**Decision**: Go 1.22+ for the live execution service.
+**Decision**: Go 1.26+ for the live execution service.
 
 **Rationale**: Order placement, concurrent market feeds, and risk evaluation benefit from lightweight goroutines, static binaries, and predictable GC for a sub-minute anomaly response target.
 

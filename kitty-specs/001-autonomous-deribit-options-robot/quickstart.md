@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-- Go 1.22+ (execution)
+- Go 1.26+ (execution)
 - Python 3.12+ (research)
 - SQLite 3
 - Deribit **testnet** account and API key with trade permission (use testnet for all first runs)
