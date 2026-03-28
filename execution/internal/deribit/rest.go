@@ -164,3 +164,116 @@ func (r *REST) GetServerTime(ctx context.Context) (int64, error) {
 	}
 	return ms, nil
 }
+
+// Buy calls private/buy.
+func (r *REST) Buy(ctx context.Context, params PlaceOrderParams) (*PlacedOrderResponse, error) {
+	return r.placeOrder(ctx, "private/buy", params)
+}
+
+// Sell calls private/sell.
+func (r *REST) Sell(ctx context.Context, params PlaceOrderParams) (*PlacedOrderResponse, error) {
+	return r.placeOrder(ctx, "private/sell", params)
+}
+
+func (r *REST) placeOrder(ctx context.Context, method string, params PlaceOrderParams) (*PlacedOrderResponse, error) {
+	c, err := r.priv()
+	if err != nil {
+		return nil, err
+	}
+	if params.InstrumentName == "" {
+		return nil, errMissingInstrument
+	}
+	raw, err := c.Call(ctx, method, params)
+	if err != nil {
+		return nil, err
+	}
+	var out PlacedOrderResponse
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// CancelAllByInstrument calls private/cancel_all_by_instrument (count of cancelled orders).
+func (r *REST) CancelAllByInstrument(ctx context.Context, params CancelAllByInstrumentParams) (int, error) {
+	c, err := r.priv()
+	if err != nil {
+		return 0, err
+	}
+	if params.InstrumentName == "" {
+		return 0, errMissingInstrument
+	}
+	raw, err := c.Call(ctx, "private/cancel_all_by_instrument", params)
+	if err != nil {
+		return 0, err
+	}
+	return unmarshalIntish(raw)
+}
+
+// CancelByLabel calls private/cancel_by_label.
+func (r *REST) CancelByLabel(ctx context.Context, params CancelByLabelParams) (int, error) {
+	c, err := r.priv()
+	if err != nil {
+		return 0, err
+	}
+	if params.Label == "" {
+		return 0, errMissingLabel
+	}
+	raw, err := c.Call(ctx, "private/cancel_by_label", params)
+	if err != nil {
+		return 0, err
+	}
+	return unmarshalIntish(raw)
+}
+
+// GetOrderState calls private/get_order_state (trade:read).
+func (r *REST) GetOrderState(ctx context.Context, orderID string) (*OrderDetail, error) {
+	c, err := r.priv()
+	if err != nil {
+		return nil, err
+	}
+	if orderID == "" {
+		return nil, errMissingOrderID
+	}
+	raw, err := c.Call(ctx, "private/get_order_state", map[string]string{"order_id": orderID})
+	if err != nil {
+		return nil, err
+	}
+	var out OrderDetail
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetUserTradesByOrder calls private/get_user_trades_by_order.
+func (r *REST) GetUserTradesByOrder(ctx context.Context, params GetUserTradesByOrderParams) ([]UserTrade, error) {
+	c, err := r.priv()
+	if err != nil {
+		return nil, err
+	}
+	if params.OrderID == "" {
+		return nil, errMissingOrderID
+	}
+	raw, err := c.Call(ctx, "private/get_user_trades_by_order", params)
+	if err != nil {
+		return nil, err
+	}
+	var out []UserTrade
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func unmarshalIntish(raw json.RawMessage) (int, error) {
+	var n int
+	if err := json.Unmarshal(raw, &n); err == nil {
+		return n, nil
+	}
+	var f float64
+	if err := json.Unmarshal(raw, &f); err != nil {
+		return 0, err
+	}
+	return int(f), nil
+}

@@ -80,7 +80,9 @@
       "type": "object",
       "properties": {
         "book_gap_spread_bps": { "type": "integer", "minimum": 0 },
-        "feed_stale_ms": { "type": "integer", "minimum": 1000 }
+        "feed_stale_ms": { "type": "integer", "minimum": 1000 },
+        "ws_down_grace_ms": { "type": "integer", "minimum": 0 },
+        "max_flatten_wait_ms": { "type": "integer", "minimum": 0 }
       },
       "additionalProperties": false
     }
