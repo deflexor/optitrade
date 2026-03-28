@@ -209,10 +209,10 @@ Combo naming: align with exchange before placing orders (execution WP10).
 **Requirements Refs**: FR-010
 
 ### Included Subtasks
-- [ ] T051 Implement `audit.DecisionLogger` interface and SQLite persistence for `audit_decision` (used by cost, risk, execution)
-- [ ] T052 Serialize gate outcomes, cost model version, veto reasons, and `correlation_id` into `audit_decision`
-- [ ] T053 Configure zap/zerolog JSON with redaction filters for sensitive keys
-- [ ] T054 Optional: emit `event-envelope.schema.json` compatible JSON lines for external tools
+- [x] T051 Implement `audit.DecisionLogger` interface and SQLite persistence for `audit_decision` (used by cost, risk, execution)
+- [x] T052 Serialize gate outcomes, cost model version, veto reasons, and `correlation_id` into `audit_decision`
+- [x] T053 Configure zap/zerolog JSON with redaction filters for sensitive keys
+- [x] T054 Optional: emit `event-envelope.schema.json` compatible JSON lines for external tools
 
 ### Implementation Notes
 Land **after WP07**, **before WP08**: cost and risk packages accept `DecisionLogger` via constructor or functional options; avoid import cycles (`audit` must not import `strategy`).
