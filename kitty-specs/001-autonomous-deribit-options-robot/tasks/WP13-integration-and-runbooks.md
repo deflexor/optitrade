@@ -1,8 +1,11 @@
 ---
 work_package_id: WP13
 title: Integration examples and operator runbooks
-lane: planned
+lane: "doing"
 dependencies: [WP12]
+base_branch: 001-autonomous-deribit-options-robot-WP12
+base_commit: cd6f070d4e58bcbd24852e7a184d7d3a4cf13779
+created_at: '2026-03-28T09:53:53.573188+00:00'
 subtasks:
 - T060
 - T061
@@ -16,7 +19,7 @@ subtasks:
 phase: Phase 5 - Ship
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "53122"
 review_status: ''
 reviewed_by: ''
 history:
