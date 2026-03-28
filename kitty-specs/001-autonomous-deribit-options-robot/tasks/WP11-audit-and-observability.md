@@ -35,10 +35,10 @@ requirement_refs:
 ## Implementation command
 
 ```bash
-spec-kitty implement WP11 --base WP03
+spec-kitty implement WP11 --base WP07
 ```
 
-(Schedule **before** WP08: merge WP01-03 first; WP02+WP03 satisfied. May merge in parallel with WP04-WP07 on separate agents.)
+(WP07 brings in the full chain through market/regime/candidates; audit stays free of import cycles from `strategy` internals.)
 
 ## Objectives and success criteria
 
