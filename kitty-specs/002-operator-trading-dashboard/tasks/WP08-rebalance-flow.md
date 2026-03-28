@@ -1,7 +1,7 @@
 ---
 work_package_id: WP08
 title: Rebalance preview and execution
-lane: "doing"
+lane: "for_review"
 dependencies: [WP06]
 base_branch: 002-operator-trading-dashboard-WP06
 base_commit: 866a248244e064fcd8ffe6dcbbefbd37d8dc3f61
@@ -75,3 +75,4 @@ requirement_refs:
 
 - 2026-03-28T11:05:00Z -- system -- lane=planned -- Prompt created via /spec-kitty.tasks
 - 2026-03-28T12:40:54Z – cursor – shell_pid=83071 – lane=doing – Assigned agent via workflow command
+- 2026-03-28T12:44:27Z – cursor – shell_pid=83071 – lane=for_review – Ready for review: rebalance GET preview, confirmed POST 202, modal UI with poll
