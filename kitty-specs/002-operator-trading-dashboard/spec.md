@@ -11,6 +11,7 @@
 
 - Q: For this dashboard, how should access be secured in the first shipped version? -> A: Simple username/password registration and login only (no email, no verification codes). Login succeeds only for usernames on an operator-maintained allowlist (example: `opti`) after correct password verification; all other usernames receive the exact message `Sorry, feature not ready` and MUST NOT access dashboard data. Passwords MUST NOT be stored in plaintext.
 - Q: The main total balance figure on the dashboard should match which meaning for Deribit? -> A: **Equity** (portfolio value: cash plus unrealized profit and loss; not wallet cash alone). The UI label MUST identify this figure as equity so operators do not confuse it with isolated margin or cash-only balances.
+- Q: What should the default time range be for the P/L chart when the operator first opens the dashboard? -> A: **Last 30 days** (rolling calendar-day window ending at snapshot time). Other ranges remain optional if the backend supports them.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -45,7 +46,7 @@ An operator wants total account balance, a profit and loss view over time, and t
 **Acceptance Scenarios**:
 
 1. **Given** the bot has a live Deribit session and the operator is authenticated to the dashboard, **when** the operator views the summary, **then** the primary balance shown is **account equity** (cash plus unrealized P/L) reconciled to the exchange at the same timestamp as the rest of the snapshot, and the label makes clear it is equity rather than cash-only.
-2. **Given** historical P/L snapshots exist, **when** the operator views the chart, **then** they can read P/L over a clear time window with labeled axes and a sensible default range.
+2. **Given** historical P/L snapshots exist, **when** an authenticated operator opens the chart without changing settings, **then** the default horizon is the **last 30 days** (rolling), axes are labeled, and the active range is visible in the UI. If fewer than 30 days of history exist, the chart spans all available history and states that fact.
 3. **Given** the classifier produces a mood or regime, **when** the operator views the dashboard, **then** the displayed mood matches the bot's current classification label (or explicitly shows unknown if data is stale).
 
 ---
@@ -90,6 +91,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - Very rapid updates: lists must not reorder confusingly; stable sort keys or brief loading states are acceptable.
 - Exchange or API errors during close/rebalance: operator sees failure message and book unchanged until reconciled.
 - Zero or fewer than ten historical closes: recent-closes section shows available rows and empty state messaging.
+- P/L chart: history shorter than 30 days MUST still render with correct span and MUST NOT imply missing data beyond the stated range.
 - Auth: brute-force or credential-stuffing attempts SHOULD be rate-limited or delayed per deployment policy; session tokens MUST expire or be revocable on restart as documented for operators.
 - Auth: duplicate registration, weak passwords, or recovery: v1 has no email recovery; operators reset accounts via deployment procedures.
 
@@ -100,7 +102,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **FR-001**: The dashboard MUST present bot process uptime and memory usage on each visit and on periodic refresh.
 - **FR-002**: The dashboard MUST show Deribit connection status and MUST distinguish test environment from real-money trading in a single unambiguous indicator or label pair.
 - **FR-003**: The dashboard MUST show the operator's primary total as **account equity** (portfolio value including unrealized P/L, not wallet cash alone), reconciled to the same Deribit-sourced snapshot as other portfolio fields, and MUST label it clearly as equity on screen.
-- **FR-004**: The dashboard MUST render a profit-and-loss time series for an operator-relevant default window, with capability to adjust range if the backend exposes multiple windows.
+- **FR-004**: The dashboard MUST render a profit-and-loss time series whose **default** range is the **last 30 days** (rolling, end-aligned to the latest snapshot). If the backend exposes additional windows, the operator MUST be able to switch among them without losing access to the default. If stored history is shorter than 30 days, the chart MUST cover available history only and MUST indicate the actual span.
 - **FR-005**: The dashboard MUST display current market mood or regime consistent with the bot's published classification for the same moment.
 - **FR-006**: The dashboard MUST list all currently open positions with strategy name, modeled expected P/L at open, and strategy win-rate statistic (per operator-configured statistics window defined by the backend).
 - **FR-007**: The dashboard MUST list the ten most recently closed positions in reverse chronological order with realized P/L in USD and as a percentage.
@@ -121,7 +123,7 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **Operator user**: Username, password verifier material, allowlist flag or allowlist source reference, registration timestamp; no email or phone in v1.
 - **Dashboard session**: Authenticated subject bound to one allowlisted operator user, issuance and expiry rules set in the implementation plan.
 - **Dashboard snapshot**: Timestamped bundle of health metrics, connection mode, **equity** (primary balance), mood label, and freshness flags.
-- **P/L series**: Time-ordered points with currency and optional benchmark reference if provided by backend.
+- **P/L series**: Time-ordered points with currency and optional benchmark reference if provided by backend; default request horizon **30 days** unless operator selects another supported window.
 - **Position summary**: Identifier, strategy name, open vs closed state, expected P/L at open, win-rate statistic source, unrealized or realized P/L.
 - **Position leg**: Instrument, side, size, entry context, liquidity indicator, and leg-level Greeks or references.
 - **Close preview**: Estimated exit P/L, scenario assumptions, recommendation (close, wait, or neutral), and optional countdown or quote timestamps.
@@ -152,3 +154,4 @@ An operator selects a position to inspect legs with liquidity, risk metrics, and
 - **SC-004**: Operators report they can locate strategy name, win rate, and expected P/L for any open position without leaving the dashboard (validated via acceptance checklist or supervised session).
 - **SC-005**: Close and rebalance dialogs always show when estimates were computed or when data is stale, so operators are not asked to confirm on unknown-age pricing (zero tolerance for missing freshness indicator during acceptance).
 - **SC-006**: In acceptance testing, every non-allowlisted username receives only the not-ready message and zero protected responses across API and UI probes; every allowlisted username with wrong password receives denial without session and without that not-ready message.
+- **SC-007**: On first open of the P/L chart after sign-in, operators always see the **last 30 days** as the active range when at least that much history exists; when less history exists, they see the true shorter span called out (100% conformance in scripted acceptance checks).
