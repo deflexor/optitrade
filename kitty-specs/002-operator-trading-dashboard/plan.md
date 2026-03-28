@@ -1,108 +1,122 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: Operator Trading Dashboard
 
+*Path: [.kittify/missions/software-dev/templates/plan-template.md](.kittify/missions/software-dev/templates/plan-template.md)*
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
+**Branch**: `master` (planning repo; feature slug `002-operator-trading-dashboard`) | **Date**: 2026-03-28 | **Spec**: [spec.md](spec.md)
 
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `src/specify_cli/missions/software-dev/command-templates/plan.md` for the execution workflow.
+**Input**: Feature specification at `kitty-specs/002-operator-trading-dashboard/spec.md` plus clarifications (sessions 2026-03-28): v1 auth with username allowlist, equity as primary balance, default P/L chart 30 days, summary staleness 5 seconds, paired **Regime** / **Market mood** labels.
 
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+**Engineering alignment**: Ship a **React + Vite** SPA with **Tailwind CSS**, **Zustand**, and **Axios** (per spec Assumptions). The **Go execution binary** (`src/cmd/optitrade`) gains an **embedded HTTP API** (JSON, cookie sessions) that reads the same process state and SQLite as the bot, serves the SPA in production (embedded `web/dist`), and exposes endpoints matching `contracts/dashboard-api.openapi.yaml`. No separate microservice for MVP.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Build an operator web dashboard that shows process health, Deribit mode (test vs live), **equity**, paired regime/mood, P/L series (default **last 30 days**), open positions, ten latest closed positions, and position detail with close/rebalance flows. **v1 auth**: username/password registration (no email), allowlist-gated login with exact `Sorry, feature not ready` for others, salted password hashing, httpOnly session cookie. **Freshness**: summary bundle older than **5 seconds** (server clock) surfaces explicit stale UI. Implementation splits **web/** (frontend) and **src/internal/dashboard/** (HTTP handlers, auth, aggregation) with contract tests at the REST boundary.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: Go 1.26+ (API and auth, shared with existing `src/`); TypeScript 5.x / React 18+ (dashboard UI)  
+**Primary Dependencies**: Go: `net/http`, chi or std mux; `golang.org/x/crypto/bcrypt` or `argon2` for passwords; existing `internal/deribit`, `internal/regime`, `internal/state`, `internal/risk`. Web: Vite, React, Tailwind, Zustand, Axios, React Router (or equivalent minimal routing).  
+**Storage**: New SQLite migrations under `dashboard_` tables for users and sessions; existing bot SQLite for positions/audit where applicable; time-series for P/L may be aggregated table or materialized snapshots (see `data-model.md`).  
+**Testing**: Go: `go test` for auth allowlist matrix, session validation, snapshot TTL math (fake clock), handler tests with `httptest`. Frontend: Vitest + Testing Library for stores and critical modals; Playwright optional later. Contract: schemathesis or openapi examples against mock server.  
+**Target Platform**: Linux (same as bot); browser: modern evergreen (Chrome/Firefox).  
+**Project Type**: **Monorepo extension**: existing `src/` Go service plus new `web/` SPA; single deployable binary embeds SPA assets.  
+**Performance Goals**: Summary **GET** p95 under **150 ms** on idle bot when cache warm; UI poll interval **2 to 3 seconds** while focused so staleness beyond 5 s is rare when healthy; no unbounded fan-out on Deribit from dashboard handlers (reuse bot caches).  
+**Constraints**: Constitution: validate all auth inputs; never log passwords or raw session tokens; CSRF strategy documented (same-site cookies + optional double-submit for mutations); 5 s staleness rule enforced using server-issued `snapshot_utc` (see FR-019).  
+**Scale/Scope**: Single operator deployment; tens of concurrent dashboard tabs max; allowlist typically one usernames.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+| Principle (from `.kittify/memory/constitution.md`) | How this plan complies |
+|----------------------------------------------------|-------------------------|
+| Testing MUST cover critical paths (auth, safety) | Table-driven tests for allowlist vs generic deny vs not-ready message; session fixation and expiry; close/rebalance endpoints require auth. |
+| MUST NOT log secrets | Redact credentials; audit login success/fail without password material; session IDs logged as truncated hash only if needed. |
+| Parameterized DB access | All dashboard SQL via prepared statements; same patterns as `internal/state/sqlite`. |
+| Performance: no unbounded work | Snapshot builder reads bounded fields; P/L query capped to requested window; rate limit login endpoint. |
+| UX consistency | Loading and stale states on all async regions; paired Regime/Market mood always; errors actionable. |
+| Public APIs documented | OpenAPI for `/api/v1/*`; handler docstrings reference error shapes. |
+
+**Post-Phase 1 re-check**: PASS. Design adds explicit error JSON schema and staleness field on snapshot; no new MUST violations.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
+kitty-specs/002-operator-trading-dashboard/
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── contracts/
+└── tasks.md             # Phase 2 only: created by /spec-kitty.tasks
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+web/                              # NEW: Vite + React dashboard
+├── package.json
+├── vite.config.ts
+├── index.html
+├── tailwind.config.js
+└── src/
+    ├── main.tsx
+    ├── App.tsx
+    ├── api/client.ts             # Axios instance, cookie creds
+    ├── stores/authStore.ts       # Zustand
+    ├── stores/dashboardStore.ts
+    ├── components/
+    └── pages/                    # list, position detail, login/register
 
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+src/                              # EXISTING Go tree
+├── cmd/optitrade/main.go         # start HTTP dashboard listener when flag set
+└── internal/
+    └── dashboard/                # NEW
+        ├── server.go             # mux, middleware, static embed
+        ├── auth_handlers.go
+        ├── snapshot.go           # health + equity + regime pair + mode
+        ├── positions_handlers.go
+        └── session/sqlite        # or under internal/state/
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: **Monorepo web + Go BFF**: new `web/` for the SPA; dashboard HTTP and auth live under `src/internal/dashboard/` and wire into `optitrade` when `-dashboard.listen=:PORT` (or config) is enabled. Production build copies `web/dist` into `embed.FS`.
 
 ## Complexity Tracking
 
-*Fill ONLY if Constitution Check has violations that must be justified*
-
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| N/A | | |
+
+## Parallel Work Analysis
+
+### Dependency Graph
+
+```
+Contracts + data-model (shared) -> Go auth + session store -> Go snapshot/positions API
+                              \-> React shell + auth pages -> dashboard widgets -> position modals
+Integration: cookie login + polling snapshot after API stable
+```
+
+### Work Distribution
+
+- **Sequential work**: SQLite migrations for dashboard users/sessions before login E2E.  
+- **Parallel streams**: Frontend layout and styling vs Go HTTP skeleton vs OpenAPI fixture tests.  
+- **Agent assignments**: One track on `web/`, one on `src/internal/dashboard/`, merge via shared OpenAPI types (optional codegen later).
+
+### Coordination Points
+
+- **Contract freeze**: First usable milestone when `/api/v1/auth/login` and `/api/v1/snapshot` match OpenAPI.  
+- **Integration tests**: httptest + headless login flow before wiring real Deribit fields (mocks/fakes first).
+
+## Phase Outputs (this command)
+
+| Phase | Artifact | Path |
+|-------|-----------|------|
+| 0 | Research decisions | `kitty-specs/002-operator-trading-dashboard/research.md` |
+| 1 | Data model | `kitty-specs/002-operator-trading-dashboard/data-model.md` |
+| 1 | Contracts | `kitty-specs/002-operator-trading-dashboard/contracts/` |
+| 1 | Quickstart | `kitty-specs/002-operator-trading-dashboard/quickstart.md` |
+
+**Stop**: Task generation is **not** performed here. Run `/spec-kitty.tasks` next.
