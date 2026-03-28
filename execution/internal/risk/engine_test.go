@@ -110,6 +110,7 @@ func TestEngineDeltaVetoAudits(t *testing.T) {
 	}
 }
 
+// Baseline daily-loss veto; see TestSC002_* for explicit SC-002 / session-boundary acceptance.
 func TestEngineDailyLossVeto(t *testing.T) {
 	t.Parallel()
 	policy := loadPolicy(t)
@@ -254,6 +255,74 @@ func TestEngineAllPass(t *testing.T) {
 	ok, gates := eng.EvaluateDryRun(in)
 	if !ok {
 		t.Fatalf("expected pass gates=%v", gates)
+	}
+}
+
+// SC-002 (spec): daily loss cap blocks further risk-increasing activity until session reset.
+// See [DailyLossTracker] for UTC calendar-day boundary alignment with WP09.
+func TestSC002_DailyLossCapBlocksSubsequentCheck(t *testing.T) {
+	t.Parallel()
+	policy := loadPolicy(t)
+	eng := NewEngine(policy, nil)
+	now := time.Date(2026, 3, 28, 12, 0, 0, 0, time.UTC)
+	tr := &DailyLossTracker{}
+	tr.SessionLoss(now, big.NewRat(0, 1))
+	pnl := big.NewRat(-2000, 1)
+	in := PreTradeInput{
+		CorrelationID:    "sc002-corr-xxxxxx",
+		RegimeLabel:      "normal",
+		CostModelVersion: "cm-v1",
+		Positions:        nil,
+		Candidate: CandidateRisk{
+			MaxLossQuote: "1",
+			Instruments:  nil,
+		},
+		Now:           now,
+		CumulativePnL: pnl,
+		DailyTracker:  tr,
+	}
+	if ok, _ := eng.EvaluateDryRun(in); ok {
+		t.Fatal("expected first check to fail daily_loss gate")
+	}
+	if ok, _ := eng.EvaluateDryRun(in); ok {
+		t.Fatal("expected subsequent evaluations to remain blocked same session")
+	}
+}
+
+func TestSC002_SessionBoundaryResetsDailyLossGate(t *testing.T) {
+	t.Parallel()
+	policy := loadPolicy(t)
+	eng := NewEngine(policy, nil)
+	tr := &DailyLossTracker{}
+	day1 := time.Date(2026, 3, 28, 12, 0, 0, 0, time.UTC)
+	_ = tr.SessionLoss(day1, big.NewRat(0, 1))
+	pnl := big.NewRat(-2000, 1)
+	in1 := PreTradeInput{
+		CorrelationID:    "sc002b-corr-xxxxx",
+		RegimeLabel:      "normal",
+		CostModelVersion: "cm-v1",
+		Candidate:        CandidateRisk{MaxLossQuote: "1"},
+		Now:              day1,
+		CumulativePnL:    pnl,
+		DailyTracker:     tr,
+	}
+	ok1, g1 := eng.EvaluateDryRun(in1)
+	if ok1 || g1["daily_loss"].(bool) {
+		t.Fatalf("expected loss cap on day1: ok=%v daily_loss=%v", ok1, g1["daily_loss"])
+	}
+	day2 := time.Date(2026, 3, 29, 12, 0, 0, 0, time.UTC)
+	in2 := PreTradeInput{
+		CorrelationID:    "sc002b2-corr-xxxxx",
+		RegimeLabel:      "normal",
+		CostModelVersion: "cm-v1",
+		Candidate:        CandidateRisk{MaxLossQuote: "1"},
+		Now:              day2,
+		CumulativePnL:    pnl,
+		DailyTracker:     tr,
+	}
+	ok2, g2 := eng.EvaluateDryRun(in2)
+	if !ok2 || !g2["daily_loss"].(bool) {
+		t.Fatalf("expected new UTC day to reset session PnL baseline: ok=%v gates=%v", ok2, g2)
 	}
 }
 

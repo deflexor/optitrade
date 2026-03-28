@@ -47,7 +47,7 @@
 
 ## 3. Bot configuration checklist (before mainnet)
 
-Work through with `contracts/config-policy.schema.json` aligned policy (schema path from repo root: `kitty-specs/001-autonomous-deribit-options-robot/contracts/config-policy.schema.json`).
+Work through policy JSON validated against the embedded schema in-tree: `execution/internal/config/policy.schema.json` (validated via `config.LoadFile`). Start from `config/examples/policy.example.json` (**testnet** `environment` only for examples in this repo).
 
 - [ ] **max_loss_per_trade** and **max_daily_loss** are small relative to subaccount equity.  
 - [ ] **max_open_premium_at_risk** and **max_portfolio_delta / vega** reflect your real pain tolerance, not optimistic backtests.  
@@ -93,6 +93,8 @@ There is **no probability** the team can honestly quote: outcomes depend on mark
 
 ## 7. Where to read more in this repo
 
+- **Quickstart (CLI, testnet observe, smoke-order gate):** `docs/quickstart.md`  
+- **Incident steps (kill switch, cancel-all, reconciliation pointer):** `docs/runbook-incident.md`  
 - Product requirements: `kitty-specs/001-autonomous-deribit-options-robot/spec.md`  
 - Architecture and stack: `kitty-specs/001-autonomous-deribit-options-robot/plan.md`  
 - Research (including safety section): `kitty-specs/001-autonomous-deribit-options-robot/research.md`  

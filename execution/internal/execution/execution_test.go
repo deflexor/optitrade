@@ -306,3 +306,58 @@ func TestPollUserTradesIngests(t *testing.T) {
 
 func strPtr(s string) *string { return &s }
 func f64p(f float64) *float64 { return &f }
+
+// SC-004: after reconcile, no local row stays "open" when the exchange reports the order filled.
+func TestSC004_ReconcileMarksFilledWithoutOrphanOpen(t *testing.T) {
+	t.Parallel()
+	db, err := sqlite.Open(filepath.Join(t.TempDir(), "sc4.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	store := sqlite.NewStore(db)
+	ctx := context.Background()
+	ex := "EX-7"
+	filled := "filled"
+	if err := store.InsertOrder(ctx, &state.OrderRecord{
+		InternalOrderID: "loc-sc4",
+		ExchangeOrderID: &ex,
+		InstrumentName:  "ETH-PERPETUAL",
+		Label:           "x",
+		Side:            "buy",
+		OrderType:       "limit",
+		Amount:          "1",
+		PostOnly:        true,
+		State:           state.OrderStateOpen,
+		CreatedAt:       1,
+		UpdatedAt:       1,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	api := &stubREST{
+		open: nil,
+		state: &deribit.OrderDetail{
+			OrderState: &filled,
+		},
+	}
+	r := Reconciler{API: api, Orders: store}
+	if err := r.Run(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	got, err := store.GetOrder(ctx, "loc-sc4")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.State != state.OrderStateFilled {
+		t.Fatalf("want filled, got %q", got.State)
+	}
+	left, err := store.ListOrdersByStates(ctx, []string{state.OrderStateOpen, state.OrderStatePartiallyFilled})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, o := range left {
+		if o.InternalOrderID == "loc-sc4" {
+			t.Fatalf("orphan open row after reconcile: %+v", o)
+		}
+	}
+}
