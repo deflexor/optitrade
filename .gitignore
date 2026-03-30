@@ -1,5 +1,5 @@
 .env
-.kittify/workspaces/
+/optitrade
 research/.venv/
 .venv/
 *.egg-info/
@@ -10,3 +10,6 @@ src/optitrade
 web/node_modules/
 web/dist/*
 !web/dist/.gitkeep
+
+# Built SPA copy for go:embed (see Makefile: dashboard-sync-assets / ensure-dashboard-embed-dir)
+src/internal/dashboard/dist/

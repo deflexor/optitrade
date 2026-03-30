@@ -95,10 +95,7 @@ There is **no probability** the team can honestly quote: outcomes depend on mark
 
 - **Quickstart (CLI, testnet observe, smoke-order gate):** `docs/quickstart.md`  
 - **Incident steps (kill switch, cancel-all, reconciliation pointer):** `docs/runbook-incident.md`  
-- Product requirements: `kitty-specs/001-autonomous-deribit-options-robot/spec.md`  
-- Architecture and stack: `kitty-specs/001-autonomous-deribit-options-robot/plan.md`  
-- Research (including safety section): `kitty-specs/001-autonomous-deribit-options-robot/research.md`  
-- Exchange API reference (external): see `kitty-specs/001-autonomous-deribit-options-robot/research/source-register.csv` for curated links
+- **Technical brief (stack and direction):** root `plan.md`
 
 ---
 

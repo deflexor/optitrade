@@ -118,4 +118,4 @@ Read-only testnet observation, smoke orders, policy paths, and SC test mapping a
 - `docs/quickstart.md` -- Deribit env, `observe`, `smoke-order`, integration tests
 - `docs/trader-safety-cheatsheet.md` -- operator safety
 - `docs/runbook-incident.md` -- incidents
-- `kitty-specs/` -- product specs and work packages (when present on your checkout)
+- `plan.md` -- technical brief at repo root (when maintained)

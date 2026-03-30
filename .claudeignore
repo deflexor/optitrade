@@ -1,11 +1,3 @@
-# Spec Kitty Configuration and Templates
-# These are internal directories that shouldn't be scanned by AI assistants
-
-# Template directories (not working code)
-.kittify/templates/
-.kittify/missions/
-.kittify/scripts/
-
 # Agent command directories (generated from templates, not source)
 .claude/
 .codex/

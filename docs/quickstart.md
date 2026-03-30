@@ -81,4 +81,4 @@ Automated checks live next to the relevant packages (run `make test` from repo r
 
 - Operator safety: `docs/trader-safety-cheatsheet.md`
 - Incidents: `docs/runbook-incident.md`
-- Product spec (paths may be under `kitty-specs/` on full checkouts): `spec.md`, `plan.md`
+- Technical brief: root `plan.md`
