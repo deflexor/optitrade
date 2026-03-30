@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"errors"
 	"path/filepath"
 	"testing"
 	"time"
@@ -259,5 +260,60 @@ func TestOrderUpdateListFills(t *testing.T) {
 	}
 	if n != 1 {
 		t.Fatalf("duplicate trade insert ignored: count=%d", n)
+	}
+}
+
+func TestRegimeStateLatest(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	db, err := Open(filepath.Join(dir, "regime.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	store := NewStore(db)
+	ctx := context.Background()
+	_, err = store.LatestRegimeState(ctx)
+	if !errors.Is(err, state.ErrNoRegimeState) {
+		t.Fatalf("empty db: %v", err)
+	}
+
+	if err := store.InsertRegimeState(ctx, nil); err == nil {
+		t.Fatal("expected error for nil")
+	}
+
+	r1 := &state.RegimeState{
+		EffectiveAt:       100,
+		Label:             "calm",
+		ClassifierVersion: "v1",
+		InputsDigest:      "d1",
+	}
+	if err := store.InsertRegimeState(ctx, r1); err != nil {
+		t.Fatal(err)
+	}
+	got, err := store.LatestRegimeState(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Label != "calm" || got.ClassifierVersion != "v1" || got.InputsDigest != "d1" || got.EffectiveAt != 100 {
+		t.Fatalf("got %+v", got)
+	}
+
+	r2 := &state.RegimeState{
+		EffectiveAt:       200,
+		Label:             "stress",
+		ClassifierVersion: "v1",
+		InputsDigest:      "d2",
+	}
+	if err := store.InsertRegimeState(ctx, r2); err != nil {
+		t.Fatal(err)
+	}
+	got, err = store.LatestRegimeState(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Label != "stress" || got.EffectiveAt != 200 {
+		t.Fatalf("latest: %+v", got)
 	}
 }
