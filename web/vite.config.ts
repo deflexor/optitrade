@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Dashboard BFF default (cmd/optitrade dashboard); must match -listen / OPTITRADE_DASHBOARD_LISTEN
+      // Proxies /api/v1/* to Go; path prefix is /api so VITE calls to /api/v1 hit the BFF.
       '/api': {
         target: 'http://127.0.0.1:8080',
         changeOrigin: true,

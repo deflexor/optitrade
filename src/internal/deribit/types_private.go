@@ -56,6 +56,17 @@ type GetAccountSummariesParams struct {
 	Extended *bool   `json:"extended,omitempty"`
 }
 
+// GetUserTradesParams for private/get_user_trades (time-bounded history).
+type GetUserTradesParams struct {
+	Currency       string  `json:"currency"`
+	Kind           string  `json:"kind,omitempty"`
+	StartTimestamp *int64  `json:"start_timestamp,omitempty"`
+	EndTimestamp   *int64  `json:"end_timestamp,omitempty"`
+	Count          *int    `json:"count,omitempty"`
+	Sorting        *string `json:"sorting,omitempty"`
+	Historical     *bool   `json:"historical,omitempty"`
+}
+
 // AccountSummary is one element of private/get_account_summaries.
 type AccountSummary struct {
 	Currency              string   `json:"currency"`

@@ -1,0 +1,255 @@
+openapi: 3.0.3
+info:
+  title: Optitrade Dashboard BFF API
+  version: 0.1.0
+  description: >
+    Operator dashboard JSON API (Go BFF). Paths are served under /api/v1 with prefix stripped in router.
+servers:
+  - url: /api/v1
+paths:
+  /auth/login:
+    post:
+      summary: Sign in (allowlisted user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "204":
+          description: Success; sets session cookie
+        "401":
+          description: Invalid credentials
+  /auth/logout:
+    post:
+      summary: Sign out (destroy session)
+      security: [{ cookieAuth: [] }]
+      responses:
+        "204":
+          description: Session cleared
+  /auth/me:
+    get:
+      summary: Current session (optional)
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /health:
+    get:
+      summary: Process health for dashboard (auth optional TBD)
+      responses:
+        "200":
+          description: Uptime, memory, mode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /overview:
+    get:
+      summary: Balance, P/L series (30d default), mood, strategy meta
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Overview DTO
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OverviewResponse"
+  /positions/open:
+    get:
+      summary: Paginated open positions
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 25, maximum: 25 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Open positions page + next cursor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenPositionsResponse"
+  /positions/closed:
+    get:
+      summary: Recent closed (30d, max 200)
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Closed rows with percent basis labels
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosedPositionsResponse"
+  /positions/{id}:
+    get:
+      summary: Position detail (legs, greeks, liquidity)
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Position detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PositionDetailResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /positions/{id}/close/preview:
+    post:
+      summary: Close preview (estimate + guidance)
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: CloseEstimate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosePreviewResponse"
+  /positions/{id}/close/confirm:
+    post:
+      summary: Execute close after preview
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CloseConfirmResponse"
+  /rebalance/preview:
+    post:
+      summary: Rebalance preview
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: RebalanceProposal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RebalancePreviewResponse"
+  /rebalance/confirm:
+    post:
+      summary: Execute rebalance after preview
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RebalanceConfirmResponse"
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: optitrade_session
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error, message]
+      properties:
+        error: { type: string }
+        message: { type: string }
+    MeResponse:
+      type: object
+      required: [username]
+      properties:
+        username: { type: string }
+    HealthResponse:
+      type: object
+      properties:
+        health:
+          type: object
+          properties:
+            uptime_seconds: { type: integer, format: int64 }
+            memory_heap_alloc_bytes: { type: integer, format: int64 }
+            memory_sys_bytes: { type: integer, format: int64 }
+            collected_at: { type: string, format: date-time }
+        trading:
+          type: object
+          properties:
+            mode: { type: string, enum: [test, live] }
+            exchange_reachable: { type: boolean }
+            detail: { type: string }
+    OverviewResponse:
+      type: object
+      properties:
+        account:
+          type: object
+        pnl_series:
+          type: object
+        market_mood:
+          type: object
+        strategy:
+          type: object
+    OpenPositionsResponse:
+      type: object
+      properties:
+        items: { type: array, items: { type: object } }
+        next_cursor: { type: string }
+        total_count: { type: integer }
+    ClosedPositionsResponse:
+      type: object
+      properties:
+        items: { type: array, items: { type: object } }
+        truncated: { type: boolean }
+    PositionDetailResponse:
+      type: object
+    ClosePreviewResponse:
+      type: object
+      properties:
+        estimated_exit_pnl: { type: string }
+        wait_vs_close_guidance: { type: string }
+        assumptions: { type: array, items: { type: string } }
+        preview_token: { type: string }
+        position_id_echo: { type: string }
+        labels: { type: array, items: { type: string } }
+    CloseConfirmResponse:
+      type: object
+      properties:
+        status: { type: string }
+        result: {}
+        warning: { type: string }
+    RebalancePreviewResponse:
+      type: object
+      properties:
+        suggested_adjustments: { type: array, items: { type: object } }
+        projected_outcome: { type: object }
+        preview_token: { type: string }
+        disclaimer: { type: string }
+    RebalanceConfirmResponse:
+      type: object
+      properties:
+        status: { type: string }
+        detail: { type: string }
+        warning: { type: string }

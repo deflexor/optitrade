@@ -13,3 +13,7 @@ web/dist/*
 
 # Built SPA copy for go:embed (see Makefile: dashboard-sync-assets / ensure-dashboard-embed-dir)
 src/internal/dashboard/dist/
+
+# Local dashboard session DB (default path when OPTITRADE_DASHBOARD_SESSION_PATH unset)
+optitrade-dashboard.sqlite
+optitrade-dashboard.sqlite-*

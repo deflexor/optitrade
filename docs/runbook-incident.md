@@ -1,7 +1,7 @@
 # Incident runbook: Optitrade Deribit bot
 
 **Canonical**: `docs/runbook-incident.md`  
-**Last updated**: 2026-03-28  
+**Last updated**: 2026-03-30  
 **Audience**: on-call operator with exchange UI + shell access to the host running `optitrade`.
 
 ---
@@ -58,7 +58,19 @@ Escalation is **organization-specific**. Fill in below for your deployment:
 
 ---
 
-## 5. Post-incident
+## 5. Operator dashboard (BFF)
+
+If the incident involves the embedded/standalone **dashboard** (`optitrade dashboard` or shortcut flags):
+
+- **Listen / TLS**: `-listen` / `OPTITRADE_DASHBOARD_LISTEN` — ensure the value matches the Vite dev proxy target in `web/vite.config.ts` when debugging locally.
+- **Auth file**: `OPTITRADE_DASHBOARD_AUTH_PATH` (or `dashboard -auth=…`) — allowlisted operators; if unset, a **development** embedded user (`opti` / `opti`) applies. A bad or unreadable auth file fails startup. **SIGHUP** reloads the file when a path is configured, without process restart.
+- **Sessions**: `OPTITRADE_DASHBOARD_SESSION_PATH` / `dashboard -session-db=…` — SQLite path for `dashboard_session` rows (default working dir `optitrade-dashboard.sqlite`). Removing the file invalidates all sessions.
+- **Exchange reads/writes**: `DERIBIT_BASE_URL`, `DERIBIT_CLIENT_ID`, `DERIBIT_CLIENT_SECRET` — if unset, overview/positions degrade gracefully but **close confirm** cannot hit the exchange.
+- **Kill switch for UI-driven orders**: sign out operators, revoke/rotate Deribit keys as in §2, and stop the dashboard process if UI could still reach a live key.
+
+---
+
+## 6. Post-incident
 
 - Capture timestamps, exchange screenshots, and log excerpts (redact secrets).
 - If automation contributed, open a remediation ticket: config change, code fix, or runbook update.

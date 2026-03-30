@@ -4,7 +4,7 @@ Go services and tooling for Deribit-focused options workflows, plus an **operato
 
 ## Requirements
 
-- **Go** 1.22+ (see `src/go.mod`)
+- **Go** 1.26+ (see `src/go.mod`)
 - **Node.js** 20+ and **npm** (for `web/`)
 
 ## Operator dashboard (frontend + API)
@@ -38,7 +38,12 @@ If you change the listen port, update `web/vite.config.ts` proxy `target` to mat
 ```bash
 cd src
 go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080
+# with auth and custom session DB:
+# go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080 \
+#   -auth=./dashboard.auth.json -session-db=./dashboard-sessions.sqlite
 ```
+
+(If `-auth` is omitted and `OPTITRADE_DASHBOARD_AUTH_PATH` is unset, the built-in **opti** / **opti** allowlist is used.)
 
 **Terminal B** -- Vite dev server (HMR):
 
@@ -53,6 +58,31 @@ Sanity checks:
 ```bash
 curl -sS http://127.0.0.1:8080/healthz    # expect: ok
 ```
+
+### 2b. Operator auth (allowlist + sessions)
+
+Sign-in uses a **JSON allowlist** (username + bcrypt `password_hash`) and a **SQLite file** for server-side sessions (not idle-expired; revoked if you remove a user from the file and reload).
+
+**If you do not set `OPTITRADE_DASHBOARD_AUTH_PATH`**, the server loads a **built-in development allowlist**: username **`opti`**, password **`opti`**. For anything beyond local dev, point at your own auth file (and use strong passwords).
+
+1. (Optional) Create an auth file (schema: `specs/002-dashboard-operator-trading/quickstart.md`).
+2. Point the process at it when overriding the default, e.g.:
+
+```bash
+export OPTITRADE_DASHBOARD_AUTH_PATH=/path/to/dashboard.auth.json
+# Optional: session DB (default if unset: ./optitrade-dashboard.sqlite in the process working directory)
+export OPTITRADE_DASHBOARD_SESSION_PATH=/path/to/dashboard-sessions.sqlite
+```
+
+Or pass flags (same effect as the env vars):
+
+```bash
+make run-dashboard \
+  DASHBOARD_AUTH_PATH=./dashboard.auth.json \
+  DASHBOARD_SESSION_PATH=./dashboard-sessions.sqlite
+```
+
+The Go CLI also accepts **`dashboard -auth=...`** and **`dashboard -session-db=...`**. Changing the allowlist on disk is picked up on **`SIGHUP`** without restarting.
 
 ### 3. Build the SPA into the Go embed directory
 
@@ -80,6 +110,7 @@ Run the fat binary (serves static files if assets were synced; otherwise API rou
 
 ```bash
 ./optitrade dashboard -listen=:8080
+# optional: -auth=./dashboard.auth.json -session-db=./sessions.sqlite
 # or: ./optitrade --dashboard-listen=:8080
 ```
 
@@ -88,7 +119,7 @@ Run the fat binary (serves static files if assets were synced; otherwise API rou
 | Command | Purpose |
 |--------|---------|
 | `make help` | List Makefile targets |
-| `make run-dashboard` | Start Go dashboard BFF (default `:8080`) |
+| `make run-dashboard` | Start Go dashboard BFF (default `:8080`; optional `DASHBOARD_AUTH_PATH`, `DASHBOARD_SESSION_PATH`) |
 | `make web-dev` | Vite dev server + `/api` proxy |
 | `make web-build` | Production build of `web/` |
 | `make dashboard-sync-assets` | `web-build` + copy into `src/internal/dashboard/dist/` |
@@ -116,6 +147,7 @@ Read-only testnet observation, smoke orders, policy paths, and SC test mapping a
 ## Further reading
 
 - `docs/quickstart.md` -- Deribit env, `observe`, `smoke-order`, integration tests
+- `specs/002-dashboard-operator-trading/quickstart.md` -- dashboard auth file, curl, two-terminal dev
 - `docs/trader-safety-cheatsheet.md` -- operator safety
-- `docs/runbook-incident.md` -- incidents
-- `plan.md` -- technical brief at repo root (when maintained)
+- `docs/runbook-incident.md` -- incidents (includes dashboard BFF notes)
+- `specs/002-dashboard-operator-trading/plan.md` -- dashboard feature plan (branch `002-dashboard-operator-trading`)

@@ -52,6 +52,7 @@ type UserTrade struct {
 	State            *string  `json:"state,omitempty"`
 	ReduceOnly       *bool    `json:"reduce_only,omitempty"`
 	PostOnly         *bool    `json:"post_only,omitempty"`
+	ProfitLoss       *float64 `json:"profit_loss,omitempty"`
 }
 
 // GetUserTradesByOrderParams for private/get_user_trades_by_order.

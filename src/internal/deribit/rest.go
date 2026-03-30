@@ -3,6 +3,7 @@ package deribit
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/dfr/optitrade/src/internal/deribit/rpc"
 )
@@ -244,6 +245,28 @@ func (r *REST) GetOrderState(ctx context.Context, orderID string) (*OrderDetail,
 		return nil, err
 	}
 	return &out, nil
+}
+
+// GetUserTrades calls private/get_user_trades (paginated trade history).
+func (r *REST) GetUserTrades(ctx context.Context, params GetUserTradesParams) ([]UserTrade, error) {
+	c, err := r.priv()
+	if err != nil {
+		return nil, err
+	}
+	if params.Currency == "" {
+		return nil, fmt.Errorf("deribit: currency required for get_user_trades")
+	}
+	raw, err := c.Call(ctx, "private/get_user_trades", params)
+	if err != nil {
+		return nil, err
+	}
+	var out struct {
+		Trades []UserTrade `json:"trades"`
+	}
+	if err := json.Unmarshal(raw, &out); err != nil {
+		return nil, err
+	}
+	return out.Trades, nil
 }
 
 // GetUserTradesByOrder calls private/get_user_trades_by_order.

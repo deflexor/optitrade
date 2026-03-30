@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -16,6 +17,7 @@ import (
 	"github.com/dfr/optitrade/src/internal/dashboard"
 	"github.com/dfr/optitrade/src/internal/deribit"
 	"github.com/dfr/optitrade/src/internal/observe"
+	"github.com/dfr/optitrade/src/internal/state/sqlite"
 )
 
 const version = "0.0.1-dev"
@@ -23,7 +25,7 @@ const version = "0.0.1-dev"
 func main() {
 	log := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	if addr, ok := dashboardAddrFromLeadingFlags(os.Args[1:]); ok {
-		if err := runDashboard(log, addr); err != nil {
+		if err := runDashboardShortcut(log, addr); err != nil {
 			log.Error("dashboard", "err", err)
 			os.Exit(1)
 		}
@@ -77,6 +79,8 @@ Env:
   DERIBIT_BASE_URL                           Default %s
   OPTITRADE_POLICY_PATH                      Policy JSON for smoke-order gate
   OPTITRADE_DASHBOARD_LISTEN                 Dashboard listen addr (e.g. 127.0.0.1:8080)
+  OPTITRADE_DASHBOARD_AUTH_PATH              Dashboard allowlist JSON (username + password_hash)
+  OPTITRADE_DASHBOARD_SESSION_PATH           SQLite file for dashboard sessions
 
 `, observe.EnvAllowTestnetOrders, deribit.TestnetRPCBaseURL)
 }
@@ -116,6 +120,16 @@ func runDashboardCmd(log *slog.Logger, args []string) error {
 		"HTTP listen address (e.g. 127.0.0.1:8080)",
 	)
 	dashListen := fs.String("dashboard-listen", "", "alias for -listen")
+	authPath := fs.String(
+		"auth",
+		strings.TrimSpace(os.Getenv("OPTITRADE_DASHBOARD_AUTH_PATH")),
+		"path to dashboard allowlist JSON (OPTITRADE_DASHBOARD_AUTH_PATH)",
+	)
+	sessionPath := fs.String(
+		"session-db",
+		strings.TrimSpace(os.Getenv("OPTITRADE_DASHBOARD_SESSION_PATH")),
+		"SQLite path for dashboard sessions (OPTITRADE_DASHBOARD_SESSION_PATH)",
+	)
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -129,20 +143,74 @@ func runDashboardCmd(log *slog.Logger, args []string) error {
 	if addr == "" {
 		return fmt.Errorf("dashboard: set -listen or OPTITRADE_DASHBOARD_LISTEN")
 	}
-	return runDashboard(log, addr)
+	return runDashboardCmdFull(log, addr, *authPath, *sessionPath)
 }
 
-func runDashboard(log *slog.Logger, addr string) error {
+func runDashboardShortcut(log *slog.Logger, addr string) error {
+	return runDashboardCmdFull(log, addr, "", "")
+}
+
+func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	var auth *dashboard.DashboardAuthFile
+	sessPath := strings.TrimSpace(sessionPath)
+	if sessPath == "" {
+		sessPath = filepath.Clean("optitrade-dashboard.sqlite")
+	}
+	db, err := sqlite.Open(sessPath)
+	if err != nil {
+		return fmt.Errorf("dashboard session db: %w", err)
+	}
+	defer db.Close()
+
+	if p := strings.TrimSpace(authPath); p != "" {
+		var loadErr error
+		auth, loadErr = dashboard.LoadDashboardAuthFile(p)
+		if loadErr != nil {
+			return fmt.Errorf("dashboard auth: %w", loadErr)
+		}
+	} else {
+		var err error
+		auth, err = dashboard.DefaultEmbeddedAuth()
+		if err != nil {
+			return fmt.Errorf("dashboard default auth: %w", err)
+		}
+		log.Info("dashboard using embedded dev allowlist (user opti / password opti); set OPTITRADE_DASHBOARD_AUTH_PATH to use a file")
+	}
+
+	xchg := dashboard.ExchangeFromEnv()
+	h := dashboard.NewServer(dashboard.Options{
+		Logger:   log,
+		Auth:     auth,
+		Sessions: dashboard.NewSessionStore(db),
+		Exchange: xchg,
+	})
+
+	if p := strings.TrimSpace(authPath); p != "" {
+		hup := make(chan os.Signal, 1)
+		signal.Notify(hup, syscall.SIGHUP)
+		go func() {
+			for range hup {
+				f, err := dashboard.LoadDashboardAuthFile(p)
+				if err != nil {
+					log.Warn("reload dashboard auth failed", "err", err)
+					continue
+				}
+				h.ReloadAuth(f)
+				log.Info("reloaded dashboard auth file", "path", p)
+			}
+		}()
+	}
+
 	srv := &http.Server{
 		Addr:    addr,
-		Handler: dashboard.NewServer().Handler(),
+		Handler: h.Handler(),
 	}
 
 	go func() {
-		log.Info("dashboard listening", "addr", addr)
+		log.Info("dashboard listening", "addr", addr, "session_db", sessPath)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Error("dashboard server", "err", err)
 			stop()

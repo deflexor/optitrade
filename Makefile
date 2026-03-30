@@ -5,6 +5,9 @@ DASHBOARD_EMBED_DIST := $(SRC_DIR)/internal/dashboard/dist
 OPTITRADE_BIN := $(ROOT)/optitrade
 # Must match web/vite.config.ts server.proxy['/api'].target (host:port)
 DASHBOARD_LISTEN ?= 127.0.0.1:8080
+# Optional: allowlist JSON and session DB for operator login (see README). Empty = rely on OPTITRADE_* env or CLI defaults.
+DASHBOARD_AUTH_PATH ?=
+DASHBOARD_SESSION_PATH ?=
 
 .PHONY: help build test test-integration lint \
 	ensure-dashboard-embed-dir \
@@ -15,7 +18,8 @@ help:
 	@echo "Optitrade Makefile"
 	@echo ""
 	@echo "Dashboard (frontend + Go BFF):"
-	@echo "  make run-dashboard          Go API/UI on DASHBOARD_LISTEN (default $(DASHBOARD_LISTEN))"
+	@echo "  make run-dashboard          Go BFF + API on DASHBOARD_LISTEN (default $(DASHBOARD_LISTEN))"
+	@echo "    Optional: DASHBOARD_AUTH_PATH=... DASHBOARD_SESSION_PATH=... (or OPTITRADE_DASHBOARD_AUTH_PATH / OPTITRADE_DASHBOARD_SESSION_PATH)"
 	@echo "  make web-dev                Vite dev server (run web-install once first)"
 	@echo "  make dev-info               Print two-terminal dev instructions"
 	@echo "  web-install / web-build     npm ci / production build in web/"
@@ -67,11 +71,13 @@ web-dev:
 	cd "$(WEB_DIR)" && npm run dev
 
 run-dashboard: ensure-dashboard-embed-dir
-	cd "$(SRC_DIR)" && go run ./cmd/optitrade dashboard -listen=$(DASHBOARD_LISTEN)
+	cd "$(SRC_DIR)" && go run ./cmd/optitrade dashboard -listen=$(DASHBOARD_LISTEN) \
+		$(if $(DASHBOARD_AUTH_PATH),-auth=$(DASHBOARD_AUTH_PATH)) \
+		$(if $(DASHBOARD_SESSION_PATH),-session-db=$(DASHBOARD_SESSION_PATH))
 
 dev-info:
 	@echo "Development dashboard (two terminals, same repo root):"
-	@echo "  1) make run-dashboard"
+	@echo "  1) make run-dashboard  (optional auth file; default dev login opti/opti)"
 	@echo "  2) make web-dev"
 	@echo "Then open the Vite URL (default http://127.0.0.1:5173). API proxy targets $(DASHBOARD_LISTEN)."
 
