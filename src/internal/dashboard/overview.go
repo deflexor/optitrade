@@ -57,7 +57,7 @@ func (s *Server) handleOverview(w http.ResponseWriter, r *http.Request) {
 		"market_mood": map[string]any{
 			"label":       "",
 			"score":       nil,
-			"explanation": "strategy modules not wired to dashboard yet",
+			"explanation": "Market mood analytics are not connected for this operator view. This will appear once mood signals are available from your deployment.",
 			"available":   false,
 		},
 		"strategy": map[string]any{

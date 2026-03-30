@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
+import { formatHeapBytes, formatUptimeSeconds } from '../lib/formatHealth'
 
 type HealthResp = {
   health: {
@@ -78,9 +79,9 @@ export default function HealthPanel() {
         <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
           Process
         </p>
-        <p className="mt-1 font-mono text-sm">
-          uptime {data.health.uptime_seconds}s · heap_alloc{' '}
-          {data.health.memory_heap_alloc_bytes} bytes
+        <p className="mt-1 font-mono text-sm" data-testid="health-process-metrics">
+          Uptime {formatUptimeSeconds(data.health.uptime_seconds)} · heap{' '}
+          {formatHeapBytes(data.health.memory_heap_alloc_bytes)}
         </p>
         <p className="mt-1 text-xs text-slate-500">{data.health.collected_at}</p>
       </div>

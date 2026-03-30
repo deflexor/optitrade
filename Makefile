@@ -9,7 +9,7 @@ DASHBOARD_LISTEN ?= 127.0.0.1:8080
 DASHBOARD_AUTH_PATH ?=
 DASHBOARD_SESSION_PATH ?=
 
-.PHONY: help build test test-integration lint \
+.PHONY: help build test test-integration lint test-e2e \
 	ensure-dashboard-embed-dir \
 	web-install web-build web-dev test-web \
 	run-dashboard dev-info dashboard-sync-assets build-optitrade build-dashboard
@@ -28,7 +28,8 @@ help:
 	@echo "  make build-dashboard        dashboard-sync-assets + build-optitrade"
 	@echo ""
 	@echo "Tests and quality:"
-	@echo "  make test / test-integration / lint / test-web"
+	@echo "  make test / test-integration / lint / test-web / test-e2e"
+	@echo "    test-e2e runs Playwright in web/ (requires web-install / npm ci in web/)"
 	@echo ""
 	@echo "Library build:"
 	@echo "  make build                  go build ./... under src/"
@@ -66,6 +67,10 @@ web-build: web-install
 
 test-web: web-install
 	cd "$(WEB_DIR)" && npm run build
+
+# Playwright: starts BFF + Vite via web/playwright.config.ts (run from clean shell; see quickstart).
+test-e2e: web-install
+	cd "$(WEB_DIR)" && npm run test:e2e
 
 web-dev:
 	cd "$(WEB_DIR)" && npm run dev

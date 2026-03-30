@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/dfr/optitrade/src/internal/deribit"
@@ -78,13 +79,20 @@ func TestOverviewJSONShape(t *testing.T) {
 		t.Fatal(err)
 	}
 	var mood struct {
-		Available bool `json:"available"`
+		Available   bool   `json:"available"`
+		Explanation string `json:"explanation"`
 	}
 	if err := json.Unmarshal(body["market_mood"], &mood); err != nil {
 		t.Fatal(err)
 	}
 	if mood.Available {
 		t.Fatal("expected mood.available false for stub")
+	}
+	if strings.Contains(mood.Explanation, "strategy modules not wired") {
+		t.Fatalf("market_mood.explanation must not use internal placeholder: %q", mood.Explanation)
+	}
+	if mood.Explanation == "" {
+		t.Fatal("expected non-empty mood explanation when unavailable")
 	}
 	var strat struct {
 		WinRateDefined bool `json:"win_rate_defined"`

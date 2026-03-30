@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { signInAsDevOperator } from './helpers/login'
 
 test.describe('operator dashboard', () => {
   test('health API is public', async ({ request }) => {
@@ -10,15 +11,7 @@ test.describe('operator dashboard', () => {
   })
 
   test('login with default dev operator and see overview shell', async ({ page }) => {
-    await page.goto('/login')
-    await expect(page.getByRole('heading', { name: 'Operator sign-in' })).toBeVisible()
-
-    await page.getByLabel('Username').fill('opti')
-    await page.getByLabel('Password').fill('opti')
-    await page.getByRole('button', { name: 'Sign in' }).click()
-
-    await expect(page.getByRole('link', { name: 'Optitrade Dashboard' })).toBeVisible()
-    await expect(page.locator('header').getByText('opti', { exact: true })).toBeVisible()
+    await signInAsDevOperator(page)
     await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible()
     await expect(
       page.getByText(/Exchange data partially degraded/),
@@ -27,6 +20,8 @@ test.describe('operator dashboard', () => {
 
   test('rejects wrong password', async ({ page }) => {
     await page.goto('/login')
+    await expect(page.getByRole('heading', { name: 'Operator sign-in' })).toBeVisible()
+
     await page.getByLabel('Username').fill('opti')
     await page.getByLabel('Password').fill('wrong-password')
     await page.getByRole('button', { name: 'Sign in' }).click()
