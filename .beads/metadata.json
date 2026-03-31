@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "optitrade",
+  "project_id": "26d60e68-065a-4f3a-9536-c5d48e827cfd"
+}

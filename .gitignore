@@ -17,3 +17,8 @@ src/internal/dashboard/dist/
 # Local dashboard session DB (default path when OPTITRADE_DASHBOARD_SESSION_PATH unset)
 optitrade-dashboard.sqlite
 optitrade-dashboard.sqlite-*
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
