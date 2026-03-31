@@ -153,6 +153,7 @@ func runDashboardShortcut(log *slog.Logger, addr string) error {
 }
 
 func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) error {
+	loadDashboardEnv(log)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 

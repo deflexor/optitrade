@@ -35,14 +35,14 @@ make run-dashboard DASHBOARD_LISTEN=127.0.0.1:9090
 
 If you change the listen port, update `web/vite.config.ts` proxy `target` to match (or set `OPTITRADE_DASHBOARD_LISTEN`). The embed directory `src/internal/dashboard/dist/` is gitignored; `make run-dashboard` creates a stub there when needed.
 
-**`make run-dashboard`** sets a **development default** for `OPTITRADE_SETTINGS_SECRET` if the variable is unset (see §2c). If you run the dashboard with plain `go run` or a built binary, you must set the secret yourself (or use `OPTITRADE_SETTINGS_KEY_FILE`). After `make ensure-dashboard-embed-dir`:
+**`make run-dashboard`** sets a **development default** for `OPTITRADE_SETTINGS_SECRET` if the variable is unset (see §2c). If you run the dashboard with plain `go run` or `./optitrade`, put variables in a **`.env`** file at the repo root (or any parent of the current working directory); the dashboard command loads that file automatically (it does not override variables already exported in your shell). Otherwise you must export the secret yourself (or use `OPTITRADE_SETTINGS_KEY_FILE`). After `make ensure-dashboard-embed-dir`:
 
 ```bash
 cd src
-export OPTITRADE_SETTINGS_SECRET='abcdefghijklmnopqrstuvwxyz123456'  # 32 ASCII chars; see §2c
+# Optional if repo-root `.env` sets OPTITRADE_SETTINGS_SECRET (dashboard loads it automatically):
+# export OPTITRADE_SETTINGS_SECRET='abcdefghijklmnopqrstuvwxyz123456'  # 32 ASCII chars; see §2c
 go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080
 # with auth and custom session DB:
-# export OPTITRADE_SETTINGS_SECRET='...'  # required
 # go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080 \
 #   -auth=./dashboard.auth.json -session-db=./dashboard-sessions.sqlite
 ```
