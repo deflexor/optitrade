@@ -8,6 +8,8 @@ DASHBOARD_LISTEN ?= 127.0.0.1:8080
 # Optional: allowlist JSON and session DB for operator login (see README). Empty = rely on OPTITRADE_* env or CLI defaults.
 DASHBOARD_AUTH_PATH ?=
 DASHBOARD_SESSION_PATH ?=
+# Dashboard encrypts per-operator API keys in SQLite; required for dashboard unless using run-dashboard (see below).
+# OPTITRADE_SETTINGS_SECRET or OPTITRADE_SETTINGS_KEY_FILE — see README §2c.
 
 .PHONY: help build test test-integration lint test-e2e \
 	ensure-dashboard-embed-dir \
@@ -19,6 +21,7 @@ help:
 	@echo ""
 	@echo "Dashboard (frontend + Go BFF):"
 	@echo "  make run-dashboard          Go BFF + API on DASHBOARD_LISTEN (default $(DASHBOARD_LISTEN))"
+	@echo "    Sets OPTITRADE_SETTINGS_SECRET to a dev default if unset (encrypt operator Settings in session DB)."
 	@echo "    Optional: DASHBOARD_AUTH_PATH=... DASHBOARD_SESSION_PATH=... (or OPTITRADE_DASHBOARD_AUTH_PATH / OPTITRADE_DASHBOARD_SESSION_PATH)"
 	@echo "  make web-dev                Vite dev server (run web-install once first)"
 	@echo "  make dev-info               Print two-terminal dev instructions"
@@ -29,7 +32,7 @@ help:
 	@echo ""
 	@echo "Tests and quality:"
 	@echo "  make test / test-integration / lint / test-web / test-e2e"
-	@echo "    test-e2e runs Playwright in web/ (requires web-install / npm ci in web/)"
+	@echo "    test-e2e runs Playwright in web/ (requires web-install; BFF gets OPTITRADE_SETTINGS_SECRET via web/playwright.config.ts if unset)"
 	@echo ""
 	@echo "Library build:"
 	@echo "  make build                  go build ./... under src/"
@@ -84,9 +87,10 @@ run-dashboard: ensure-dashboard-embed-dir
 
 dev-info:
 	@echo "Development dashboard (two terminals, same repo root):"
-	@echo "  1) make run-dashboard  (optional auth file; default dev login opti/opti)"
+	@echo "  1) make run-dashboard  (optional auth file; default dev login opti/opti; dev settings-encryption secret if OPTITRADE_SETTINGS_SECRET unset)"
 	@echo "  2) make web-dev"
 	@echo "Then open the Vite URL (default http://127.0.0.1:5173). API proxy targets $(DASHBOARD_LISTEN)."
+	@echo "Sign in, then Settings: save Deribit or OKX keys (dashboard does not use DERIBIT_* env for trading)."
 
 # Copies Vite output into the Go embed tree for: go run ./cmd/optitrade dashboard ...
 dashboard-sync-assets: web-build

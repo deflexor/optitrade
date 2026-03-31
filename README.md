@@ -33,12 +33,16 @@ Override the listen address if needed:
 make run-dashboard DASHBOARD_LISTEN=127.0.0.1:9090
 ```
 
-If you change the listen port, update `web/vite.config.ts` proxy `target` to match (or set `OPTITRADE_DASHBOARD_LISTEN`). The embed directory `src/internal/dashboard/dist/` is gitignored; `make run-dashboard` creates a stub there when needed. Plain `go run` only works after `make ensure-dashboard-embed-dir`:
+If you change the listen port, update `web/vite.config.ts` proxy `target` to match (or set `OPTITRADE_DASHBOARD_LISTEN`). The embed directory `src/internal/dashboard/dist/` is gitignored; `make run-dashboard` creates a stub there when needed.
+
+**`make run-dashboard`** sets a **development default** for `OPTITRADE_SETTINGS_SECRET` if the variable is unset (see §2c). If you run the dashboard with plain `go run` or a built binary, you must set the secret yourself (or use `OPTITRADE_SETTINGS_KEY_FILE`). After `make ensure-dashboard-embed-dir`:
 
 ```bash
 cd src
+export OPTITRADE_SETTINGS_SECRET='abcdefghijklmnopqrstuvwxyz123456'  # 32 ASCII chars; see §2c
 go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080
 # with auth and custom session DB:
+# export OPTITRADE_SETTINGS_SECRET='...'  # required
 # go run ./cmd/optitrade dashboard -listen=127.0.0.1:8080 \
 #   -auth=./dashboard.auth.json -session-db=./dashboard-sessions.sqlite
 ```
@@ -91,12 +95,14 @@ The dashboard **does not read `DERIBIT_*` (or OKX keys) from the environment**. 
 You must provide a **32-byte server secret** so the process can encrypt those credentials at rest (this is not a venue API key):
 
 ```bash
-# Easiest for local dev: exactly 32 ASCII characters (make run-dashboard sets a dev default if unset)
+# Local dev: exactly 32 ASCII characters is accepted as the raw key (see also `make run-dashboard`, which defaults this if unset).
 export OPTITRADE_SETTINGS_SECRET='abcdefghijklmnopqrstuvwxyz123456'
 
-# Production: prefer a random 32-byte value encoded as base64 or 64 hex chars, or a file:
+# Production: 64 hex chars (32 bytes), base64 encoding of 32 random bytes, or a file with 32 raw key bytes:
 # export OPTITRADE_SETTINGS_KEY_FILE=/run/secrets/settings-aes-key
 ```
+
+After sign-in, open **Settings** in the UI and save venue credentials (they are not read from `DERIBIT_*` / OKX env vars for the dashboard).
 
 OKX **demo trading** uses official demo API keys and sends `x-simulated-trading: 1` on REST (`https://www.okx.com`).
 
@@ -125,9 +131,10 @@ make build-dashboard
 Run the fat binary (serves static files if assets were synced; otherwise API routes like `/healthz` still work):
 
 ```bash
+export OPTITRADE_SETTINGS_SECRET='…'   # or OPTITRADE_SETTINGS_KEY_FILE; required (same as §2c)
 ./optitrade dashboard -listen=:8080
 # optional: -auth=./dashboard.auth.json -session-db=./sessions.sqlite
-# or: ./optitrade --dashboard-listen=:8080
+# or: OPTITRADE_SETTINGS_SECRET='…' ./optitrade --dashboard-listen=:8080
 ```
 
 ### Makefile quick reference
@@ -135,7 +142,7 @@ Run the fat binary (serves static files if assets were synced; otherwise API rou
 | Command | Purpose |
 |--------|---------|
 | `make help` | List Makefile targets |
-| `make run-dashboard` | Start Go dashboard BFF (default `:8080`; optional `DASHBOARD_AUTH_PATH`, `DASHBOARD_SESSION_PATH`) |
+| `make run-dashboard` | Start Go dashboard BFF (default `:8080`; optional `DASHBOARD_AUTH_PATH`, `DASHBOARD_SESSION_PATH`). If `OPTITRADE_SETTINGS_SECRET` is unset, Makefile supplies a **dev-only** 32-byte default for encrypting operator settings; override in production. |
 | `make web-dev` | Vite dev server + `/api` proxy |
 | `make web-build` | Production build of `web/` |
 | `make dashboard-sync-assets` | `web-build` + copy into `src/internal/dashboard/dist/` |
@@ -150,7 +157,10 @@ From the repository root:
 ```bash
 make test          # Go unit tests + research pytest
 make test-web      # Frontend production build (compile check)
+make test-e2e     # Playwright (from `web/`; run `npx playwright install` there once if browsers are missing)
 ```
+
+`web/playwright.config.ts` passes a **dev** `OPTITRADE_SETTINGS_SECRET` to the BFF when unset, consistent with `make run-dashboard`.
 
 Dashboard Go packages are included in `go test ./...`. Integration tests for Deribit need credentials; see **Further reading** below.
 
