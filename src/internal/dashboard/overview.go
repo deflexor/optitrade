@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 	"github.com/dfr/optitrade/src/internal/deribit"
 )
 
-func dashboardCurrencies() []string {
+func dashboardCurrenciesFromEnv() []string {
 	c := strings.TrimSpace(os.Getenv("OPTITRADE_DASHBOARD_CURRENCIES"))
 	if c == "" {
 		return []string{"BTC", "ETH"}
@@ -24,6 +25,28 @@ func dashboardCurrencies() []string {
 	}
 	if len(out) == 0 {
 		return []string{"BTC", "ETH"}
+	}
+	return out
+}
+
+func (s *Server) dashboardCurrenciesFor(ctx context.Context) []string {
+	user, ok := requestUser(ctx)
+	if !ok || s.settings == nil || s.settingsCrypto == nil {
+		return dashboardCurrenciesFromEnv()
+	}
+	row, err := s.settings.GetDecrypting(ctx, user, s.settingsCrypto)
+	if err != nil || row == nil || strings.TrimSpace(row.Currencies) == "" {
+		return dashboardCurrenciesFromEnv()
+	}
+	var out []string
+	for _, p := range strings.Split(row.Currencies, ",") {
+		p = strings.TrimSpace(strings.ToUpper(p))
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	if len(out) == 0 {
+		return dashboardCurrenciesFromEnv()
 	}
 	return out
 }
@@ -74,7 +97,13 @@ func (s *Server) handleOverview(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	if s.xchg == nil {
+	xchg, err := s.exchangeForRequest(r.Context())
+	if err != nil {
+		logHandlerError(s.log, "overview_exchange", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not resolve exchange")
+		return
+	}
+	if xchg == nil {
 		acc := out["account"].(map[string]any)
 		acc["exchange_degraded"] = true
 		writeJSON(w, http.StatusOK, out)
@@ -86,9 +115,9 @@ func (s *Server) handleOverview(w http.ResponseWriter, r *http.Request) {
 
 	var eq, bal *float64
 	var cur string
-	for _, ccy := range dashboardCurrencies() {
+	for _, ccy := range s.dashboardCurrenciesFor(r.Context()) {
 		cc := ccy
-		sums, err := s.xchg.GetAccountSummaries(ctx, &deribit.GetAccountSummariesParams{Currency: &cc})
+		sums, err := xchg.GetAccountSummaries(ctx, &deribit.GetAccountSummariesParams{Currency: &cc})
 		if err != nil || len(sums) == 0 {
 			continue
 		}
@@ -117,8 +146,8 @@ func (s *Server) handleOverview(w http.ResponseWriter, r *http.Request) {
 	sorting := "asc"
 	dayPnL := map[string]float64{}
 	degraded := false
-	for _, ccy := range dashboardCurrencies() {
-		trades, err := s.xchg.GetUserTrades(ctx, deribit.GetUserTradesParams{
+	for _, ccy := range s.dashboardCurrenciesFor(r.Context()) {
+		trades, err := xchg.GetUserTrades(ctx, deribit.GetUserTradesParams{
 			Currency:       ccy,
 			StartTimestamp: &startMs,
 			EndTimestamp:   &endMs,

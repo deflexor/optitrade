@@ -20,7 +20,15 @@ type Server struct {
 	auth   *DashboardAuthFile
 
 	sessions *SessionStore
-	xchg     exchangeReader
+
+	settingsCrypto *SettingsCrypto
+	settings       *OperatorSettingsStore
+
+	// testXchg, when set, is used for all routes (unit tests); production leaves it nil.
+	testXchg exchangeReader
+
+	xchgMu   sync.Mutex
+	xchgCache map[string]cachedExchange
 
 	started time.Time
 
@@ -29,10 +37,15 @@ type Server struct {
 
 // Options configures the dashboard server.
 type Options struct {
-	Logger   *slog.Logger
-	Auth     *DashboardAuthFile
+	Logger *slog.Logger
+	Auth   *DashboardAuthFile
+	// Sessions and operator settings share one migrated SQLite file opened by the caller.
 	Sessions *SessionStore
-	Exchange exchangeReader
+	// SettingsCrypto and Settings enable per-operator venue credentials (required in production).
+	SettingsCrypto *SettingsCrypto
+	Settings       *OperatorSettingsStore
+	// TestExchange bypasses DB resolution (tests only).
+	TestExchange exchangeReader
 }
 
 // NewServer builds a dashboard HTTP handler tree.
@@ -42,13 +55,16 @@ func NewServer(opts Options) *Server {
 		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}
 	s := &Server{
-		log:      log,
-		mux:      http.NewServeMux(),
-		auth:     opts.Auth,
-		sessions: opts.Sessions,
-		xchg:     opts.Exchange,
-		started:  time.Now(),
-		previews: newPreviewStore(),
+		log:            log,
+		mux:            http.NewServeMux(),
+		auth:           opts.Auth,
+		sessions:       opts.Sessions,
+		settingsCrypto: opts.SettingsCrypto,
+		settings:       opts.Settings,
+		testXchg:       opts.TestExchange,
+		xchgCache:      map[string]cachedExchange{},
+		started:        time.Now(),
+		previews:       newPreviewStore(),
 	}
 
 	s.mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +93,8 @@ func NewServer(opts Options) *Server {
 	protected.Handle("POST /positions/{id}/close/confirm", http.HandlerFunc(s.handleCloseConfirm))
 	protected.Handle("POST /rebalance/preview", http.HandlerFunc(s.handleRebalancePreview))
 	protected.Handle("POST /rebalance/confirm", http.HandlerFunc(s.handleRebalanceConfirm))
+	protected.Handle("GET /settings", http.HandlerFunc(s.handleSettingsGet))
+	protected.Handle("PUT /settings", http.HandlerFunc(s.handleSettingsPut))
 
 	api.Handle("/", s.requireAuth(protected))
 

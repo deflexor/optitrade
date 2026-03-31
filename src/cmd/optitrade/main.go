@@ -81,6 +81,8 @@ Env:
   OPTITRADE_DASHBOARD_LISTEN                 Dashboard listen addr (e.g. 127.0.0.1:8080)
   OPTITRADE_DASHBOARD_AUTH_PATH              Dashboard allowlist JSON (username + password_hash)
   OPTITRADE_DASHBOARD_SESSION_PATH           SQLite file for dashboard sessions
+  OPTITRADE_SETTINGS_SECRET                  32-byte key: base64, hex, or raw (or use OPTITRADE_SETTINGS_KEY_FILE)
+  OPTITRADE_SETTINGS_KEY_FILE                File with raw 32-byte key for encrypting operator API settings
 
 `, observe.EnvAllowTestnetOrders, deribit.TestnetRPCBaseURL)
 }
@@ -180,12 +182,16 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 		log.Info("dashboard using embedded dev allowlist (user opti / password opti); set OPTITRADE_DASHBOARD_AUTH_PATH to use a file")
 	}
 
-	xchg := dashboard.ExchangeFromEnv()
+	crypto, err := dashboard.LoadSettingsCrypto()
+	if err != nil {
+		return fmt.Errorf("dashboard: %w", err)
+	}
 	h := dashboard.NewServer(dashboard.Options{
-		Logger:   log,
-		Auth:     auth,
-		Sessions: dashboard.NewSessionStore(db),
-		Exchange: xchg,
+		Logger:         log,
+		Auth:           auth,
+		Sessions:       dashboard.NewSessionStore(db),
+		SettingsCrypto: crypto,
+		Settings:       dashboard.NewOperatorSettingsStore(db),
 	})
 
 	if p := strings.TrimSpace(authPath); p != "" {

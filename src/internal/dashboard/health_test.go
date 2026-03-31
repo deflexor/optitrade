@@ -42,7 +42,7 @@ func TestHealthAPI_unauthenticated_noExchange(t *testing.T) {
 		Logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Auth:     &DashboardAuthFile{Version: "1"},
 		Sessions: nil,
-		Exchange: nil,
+		TestExchange: nil,
 	})
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/health", nil)
@@ -70,7 +70,7 @@ func TestHealthAPI_exchangeUnreachable(t *testing.T) {
 		Logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Auth:     &DashboardAuthFile{Version: "1"},
 		Sessions: nil,
-		Exchange: healthExchange{err: errHealthTest},
+		TestExchange: healthExchange{err: errHealthTest},
 	})
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/health", nil)
@@ -98,7 +98,7 @@ func TestHealthAPI_exchangeReachable(t *testing.T) {
 		Logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Auth:     &DashboardAuthFile{Version: "1"},
 		Sessions: nil,
-		Exchange: healthExchange{t: 123},
+		TestExchange: healthExchange{t: 123},
 	})
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/health", nil)
@@ -131,7 +131,7 @@ func TestHealthAPI_requiresAuthForOverview(t *testing.T) {
 		Logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Auth:     auth,
 		Sessions: NewSessionStore(db),
-		Exchange: nil,
+		TestExchange: nil,
 	})
 	rec := httptest.NewRecorder()
 	srv.Handler().ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/v1/overview", nil))

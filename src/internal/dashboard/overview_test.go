@@ -51,7 +51,7 @@ func TestOverviewJSONShape(t *testing.T) {
 		Logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Auth:     auth,
 		Sessions: NewSessionStore(db),
-		Exchange: stubExchange{},
+		TestExchange: stubExchange{},
 	})
 	h := srv.Handler()
 

@@ -115,7 +115,7 @@ export default function Overview() {
             <p className="text-xs text-slate-500">Equity {data.account.equity}</p>
             {data.account.exchange_degraded ? (
               <p className="mt-2 text-xs text-amber-300/90">
-                Exchange data partially degraded — verify fills in Deribit UI.
+                Exchange data partially degraded — verify fills in your venue UI.
               </p>
             ) : null}
           </section>

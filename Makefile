@@ -76,7 +76,9 @@ web-dev:
 	cd "$(WEB_DIR)" && npm run dev
 
 run-dashboard: ensure-dashboard-embed-dir
-	cd "$(SRC_DIR)" && go run ./cmd/optitrade dashboard -listen=$(DASHBOARD_LISTEN) \
+	cd "$(SRC_DIR)" && \
+	OPTITRADE_SETTINGS_SECRET="$${OPTITRADE_SETTINGS_SECRET:-abcdefghijklmnopqrstuvwxyz123456}" \
+	go run ./cmd/optitrade dashboard -listen=$(DASHBOARD_LISTEN) \
 		$(if $(DASHBOARD_AUTH_PATH),-auth=$(DASHBOARD_AUTH_PATH)) \
 		$(if $(DASHBOARD_SESSION_PATH),-session-db=$(DASHBOARD_SESSION_PATH))
 

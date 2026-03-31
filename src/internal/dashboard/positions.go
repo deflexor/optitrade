@@ -40,7 +40,13 @@ func (s *Server) handleOpenPositions(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	if s.xchg == nil {
+	xchg, err := s.exchangeForRequest(r.Context())
+	if err != nil {
+		logHandlerError(s.log, "open_positions", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not resolve exchange")
+		return
+	}
+	if xchg == nil {
 		writeAPIError(w, http.StatusServiceUnavailable, "exchange_unavailable", "exchange not configured")
 		return
 	}
@@ -60,7 +66,7 @@ func (s *Server) handleOpenPositions(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := rpcTimeout(r.Context())
 	defer cancel()
 
-	rows, err := s.xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
+	rows, err := xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
 	if err != nil {
 		logHandlerError(s.log, "get_positions", err)
 		writeAPIError(w, http.StatusBadGateway, "exchange_error", "could not load positions")
@@ -125,7 +131,13 @@ func (s *Server) handleClosedPositions(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	if s.xchg == nil {
+	xchg, err := s.exchangeForRequest(r.Context())
+	if err != nil {
+		logHandlerError(s.log, "closed_positions", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not resolve exchange")
+		return
+	}
+	if xchg == nil {
 		writeAPIError(w, http.StatusServiceUnavailable, "exchange_unavailable", "exchange not configured")
 		return
 	}
@@ -143,8 +155,8 @@ func (s *Server) handleClosedPositions(w http.ResponseWriter, r *http.Request) {
 		tr deribit.UserTrade
 	}
 	var all []row
-	for _, ccy := range dashboardCurrencies() {
-		trades, err := s.xchg.GetUserTrades(ctx, deribit.GetUserTradesParams{
+	for _, ccy := range s.dashboardCurrenciesFor(r.Context()) {
+		trades, err := xchg.GetUserTrades(ctx, deribit.GetUserTradesParams{
 			Currency:       ccy,
 			StartTimestamp: &startMs,
 			EndTimestamp:   &endMs,
@@ -202,7 +214,13 @@ func (s *Server) handlePositionDetail(w http.ResponseWriter, r *http.Request) {
 		writeAPIError(w, http.StatusBadRequest, "invalid_id", "missing id")
 		return
 	}
-	if s.xchg == nil {
+	xchg, err := s.exchangeForRequest(r.Context())
+	if err != nil {
+		logHandlerError(s.log, "position_detail", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not resolve exchange")
+		return
+	}
+	if xchg == nil {
 		writeAPIError(w, http.StatusServiceUnavailable, "exchange_unavailable", "exchange not configured")
 		return
 	}
@@ -213,7 +231,7 @@ func (s *Server) handlePositionDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := rpcTimeout(r.Context())
 	defer cancel()
-	rows, err := s.xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
+	rows, err := xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
 	if err != nil {
 		writeAPIError(w, http.StatusBadGateway, "exchange_error", "could not load positions")
 		return

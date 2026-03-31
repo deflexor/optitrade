@@ -38,7 +38,7 @@ func TestAuthLoginLogoutMe(t *testing.T) {
 		Logger:   log,
 		Auth:     auth,
 		Sessions: NewSessionStore(db),
-		Exchange: nil,
+		TestExchange: nil,
 	})
 	h := srv.Handler()
 

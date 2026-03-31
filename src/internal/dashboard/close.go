@@ -18,8 +18,18 @@ func (s *Server) handleClosePreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := r.PathValue("id")
-	if id == "" || s.xchg == nil {
-		writeAPIError(w, http.StatusBadRequest, "invalid_request", "missing position or exchange")
+	if id == "" {
+		writeAPIError(w, http.StatusBadRequest, "invalid_request", "missing position")
+		return
+	}
+	xchg, err := s.exchangeForRequest(r.Context())
+	if err != nil {
+		logHandlerError(s.log, "close_preview", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not resolve exchange")
+		return
+	}
+	if xchg == nil {
+		writeAPIError(w, http.StatusBadRequest, "invalid_request", "exchange not configured")
 		return
 	}
 	inst, dir, ok := parsePositionRowID(id)
@@ -29,7 +39,7 @@ func (s *Server) handleClosePreview(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := rpcTimeout(r.Context())
 	defer cancel()
-	rows, err := s.xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
+	rows, err := xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
 	if err != nil {
 		writeAPIError(w, http.StatusBadGateway, "exchange_error", "could not load positions")
 		return
@@ -92,7 +102,13 @@ func (s *Server) handleCloseConfirm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s.xchg == nil {
+	xchg, err := s.exchangeForRequest(r.Context())
+	if err != nil {
+		logHandlerError(s.log, "close_confirm", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not resolve exchange")
+		return
+	}
+	if xchg == nil {
 		writeAPIError(w, http.StatusServiceUnavailable, "exchange_unavailable", "exchange not configured")
 		return
 	}
@@ -103,7 +119,7 @@ func (s *Server) handleCloseConfirm(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := rpcTimeout(r.Context())
 	defer cancel()
-	rows, err := s.xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
+	rows, err := xchg.GetPositions(ctx, &deribit.GetPositionsParams{})
 	if err != nil {
 		writeAPIError(w, http.StatusBadGateway, "exchange_error", "could not load positions")
 		return
@@ -138,8 +154,8 @@ func (s *Server) handleCloseConfirm(w http.ResponseWriter, r *http.Request) {
 		Type:           &typ,
 		ReduceOnly:     &ro,
 	}
-	ow, ok := s.xchg.(exchangeWriter)
-	if !ok {
+	ow, hasW := xchg.(exchangeWriter)
+	if !hasW {
 		writeAPIError(w, http.StatusInternalServerError, "server_error", "close execution unavailable")
 		return
 	}

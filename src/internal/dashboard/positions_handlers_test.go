@@ -29,7 +29,7 @@ func TestPositionsHandlersNilExchange(t *testing.T) {
 		Logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Auth:     auth,
 		Sessions: NewSessionStore(db),
-		Exchange: nil,
+		TestExchange: nil,
 	})
 	h := srv.Handler()
 

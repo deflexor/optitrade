@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Overview from './pages/Overview'
 import PositionDetail from './pages/PositionDetail'
 import PositionsPage from './pages/PositionsPage'
+import SettingsPage from './pages/SettingsPage'
 import { useAuthStore } from './stores/authStore'
 
 function Shell() {
@@ -20,6 +21,12 @@ function Shell() {
           </h1>
           {username ? (
             <div className="flex items-center gap-3 text-sm text-slate-400">
+              <Link
+                to="/settings"
+                className="rounded-md border border-slate-700 px-3 py-1.5 text-slate-200 hover:bg-slate-800"
+              >
+                Settings
+              </Link>
               <span className="hidden sm:inline">{username}</span>
               <button
                 type="button"
@@ -57,6 +64,7 @@ export default function App() {
             <Route path="/" element={<Overview />} />
             <Route path="/positions" element={<PositionsPage />} />
             <Route path="/positions/:id" element={<PositionDetail />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
       </Routes>

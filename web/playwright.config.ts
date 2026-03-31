@@ -19,7 +19,7 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     {
-      command: `bash -lc 'rm -f /tmp/optitrade-e2e.sqlite && env -u DERIBIT_CLIENT_ID -u DERIBIT_CLIENT_SECRET OPTITRADE_DASHBOARD_SESSION_PATH=/tmp/optitrade-e2e.sqlite go run -C "${srcDir}" ./cmd/optitrade dashboard -listen=127.0.0.1:8080'`,
+      command: `bash -lc 'rm -f /tmp/optitrade-e2e.sqlite && env -u DERIBIT_CLIENT_ID -u DERIBIT_CLIENT_SECRET OPTITRADE_SETTINGS_SECRET="${process.env.OPTITRADE_SETTINGS_SECRET ?? 'abcdefghijklmnopqrstuvwxyz123456'}" OPTITRADE_DASHBOARD_SESSION_PATH=/tmp/optitrade-e2e.sqlite go run -C "${srcDir}" ./cmd/optitrade dashboard -listen=127.0.0.1:8080'`,
       url: 'http://127.0.0.1:8080/healthz',
       timeout: 180_000,
       reuseExistingServer: !process.env.CI,

@@ -84,6 +84,22 @@ make run-dashboard \
 
 The Go CLI also accepts **`dashboard -auth=...`** and **`dashboard -session-db=...`**. Changing the allowlist on disk is picked up on **`SIGHUP`** without restarting.
 
+### 2c. Operator settings (venue API keys in SQLite)
+
+The dashboard **does not read `DERIBIT_*` (or OKX keys) from the environment**. Each operator saves **Deribit** or **OKX** credentials under **Settings** in the UI; values are encrypted in the same SQLite file as sessions (`OPTITRADE_DASHBOARD_SESSION_PATH`).
+
+You must provide a **32-byte server secret** so the process can encrypt those credentials at rest (this is not a venue API key):
+
+```bash
+# Easiest for local dev: exactly 32 ASCII characters (make run-dashboard sets a dev default if unset)
+export OPTITRADE_SETTINGS_SECRET='abcdefghijklmnopqrstuvwxyz123456'
+
+# Production: prefer a random 32-byte value encoded as base64 or 64 hex chars, or a file:
+# export OPTITRADE_SETTINGS_KEY_FILE=/run/secrets/settings-aes-key
+```
+
+OKX **demo trading** uses official demo API keys and sends `x-simulated-trading: 1` on REST (`https://www.okx.com`).
+
 ### 3. Build the SPA into the Go embed directory
 
 The directory `src/internal/dashboard/dist/` is **gitignored**. It is filled either by a tiny **stub file** from `make ensure-dashboard-embed-dir` (so `go build` works) or by a real production bundle from the step below.
