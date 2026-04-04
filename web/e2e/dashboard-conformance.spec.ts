@@ -14,21 +14,14 @@ test.describe('dashboard specification smoke', () => {
     await expect(page.getByRole('heading', { name: 'Strategy' })).toBeVisible()
   })
 
-  test('navigation: overview to positions and back', async ({ page }) => {
+  test('navigation: overview to opportunities and back', async ({ page }) => {
     await signInAsDevOperator(page)
     await page.goto('/')
-    await page.getByRole('link', { name: 'Open positions →' }).click()
-    await expect(page).toHaveURL(/\/positions/)
-    await expect(page.getByRole('heading', { name: 'Positions' })).toBeVisible()
-    await page.getByRole('link', { name: '← Overview' }).click()
+    await page.getByRole('link', { name: 'Opportunities →' }).click()
+    await expect(page).toHaveURL(/\/opportunities/)
+    await expect(page.getByRole('heading', { name: 'Opportunities' })).toBeVisible()
+    await page.getByRole('link', { name: 'Optitrade Dashboard' }).click()
     await expect(page).toHaveURL(/\/$/)
     await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible()
-  })
-
-  test('positions page lists open and closed sections', async ({ page }) => {
-    await signInAsDevOperator(page)
-    await page.goto('/positions')
-    await expect(page.getByRole('heading', { name: 'Open' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Closed (30d)' })).toBeVisible()
   })
 })

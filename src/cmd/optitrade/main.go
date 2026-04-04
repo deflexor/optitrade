@@ -79,7 +79,7 @@ Shortcut:
 Env:
   DERIBIT_CLIENT_ID, DERIBIT_CLIENT_SECRET   API keys (testnet keys for testnet URL)
   DERIBIT_BASE_URL                           Default %s
-  OPTITRADE_POLICY_PATH                      Policy JSON for smoke-order gate
+  OPTITRADE_POLICY_PATH                      Policy JSON (smoke-order + dashboard runner / opportunities)
   OPTITRADE_DASHBOARD_LISTEN                 Dashboard listen addr (e.g. 127.0.0.1:8080)
   OPTITRADE_DASHBOARD_AUTH_PATH              Dashboard allowlist JSON (username + password_hash)
   OPTITRADE_DASHBOARD_SESSION_PATH           SQLite file for dashboard sessions
@@ -202,6 +202,11 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 	}
 	oppStore := dashboard.NewOpportunityStore(db)
 	runnerMgr := dashboard.NewRunnerManager(log, settingsStore, crypto, policy, oppStore)
+	runnerSupervisorCtx, runnerSupervisorCancel := context.WithCancel(context.Background())
+	defer runnerMgr.Stop()
+	defer runnerSupervisorCancel()
+	go runnerMgr.Start(runnerSupervisorCtx)
+
 	h := dashboard.NewServer(dashboard.Options{
 		Logger:         log,
 		Auth:           auth,
@@ -214,11 +219,6 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 			return runnerMgr.Snapshot(u)
 		},
 	})
-	go func() {
-		rctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		runnerMgr.Reconcile(rctx)
-	}()
 
 	if p := strings.TrimSpace(authPath); p != "" {
 		hup := make(chan os.Signal, 1)

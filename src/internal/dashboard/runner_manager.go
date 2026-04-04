@@ -165,3 +165,39 @@ func (rm *RunnerManager) runLoop(ctx context.Context, user string) {
 		}
 	}
 }
+
+// Start runs until ctx is cancelled: an initial Reconcile, then periodic Reconcile every minute,
+// then Stop. Call from a goroutine (e.g. go rm.Start(ctx)).
+func (rm *RunnerManager) Start(ctx context.Context) {
+	if rm == nil {
+		return
+	}
+	rm.Reconcile(context.Background())
+	tick := time.NewTicker(60 * time.Second)
+	defer tick.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			rm.Stop()
+			return
+		case <-tick.C:
+			rm.Reconcile(context.Background())
+		}
+	}
+}
+
+// Stop cancels every per-user runner goroutine and clears snapshots for stopped users.
+func (rm *RunnerManager) Stop() {
+	if rm == nil {
+		return
+	}
+	rm.mu.Lock()
+	users := make([]string, 0, len(rm.runners))
+	for u := range rm.runners {
+		users = append(users, u)
+	}
+	rm.mu.Unlock()
+	for _, u := range users {
+		rm.stopUser(u)
+	}
+}

@@ -95,10 +95,10 @@ export default function Overview() {
           Rebalance…
         </Button>
         <Link
-          to="/positions"
+          to="/opportunities"
           className="text-sm text-primary underline-offset-4 hover:underline"
         >
-          Open positions →
+          Opportunities →
         </Link>
       </div>
       {err ? (

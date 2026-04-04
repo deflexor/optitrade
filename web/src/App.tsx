@@ -2,11 +2,11 @@ import { useEffect, type ReactNode } from 'react'
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import { LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import BotModeBar from './components/BotModeBar'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Overview from './pages/Overview'
-import PositionDetail from './pages/PositionDetail'
-import PositionsPage from './pages/PositionsPage'
+import OpportunitiesPage from './pages/OpportunitiesPage'
 import SettingsPage from './pages/SettingsPage'
 import { useAuthStore } from './stores/authStore'
 
@@ -26,7 +26,11 @@ function Shell() {
             </Link>
           </h1>
           {username ? (
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <BotModeBar />
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/opportunities">Opportunities</Link>
+              </Button>
               <Button variant="outline" size="sm" asChild>
                 <Link to="/settings">Settings</Link>
               </Button>
@@ -66,8 +70,7 @@ export default function App() {
         <Route element={<Shell />}>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Overview />} />
-            <Route path="/positions" element={<PositionsPage />} />
-            <Route path="/positions/:id" element={<PositionDetail />} />
+            <Route path="/opportunities" element={<OpportunitiesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
