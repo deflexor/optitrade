@@ -24,8 +24,8 @@ func TestOpenAppliesMigrationsEmptyDB(t *testing.T) {
 	if err := db.QueryRow(`SELECT COUNT(1) FROM schema_migrations`).Scan(&n); err != nil {
 		t.Fatal(err)
 	}
-	if n != 6 {
-		t.Fatalf("migrations recorded: got %d want 6", n)
+	if n != 7 {
+		t.Fatalf("migrations recorded: got %d want 7", n)
 	}
 
 	if err := db.QueryRow(`SELECT COUNT(1) FROM order_record`).Scan(&n); err != nil {
@@ -53,8 +53,8 @@ func TestMigrationsIdempotent(t *testing.T) {
 	if err := db2.QueryRow(`SELECT COUNT(1) FROM schema_migrations`).Scan(&versions); err != nil {
 		t.Fatal(err)
 	}
-	if versions != 6 {
-		t.Fatalf("want 6 migration rows, got %d", versions)
+	if versions != 7 {
+		t.Fatalf("want 7 migration rows, got %d", versions)
 	}
 }
 
