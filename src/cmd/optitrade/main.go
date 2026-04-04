@@ -14,8 +14,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dfr/optitrade/src/internal/config"
 	"github.com/dfr/optitrade/src/internal/dashboard"
 	"github.com/dfr/optitrade/src/internal/deribit"
+	"github.com/dfr/optitrade/src/internal/opportunities"
 	"github.com/dfr/optitrade/src/internal/observe"
 	"github.com/dfr/optitrade/src/internal/state/sqlite"
 )
@@ -188,7 +190,17 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 		return fmt.Errorf("dashboard: %w", err)
 	}
 	settingsStore := dashboard.NewOperatorSettingsStore(db)
-	runnerMgr := dashboard.NewRunnerManager(log, settingsStore, crypto)
+	var policy *config.Policy
+	if p := config.PolicyPathFromEnv(); p != "" {
+		var lerr error
+		policy, lerr = config.LoadFile(p)
+		if lerr != nil {
+			return fmt.Errorf("dashboard policy: %w", lerr)
+		}
+	} else {
+		log.Warn("OPTITRADE_POLICY_PATH unset; trading runner will not publish opportunity candidates")
+	}
+	runnerMgr := dashboard.NewRunnerManager(log, settingsStore, crypto, policy)
 	h := dashboard.NewServer(dashboard.Options{
 		Logger:         log,
 		Auth:           auth,
@@ -197,6 +209,9 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 		Settings:       settingsStore,
 		RunnerManager:  runnerMgr,
 		Opportunities:  dashboard.NewOpportunityStore(db),
+		OpportunitySnapshot: func(u string) opportunities.Snapshot {
+			return runnerMgr.Snapshot(u)
+		},
 	})
 	go func() {
 		rctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

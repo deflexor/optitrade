@@ -33,3 +33,24 @@ func TestPublicClient_OrderBookToDeribitShape(t *testing.T) {
 		t.Fatalf("amounts %+v %+v", book.Bids[0], book.Asks[0])
 	}
 }
+
+func TestPublicClient_GetIndexPrice(t *testing.T) {
+	const raw = `{"code":"0","data":[{"instId":"BTC-USD","idxPx":"98234.5"}]}`
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v5/market/index-tickers" {
+			t.Fatalf("path %s", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(raw))
+	}))
+	defer srv.Close()
+
+	pc := &PublicClient{BaseURL: srv.URL, HTTP: srv.Client()}
+	px, err := pc.GetIndexPrice(context.Background(), "BTC-USD")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if px != 98234.5 {
+		t.Fatalf("px %v", px)
+	}
+}

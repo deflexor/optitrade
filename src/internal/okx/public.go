@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -190,6 +191,63 @@ func (c *PublicClient) GetInstruments(ctx context.Context, instType, uly string)
 		return nil, fmt.Errorf("okx public: instruments data: %w", err)
 	}
 	return rows, nil
+}
+
+// GetIndexPrice calls GET /api/v5/market/index-tickers?instId=... and returns idxPx.
+func (c *PublicClient) GetIndexPrice(ctx context.Context, instId string) (float64, error) {
+	instId = strings.TrimSpace(instId)
+	if instId == "" {
+		return 0, fmt.Errorf("okx public: empty index instId")
+	}
+	u, err := url.Parse(c.base() + "/api/v5/market/index-tickers")
+	if err != nil {
+		return 0, fmt.Errorf("okx public: index url: %w", err)
+	}
+	q := u.Query()
+	q.Set("instId", instId)
+	u.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return 0, fmt.Errorf("okx public: index request: %w", err)
+	}
+
+	resp, err := c.httpClient().Do(req)
+	if err != nil {
+		return 0, fmt.Errorf("okx public: index http: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 8<<20))
+	if err != nil {
+		return 0, fmt.Errorf("okx public: index read body: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("okx public: index http %d: %s", resp.StatusCode, truncateBody(body))
+	}
+
+	var env apiEnvelope
+	if err := json.Unmarshal(body, &env); err != nil {
+		return 0, fmt.Errorf("okx public: index json envelope: %w", err)
+	}
+	if env.Code != "0" {
+		return 0, fmt.Errorf("okx public: index api code %q msg %q", env.Code, env.Msg)
+	}
+
+	var rows []struct {
+		IdxPx string `json:"idxPx"`
+	}
+	if err := json.Unmarshal(env.Data, &rows); err != nil {
+		return 0, fmt.Errorf("okx public: index data: %w", err)
+	}
+	if len(rows) == 0 || strings.TrimSpace(rows[0].IdxPx) == "" {
+		return 0, fmt.Errorf("okx public: index empty data")
+	}
+	v, err := strconv.ParseFloat(strings.TrimSpace(rows[0].IdxPx), 64)
+	if err != nil || v <= 0 || math.IsNaN(v) || math.IsInf(v, 0) {
+		return 0, fmt.Errorf("okx public: index bad idxPx %q", rows[0].IdxPx)
+	}
+	return v, nil
 }
 
 func truncateBody(b []byte) string {

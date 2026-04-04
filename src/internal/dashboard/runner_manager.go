@@ -6,6 +6,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/dfr/optitrade/src/internal/config"
+	"github.com/dfr/optitrade/src/internal/opportunities"
 )
 
 // RunnerManager starts and stops per-user trading runner goroutines (spec 2026-04-04).
@@ -13,21 +16,27 @@ type RunnerManager struct {
 	log      *slog.Logger
 	settings *OperatorSettingsStore
 	crypto   *SettingsCrypto
+	policy   *config.Policy
 
-	mu      sync.Mutex
-	runners map[string]context.CancelFunc
+	mu          sync.Mutex
+	runners     map[string]context.CancelFunc
+	snapMu      sync.RWMutex
+	snapshots   map[string]opportunities.Snapshot
 }
 
 // NewRunnerManager builds a manager; log/settings/crypto must be non-nil for Reconcile.
-func NewRunnerManager(log *slog.Logger, settings *OperatorSettingsStore, crypto *SettingsCrypto) *RunnerManager {
+// policy may be nil; the runner will not populate opportunity snapshots until a policy is loaded.
+func NewRunnerManager(log *slog.Logger, settings *OperatorSettingsStore, crypto *SettingsCrypto, policy *config.Policy) *RunnerManager {
 	if log == nil {
 		log = slog.Default()
 	}
 	return &RunnerManager{
-		log:      log,
-		settings: settings,
-		crypto:   crypto,
-		runners:  map[string]context.CancelFunc{},
+		log:       log,
+		settings:  settings,
+		crypto:    crypto,
+		policy:    policy,
+		runners:   map[string]context.CancelFunc{},
+		snapshots: map[string]opportunities.Snapshot{},
 	}
 }
 
@@ -123,6 +132,7 @@ func (rm *RunnerManager) stopUser(username string) {
 		delete(rm.runners, u)
 	}
 	rm.mu.Unlock()
+	rm.clearSnapshot(u)
 	if cancel != nil {
 		cancel()
 	}
@@ -135,6 +145,7 @@ func (rm *RunnerManager) runLoop(ctx context.Context, user string) {
 		}
 	}()
 	rm.log.Info("runner started", "user", user)
+	rm.runTick(ctx, user)
 	tick := time.NewTicker(30 * time.Second)
 	defer tick.Stop()
 	for {
@@ -143,7 +154,7 @@ func (rm *RunnerManager) runLoop(ctx context.Context, user string) {
 			rm.log.Info("runner stopped", "user", user)
 			return
 		case <-tick.C:
-			// Stub tick until runner_tick (Task 13) wires the selector.
+			rm.runTick(ctx, user)
 		}
 	}
 }
