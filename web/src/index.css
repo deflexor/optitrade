@@ -2,6 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+  }
+}
+
+/* Deep terminal — :root and .dark match; html has class="dark" */
+:root {
+  --background: 222 47% 5%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 7%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 7%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 160 84% 39%;
+  --primary-foreground: 144 61% 11%;
+  --secondary: 217 19% 16%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 217 19% 16%;
+  --muted-foreground: 215 16% 57%;
+  --accent: 217 19% 18%;
+  --accent-foreground: 210 40% 96%;
+  --destructive: 0 62% 45%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 19% 18%;
+  --input: 217 19% 18%;
+  --ring: 160 84% 39%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222 47% 5%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 7%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 7%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 160 84% 39%;
+  --primary-foreground: 144 61% 11%;
+  --secondary: 217 19% 16%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 217 19% 16%;
+  --muted-foreground: 215 16% 57%;
+  --accent: 217 19% 18%;
+  --accent-foreground: 210 40% 96%;
+  --destructive: 0 62% 45%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 19% 18%;
+  --input: 217 19% 18%;
+  --ring: 160 84% 39%;
+  --radius: 0.5rem;
 }

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { api } from '../api/client'
 import HealthPanel from '../components/HealthPanel'
 import RebalanceModal from '../components/RebalanceModal'
@@ -29,7 +31,9 @@ type Overview = {
 function PnlSparkline({ points }: { points: { t: string; pnl_quote: string }[] }) {
   if (points.length < 2) {
     return (
-      <p className="text-sm text-slate-500">Not enough P/L points for this window.</p>
+      <p className="text-sm text-muted-foreground">
+        Not enough P/L points for this window.
+      </p>
     )
   }
   const vals = points.map((p) => Number(p.pnl_quote))
@@ -48,7 +52,7 @@ function PnlSparkline({ points }: { points: { t: string; pnl_quote: string }[] }
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className="w-full max-w-xl text-emerald-400/90"
+      className="w-full max-w-xl text-primary"
       preserveAspectRatio="none"
       aria-label="P/L series"
     >
@@ -86,17 +90,13 @@ export default function Overview() {
     <div className="space-y-8">
       <HealthPanel />
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="text-lg font-semibold text-slate-100">Overview</h2>
-        <button
-          type="button"
-          className="rounded-md border border-slate-600 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-800"
-          onClick={() => setRebalance(true)}
-        >
+        <h2 className="text-lg font-semibold text-foreground">Overview</h2>
+        <Button type="button" variant="outline" size="sm" onClick={() => setRebalance(true)}>
           Rebalance…
-        </button>
+        </Button>
         <Link
           to="/positions"
-          className="text-sm text-emerald-400 hover:text-emerald-300"
+          className="text-sm text-primary underline-offset-4 hover:underline"
         >
           Open positions →
         </Link>
@@ -104,56 +104,68 @@ export default function Overview() {
       {err ? (
         <p className="text-amber-200/90">{err}</p>
       ) : !data ? (
-        <p className="text-slate-500">Loading…</p>
+        <p className="text-muted-foreground">Loading…</p>
       ) : (
         <>
-          <section className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-            <h3 className="text-sm font-medium text-slate-400">Balance</h3>
-            <p className="mt-2 font-mono text-2xl text-slate-100">
-              {data.account.balance} {data.account.currency}
-            </p>
-            <p className="text-xs text-slate-500">Equity {data.account.equity}</p>
-            {data.account.exchange_degraded ? (
-              <p className="mt-2 text-xs text-amber-300/90">
-                Exchange data partially degraded — verify fills in your venue UI.
+          <Card>
+            <CardHeader>
+              <h3 className="text-sm font-medium text-muted-foreground">Balance</h3>
+            </CardHeader>
+            <CardContent>
+              <p className="font-mono text-2xl text-card-foreground">
+                {data.account.balance} {data.account.currency}
               </p>
-            ) : null}
-          </section>
-          <section className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-            <h3 className="text-sm font-medium text-slate-400">
-              P/L ({data.pnl_series.window.from} → {data.pnl_series.window.to})
-            </h3>
-            <div className="mt-4">
+              <p className="text-xs text-muted-foreground">Equity {data.account.equity}</p>
+              {data.account.exchange_degraded ? (
+                <p className="mt-2 text-xs text-amber-300/90">
+                  Exchange data partially degraded — verify fills in your venue UI.
+                </p>
+              ) : null}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                P/L ({data.pnl_series.window.from} → {data.pnl_series.window.to})
+              </h3>
+            </CardHeader>
+            <CardContent>
               <PnlSparkline points={data.pnl_series.points} />
-            </div>
-          </section>
-          <section className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-              <h3 className="text-sm font-medium text-slate-400">Market mood</h3>
-              {data.market_mood.available ? (
-                <p className="mt-2 text-slate-200">{data.market_mood.label}</p>
-              ) : (
-                <p className="mt-2 text-sm text-amber-200/80">
-                  {data.market_mood.explanation ?? 'Unavailable'}
-                </p>
-              )}
-            </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-              <h3 className="text-sm font-medium text-slate-400">Strategy</h3>
-              {data.strategy.available ? (
-                <p className="mt-2 text-slate-200">Loaded</p>
-              ) : (
-                <p className="mt-2 text-sm text-amber-200/80">
-                  {data.strategy.message ?? 'Unavailable'}
-                </p>
-              )}
-            </div>
-          </section>
+            </CardContent>
+          </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <h3 className="text-sm font-medium text-muted-foreground">Market mood</h3>
+              </CardHeader>
+              <CardContent>
+                {data.market_mood.available ? (
+                  <p className="text-card-foreground">{data.market_mood.label}</p>
+                ) : (
+                  <p className="text-sm text-amber-200/80">
+                    {data.market_mood.explanation ?? 'Unavailable'}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <h3 className="text-sm font-medium text-muted-foreground">Strategy</h3>
+              </CardHeader>
+              <CardContent>
+                {data.strategy.available ? (
+                  <p className="text-card-foreground">Loaded</p>
+                ) : (
+                  <p className="text-sm text-amber-200/80">
+                    {data.strategy.message ?? 'Unavailable'}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </>
       )}
-      {rebalance ? (
-        <RebalanceModal onClose={() => setRebalance(false)} />
-      ) : null}
+      {rebalance ? <RebalanceModal onClose={() => setRebalance(false)} /> : null}
     </div>
   )
 }

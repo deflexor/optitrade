@@ -1,5 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
+import { LayoutDashboard } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Overview from './pages/Overview'
@@ -11,30 +13,32 @@ import { useAuthStore } from './stores/authStore'
 function Shell() {
   const { username, logout } = useAuthStore()
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-slate-800 bg-slate-900/80 px-6 py-4 backdrop-blur">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border bg-card/80 px-6 py-4 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <h1 className="text-lg font-semibold tracking-tight">
-            <Link to="/" className="hover:text-emerald-300">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-foreground hover:text-primary"
+            >
+              <LayoutDashboard className="size-5 text-primary" aria-hidden />
               Optitrade Dashboard
             </Link>
           </h1>
           {username ? (
-            <div className="flex items-center gap-3 text-sm text-slate-400">
-              <Link
-                to="/settings"
-                className="rounded-md border border-slate-700 px-3 py-1.5 text-slate-200 hover:bg-slate-800"
-              >
-                Settings
-              </Link>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/settings">Settings</Link>
+              </Button>
               <span className="hidden sm:inline">{username}</span>
-              <button
+              <Button
                 type="button"
-                className="rounded-md border border-slate-700 px-3 py-1.5 text-slate-200 hover:bg-slate-800"
+                variant="outline"
+                size="sm"
                 onClick={() => void logout()}
               >
                 Sign out
-              </button>
+              </Button>
             </div>
           ) : null}
         </div>

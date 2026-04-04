@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { api } from '../api/client'
 import { formatHeapBytes, formatUptimeSeconds } from '../lib/formatHealth'
 
@@ -39,52 +40,58 @@ export default function HealthPanel() {
 
   if (err) {
     return (
-      <section className="rounded-lg border border-slate-800 bg-slate-900/50 p-4 text-sm text-amber-200/80">
-        {err}
-      </section>
+      <Card className="border-destructive/50 bg-destructive/10">
+        <CardContent className="pt-6 text-sm text-destructive">{err}</CardContent>
+      </Card>
     )
   }
   if (!data) {
     return (
-      <section className="rounded-lg border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-500">
-        Loading health…
-      </section>
+      <Card>
+        <CardContent className="pt-6 text-sm text-muted-foreground">
+          Loading health…
+        </CardContent>
+      </Card>
     )
   }
 
   const live = data.trading.mode === 'live'
-  const modeStyles = live
-    ? 'border-rose-500/50 bg-rose-950/40 text-rose-100'
-    : 'border-emerald-500/50 bg-emerald-950/40 text-emerald-100'
+  const modeCardClass = live
+    ? 'border-destructive/50 bg-destructive/15 text-destructive-foreground'
+    : 'border-primary/50 bg-primary/10 text-primary'
 
   return (
-    <section className="grid gap-3 md:grid-cols-2">
-      <div
-        className={`rounded-lg border px-4 py-3 ${modeStyles}`}
-        aria-label="Trading mode"
-      >
-        <p className="text-xs font-medium uppercase tracking-wide opacity-80">
-          Mode
-        </p>
-        <p className="text-lg font-semibold capitalize">
-          {data.trading.mode}
-        </p>
-        <p className="mt-1 text-xs opacity-90">
-          Exchange:{' '}
-          {data.trading.exchange_reachable ? 'reachable' : 'unreachable'}
-          {data.trading.detail ? ` · ${data.trading.detail}` : ''}
-        </p>
-      </div>
-      <div className="rounded-lg border border-slate-800 bg-slate-900/50 px-4 py-3 text-slate-200">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-          Process
-        </p>
-        <p className="mt-1 font-mono text-sm" data-testid="health-process-metrics">
-          Uptime {formatUptimeSeconds(data.health.uptime_seconds)} · heap{' '}
-          {formatHeapBytes(data.health.memory_heap_alloc_bytes)}
-        </p>
-        <p className="mt-1 text-xs text-slate-500">{data.health.collected_at}</p>
-      </div>
-    </section>
+    <div className="grid gap-3 md:grid-cols-2">
+      <Card className={modeCardClass} aria-label="Trading mode">
+        <CardHeader className="pb-2">
+          <p className="text-xs font-medium uppercase tracking-wide opacity-80">Mode</p>
+        </CardHeader>
+        <CardContent>
+          <p className="text-lg font-semibold capitalize">{data.trading.mode}</p>
+          <p className="mt-1 text-xs opacity-90">
+            Exchange:{' '}
+            {data.trading.exchange_reachable ? 'reachable' : 'unreachable'}
+            {data.trading.detail ? ` · ${data.trading.detail}` : ''}
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Process
+          </p>
+        </CardHeader>
+        <CardContent>
+          <p
+            className="mt-1 font-mono text-sm text-card-foreground"
+            data-testid="health-process-metrics"
+          >
+            Uptime {formatUptimeSeconds(data.health.uptime_seconds)} · heap{' '}
+            {formatHeapBytes(data.health.memory_heap_alloc_bytes)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{data.health.collected_at}</p>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

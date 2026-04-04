@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { api } from '../api/client'
 import { parseApiError } from '../api/parseApiError'
 import CloseModal from '../components/CloseModal'
@@ -101,143 +111,163 @@ export default function PositionsPage() {
     }
   }, [])
 
-  const open =
-    openState.status === 'ok' ? openState.data : null
-  const closed =
-    closedState.status === 'ok' ? closedState.data : null
+  const open = openState.status === 'ok' ? openState.data : null
+  const closed = closedState.status === 'ok' ? closedState.data : null
 
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4">
-        <h2 className="text-lg font-semibold text-slate-100">Positions</h2>
-        <Link to="/" className="text-sm text-emerald-400 hover:text-emerald-300">
+        <h2 className="text-lg font-semibold text-foreground">Positions</h2>
+        <Link
+          to="/"
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
           ← Overview
         </Link>
       </div>
 
       <section>
-        <h3 className="text-sm font-medium text-slate-400">Open</h3>
-        {openState.status === 'loading' ? (
-          <p className="text-slate-500">Loading…</p>
-        ) : openState.status === 'error' ? (
-          <p className="mt-2 text-amber-200/90">{openState.message}</p>
-        ) : openState.data.items.length === 0 ? (
-          <p className="text-sm text-slate-500">No open positions.</p>
-        ) : (
-          <div className="mt-2 overflow-x-auto rounded-lg border border-slate-800">
-            <table className="min-w-full text-left text-sm text-slate-200">
-              <thead className="border-b border-slate-800 bg-slate-900/80 text-xs uppercase text-slate-500">
-                <tr>
-                  <th className="px-3 py-2">Instrument</th>
-                  <th className="px-3 py-2">Dir</th>
-                  <th className="px-3 py-2">Size</th>
-                  <th className="px-3 py-2">U.PnL</th>
-                  <th className="px-3 py-2" />
-                </tr>
-              </thead>
-              <tbody>
-                {openState.data.items.map((r) => (
-                  <tr key={r.id} className="border-b border-slate-800/80">
-                    <td className="px-3 py-2 font-mono text-xs">{r.instrument_summary}</td>
-                    <td className="px-3 py-2">{r.direction ?? '—'}</td>
-                    <td className="px-3 py-2">{r.size ?? '—'}</td>
-                    <td className="px-3 py-2 font-mono">{r.quote_pnl ?? '—'}</td>
-                    <td className="space-x-2 px-3 py-2 text-right">
-                      <Link
-                        to={`/positions/${encodeURIComponent(r.id)}`}
-                        className="text-emerald-400 hover:text-emerald-300"
-                      >
-                        Detail
-                      </Link>
-                      <button
-                        type="button"
-                        className="text-rose-300 hover:text-rose-200"
-                        onClick={() => {
-                          setCloseId(r.id)
-                          setCloseLabel(r.instrument_summary)
-                        }}
-                      >
-                        Start close
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        {open && open.next_cursor ? (
-          <div className="mt-2 flex gap-2">
-            <button
-              type="button"
-              className="rounded border border-slate-700 px-3 py-1 text-sm text-slate-300 hover:bg-slate-800"
-              onClick={() => {
-                setCursor(open.next_cursor)
-                void loadPage(open.next_cursor)
-              }}
-            >
-              Next page
-            </button>
-            {cursor ? (
-              <button
+        <Card>
+        <CardHeader>
+          <h3 className="text-sm font-medium text-muted-foreground">Open</h3>
+        </CardHeader>
+        <CardContent>
+          {openState.status === 'loading' ? (
+            <p className="text-muted-foreground">Loading…</p>
+          ) : openState.status === 'error' ? (
+            <p className="text-amber-200/90">{openState.message}</p>
+          ) : openState.data.items.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No open positions.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-md border border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="text-xs uppercase text-muted-foreground">
+                      Instrument
+                    </TableHead>
+                    <TableHead className="text-xs uppercase text-muted-foreground">Dir</TableHead>
+                    <TableHead className="text-xs uppercase text-muted-foreground">Size</TableHead>
+                    <TableHead className="text-xs uppercase text-muted-foreground">U.PnL</TableHead>
+                    <TableHead className="text-right text-xs uppercase text-muted-foreground" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {openState.data.items.map((r) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-mono text-xs">{r.instrument_summary}</TableCell>
+                      <TableCell>{r.direction ?? '—'}</TableCell>
+                      <TableCell>{r.size ?? '—'}</TableCell>
+                      <TableCell className="font-mono">{r.quote_pnl ?? '—'}</TableCell>
+                      <TableCell className="space-x-2 text-right">
+                        <Button variant="link" className="h-auto p-0 text-primary" asChild>
+                          <Link to={`/positions/${encodeURIComponent(r.id)}`}>Detail</Link>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="h-auto p-0 text-destructive"
+                          onClick={() => {
+                            setCloseId(r.id)
+                            setCloseLabel(r.instrument_summary)
+                          }}
+                        >
+                          Start close
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+          {open && open.next_cursor ? (
+            <div className="mt-2 flex gap-2">
+              <Button
                 type="button"
-                className="rounded border border-slate-700 px-3 py-1 text-sm text-slate-300 hover:bg-slate-800"
+                variant="outline"
+                size="sm"
                 onClick={() => {
-                  setCursor('')
-                  void loadPage('')
+                  setCursor(open.next_cursor)
+                  void loadPage(open.next_cursor)
                 }}
               >
-                First page
-              </button>
-            ) : null}
-          </div>
-        ) : null}
-        {open ? (
-          <p className="mt-1 text-xs text-slate-500">
-            Showing {open.items.length} of {open.total_count} open (25/page).
-          </p>
-        ) : null}
+                Next page
+              </Button>
+              {cursor ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setCursor('')
+                    void loadPage('')
+                  }}
+                >
+                  First page
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+          {open ? (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Showing {open.items.length} of {open.total_count} open (25/page).
+            </p>
+          ) : null}
+        </CardContent>
+        </Card>
       </section>
 
       <section>
-        <h3 className="text-sm font-medium text-slate-400">
-          Closed (30d){' '}
-          {closed?.truncated ? (
-            <span className="text-amber-200/80">— capped at 200</span>
-          ) : null}
-        </h3>
-        {closedState.status === 'loading' ? (
-          <p className="text-slate-500">Loading…</p>
-        ) : closedState.status === 'error' ? (
-          <p className="mt-2 text-amber-200/90">{closedState.message}</p>
-        ) : closedState.data.items.length === 0 ? (
-          <p className="text-sm text-slate-500">No closed rows in window.</p>
-        ) : (
-          <div className="mt-2 overflow-x-auto rounded-lg border border-slate-800">
-            <table className="min-w-full text-left text-sm text-slate-200">
-              <thead className="border-b border-slate-800 bg-slate-900/80 text-xs uppercase text-slate-500">
-                <tr>
-                  <th className="px-3 py-2">Instrument</th>
-                  <th className="px-3 py-2">Closed</th>
-                  <th className="px-3 py-2">Realized</th>
-                  <th className="px-3 py-2">% basis</th>
-                </tr>
-              </thead>
-              <tbody>
-                {closedState.data.items.map((r) => (
-                  <tr key={r.id} className="border-b border-slate-800/80">
-                    <td className="px-3 py-2 font-mono text-xs">{r.instrument_summary}</td>
-                    <td className="px-3 py-2 text-xs text-slate-400">{r.closed_at}</td>
-                    <td className="px-3 py-2 font-mono">{r.realized_pnl_usd}</td>
-                    <td className="px-3 py-2 text-xs text-slate-400" title={r.percent_basis_label}>
-                      {r.percent_basis_label}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <Card>
+        <CardHeader>
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Closed (30d){' '}
+            {closed?.truncated ? (
+              <span className="text-amber-200/80">— capped at 200</span>
+            ) : null}
+          </h3>
+        </CardHeader>
+        <CardContent>
+          {closedState.status === 'loading' ? (
+            <p className="text-muted-foreground">Loading…</p>
+          ) : closedState.status === 'error' ? (
+            <p className="text-amber-200/90">{closedState.message}</p>
+          ) : closedState.data.items.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No closed rows in window.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-md border border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="text-xs uppercase text-muted-foreground">
+                      Instrument
+                    </TableHead>
+                    <TableHead className="text-xs uppercase text-muted-foreground">Closed</TableHead>
+                    <TableHead className="text-xs uppercase text-muted-foreground">Realized</TableHead>
+                    <TableHead className="text-xs uppercase text-muted-foreground">% basis</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {closedState.data.items.map((r) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-mono text-xs">{r.instrument_summary}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{r.closed_at}</TableCell>
+                      <TableCell className="font-mono">{r.realized_pnl_usd}</TableCell>
+                      <TableCell
+                        className="text-xs text-muted-foreground"
+                        title={r.percent_basis_label}
+                      >
+                        {r.percent_basis_label}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+        </Card>
       </section>
 
       {closeId ? (

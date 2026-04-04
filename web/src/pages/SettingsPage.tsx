@@ -1,6 +1,19 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
-import { api } from '../api/client'
 import { Link } from 'react-router-dom'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
+import { api } from '../api/client'
 
 type FieldDef = {
   id: string
@@ -115,10 +128,13 @@ export default function SettingsPage() {
   if (!form || !payload) {
     return (
       <div className="space-y-4">
-        <Link to="/" className="text-sm text-emerald-400 hover:text-emerald-300">
+        <Link
+          to="/"
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
           ← Overview
         </Link>
-        <p className="text-slate-500">{err ?? 'Loading…'}</p>
+        <p className="text-muted-foreground">{err ?? 'Loading…'}</p>
       </div>
     )
   }
@@ -128,72 +144,87 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
-        <Link to="/" className="text-sm text-emerald-400 hover:text-emerald-300">
+        <h2 className="text-lg font-semibold text-foreground">Settings</h2>
+        <Link
+          to="/"
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
           ← Overview
         </Link>
       </div>
 
       {payload.warnings.length > 0 ? (
-        <div
-          className="space-y-2 rounded-lg border border-amber-500/40 bg-amber-950/30 p-4 text-sm text-amber-100"
-          role="alert"
+        <Alert
+          variant="default"
+          className="border-amber-500/40 bg-amber-950/30 text-amber-100"
         >
-          {payload.warnings.map((w) => (
-            <p key={w}>{w}</p>
-          ))}
-        </div>
+          <AlertDescription className="space-y-2 text-amber-100">
+            {payload.warnings.map((w) => (
+              <p key={w}>{w}</p>
+            ))}
+          </AlertDescription>
+        </Alert>
       ) : null}
 
       {err ? (
-        <p className="text-sm text-rose-300" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {err}
         </p>
       ) : null}
 
       <form onSubmit={(e) => void onSubmit(e)} className="max-w-xl space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-300">Exchange</label>
-          <select
-            className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"
+        <div className="space-y-2">
+          <Label>Exchange</Label>
+          <Select
             value={prov}
-            onChange={(e) => setForm({ ...form, provider: e.target.value })}
+            onValueChange={(value) => setForm({ ...form, provider: value })}
           >
-            <option value="deribit">Deribit</option>
-            <option value="okx">OKX</option>
-          </select>
-          <p className="mt-1 text-xs text-slate-500">Venue for this operator account.</p>
+            <SelectTrigger>
+              <SelectValue placeholder="Exchange" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="deribit">Deribit</SelectItem>
+              <SelectItem value="okx">OKX</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">Venue for this operator account.</p>
         </div>
 
+        <Separator />
+
         {prov === 'deribit' ? (
-          <div className="space-y-4 rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-            <label className="flex items-center gap-2 text-sm text-slate-200">
-              <input
-                type="checkbox"
+          <div className="space-y-4 rounded-lg border border-border bg-card/40 p-4">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="deribit-mainnet"
                 checked={form.deribit_use_mainnet}
-                onChange={(e) =>
-                  setForm({ ...form, deribit_use_mainnet: e.target.checked })
+                onCheckedChange={(checked) =>
+                  setForm({ ...form, deribit_use_mainnet: checked })
                 }
               />
-              Use Deribit mainnet (off = testnet)
-            </label>
-            <div>
-              <label className="block text-sm text-slate-400">Client ID</label>
-              <input
+              <Label htmlFor="deribit-mainnet" className="text-sm font-normal">
+                Use Deribit mainnet (off = testnet)
+              </Label>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="deribit-client-id">Client ID</Label>
+              <Input
+                id="deribit-client-id"
                 type="password"
                 autoComplete="off"
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm text-slate-100"
+                className="font-mono text-sm"
                 value={form.deribit_client_id}
                 placeholder="Leave blank to keep saved value"
                 onChange={(e) => setForm({ ...form, deribit_client_id: e.target.value })}
               />
             </div>
-            <div>
-              <label className="block text-sm text-slate-400">Client secret</label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="deribit-client-secret">Client secret</Label>
+              <Input
+                id="deribit-client-secret"
                 type="password"
                 autoComplete="off"
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm text-slate-100"
+                className="font-mono text-sm"
                 value={form.deribit_client_secret}
                 placeholder="Leave blank to keep saved value"
                 onChange={(e) =>
@@ -203,43 +234,48 @@ export default function SettingsPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-4 rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-            <label className="flex items-center gap-2 text-sm text-slate-200">
-              <input
-                type="checkbox"
+          <div className="space-y-4 rounded-lg border border-border bg-card/40 p-4">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="okx-demo"
                 checked={form.okx_demo}
-                onChange={(e) => setForm({ ...form, okx_demo: e.target.checked })}
+                onCheckedChange={(checked) => setForm({ ...form, okx_demo: checked })}
               />
-              OKX demo trading (Demo Trading API keys + simulated header)
-            </label>
-            <div>
-              <label className="block text-sm text-slate-400">API key</label>
-              <input
+              <Label htmlFor="okx-demo" className="text-sm font-normal">
+                OKX demo trading (Demo Trading API keys + simulated header)
+              </Label>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="okx-api-key">API key</Label>
+              <Input
+                id="okx-api-key"
                 type="password"
                 autoComplete="off"
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm"
+                className="font-mono text-sm"
                 value={form.okx_api_key}
                 placeholder="Leave blank to keep saved value"
                 onChange={(e) => setForm({ ...form, okx_api_key: e.target.value })}
               />
             </div>
-            <div>
-              <label className="block text-sm text-slate-400">Secret key</label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="okx-secret-key">Secret key</Label>
+              <Input
+                id="okx-secret-key"
                 type="password"
                 autoComplete="off"
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm"
+                className="font-mono text-sm"
                 value={form.okx_secret_key}
                 placeholder="Leave blank to keep saved value"
                 onChange={(e) => setForm({ ...form, okx_secret_key: e.target.value })}
               />
             </div>
-            <div>
-              <label className="block text-sm text-slate-400">Passphrase</label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="okx-passphrase">Passphrase</Label>
+              <Input
+                id="okx-passphrase"
                 type="password"
                 autoComplete="off"
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm"
+                className="font-mono text-sm"
                 value={form.okx_passphrase}
                 placeholder="Leave blank to keep saved value"
                 onChange={(e) => setForm({ ...form, okx_passphrase: e.target.value })}
@@ -248,26 +284,25 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <div>
-          <label className="block text-sm text-slate-400">Overview currencies</label>
-          <input
-            className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+        <Separator />
+
+        <div className="space-y-2">
+          <Label htmlFor="currencies">Overview currencies</Label>
+          <Input
+            id="currencies"
             value={form.currencies}
             placeholder="e.g. BTC, ETH"
             onChange={(e) => setForm({ ...form, currencies: e.target.value })}
           />
-          <p className="mt-1 text-xs text-slate-500">
-            Comma-separated; blank uses server default (env OPTITRADE_DASHBOARD_CURRENCIES or BTC, ETH).
+          <p className="text-xs text-muted-foreground">
+            Comma-separated; blank uses server default (env OPTITRADE_DASHBOARD_CURRENCIES or BTC,
+            ETH).
           </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={saving}>
           {saving ? 'Saving…' : 'Save settings'}
-        </button>
+        </Button>
       </form>
     </div>
   )
