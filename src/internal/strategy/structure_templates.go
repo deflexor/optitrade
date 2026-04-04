@@ -8,6 +8,9 @@ import (
 // BuildLegsForStructure returns deterministic legs for a policy playbook
 // allowed_structures token (WP13 / SC-001 certification). Names match
 // config/examples/policy.example.json.
+//
+// For certification and SC-001 examples only; do not call from production selectors.
+// Production code must build legs with venue-specific helpers (e.g. VerticalPutCreditOKX on OKX).
 func BuildLegsForStructure(structureName string) ([]LegSpec, error) {
 	switch strings.ToLower(strings.TrimSpace(structureName)) {
 	case "credit_spread":
