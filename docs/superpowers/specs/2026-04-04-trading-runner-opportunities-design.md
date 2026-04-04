@@ -6,7 +6,7 @@
 
 ## Summary
 
-Add a **per-operator trading runner** started as **goroutine(s) inside the dashboard process**. The runner’s **core** is a real **Opportunities selector**: mature the **strategy layer** so it can **expand** the traded universe (instruments × allowed structures), **price** candidates with venue data, **score / rank** them, and **veto** via existing **cost** and **risk** modules. The runner keeps the ranked list **fresh for the UI**, respects **risk limits** (e.g. max loss as % of equity), and **auto-enters** only when **bot mode is `auto`**. Operators control **bot mode** (`manual` / `auto` / `paused`) from the **header**; **admins** can **disable** an account (`account_status`) so **no runner** starts. Replace the current **exchange positions list** with an **Opportunities** page that shows **live candidates** and **bot-managed positions** (open / opening / partial) with **Open**, **Cancel**, and **Close** actions. When **paused**, the Opportunities page shows a **Paused** banner and **no live list** (empty body + short copy to resume).
+Add a **per-operator trading runner** started as **goroutine(s) inside the dashboard process**. **Primary venue for v1 is OKX** (APIs for instruments, books, greeks, and order placement). The runner’s **core** is a real **Opportunities selector**: mature the **strategy layer** so it can **expand** the traded universe (instruments × allowed structures), **price** candidates with **OKX** market data, **score / rank** them, and **veto** via existing **cost** and **risk** modules (adapted as needed for OKX quote conventions). The runner keeps the ranked list **fresh for the UI**, respects **risk limits** (e.g. max loss as % of equity), and **auto-enters** only when **bot mode is `auto`**. Operators control **bot mode** (`manual` / `auto` / `paused`) from the **header**; **admins** can **disable** an account (`account_status`) so **no runner** starts. Replace the current **exchange positions list** with an **Opportunities** page that shows **live candidates** and **bot-managed positions** (open / opening / partial) with **Open**, **Cancel**, and **Close** actions. When **paused**, the Opportunities page shows a **Paused** banner and **no live list** (empty body + short copy to resume).
 
 ## Brainstorming decisions
 
@@ -20,6 +20,7 @@ Add a **per-operator trading runner** started as **goroutine(s) inside the dashb
 | Paused UX | Opportunities page: **Paused banner**; **empty** list; short **“Resume to scan the market”** (or equivalent) copy. |
 | Legacy Positions page | **Remove** the current **`/positions`** list (and linked flows) in favor of **Opportunities**; see **Positions parity** below. |
 | Runner core | **Mature `internal/strategy` + implement Opportunities selector** (not a mocked list); see dedicated section below. |
+| Primary venue (v1) | **OKX** — universe, market data, greeks, and execution use **OKX APIs**; Deribit-specific paths remain legacy elsewhere in the repo but are **not** the target for this feature set. |
 
 ## Goals
 
@@ -34,6 +35,7 @@ Add a **per-operator trading runner** started as **goroutine(s) inside the dashb
 - Separate worker process or horizontal scaling story beyond “one dashboard replica.”
 - Full **admin UI** for `account_status` (may be **DB / migration default** + documented SQL until an admin surface exists).
 - **Light theme** changes (follow existing dashboard tokens).
+- **Deribit** as the primary market for the **Opportunities selector** or **runner** in this iteration (existing Deribit code may remain for other commands; **OKX** is the focus here).
 
 ## Architecture
 
@@ -67,8 +69,8 @@ Today, **`internal/strategy`** is strong at **building** defined-risk legs from 
 
 ### Responsibilities of the Opportunities selector
 
-1. **Universe** — For each operator (currencies, venue), fetch or cache **listed options** (e.g. Deribit `get_instruments` filtered by kind/expiry window). Bound work: **max expiries ahead**, **strikes near spot** (configurable bands), **liquidity pre-filters** (min OI/volume optional, v2).
-2. **Structure expansion** — For each **regime-resolved** allowed structure from policy (`AllowedStructures`), **expand** to concrete `[]LegSpec` using **parameterized** builders (not fixed `27JUN26` demos). Strategy package grows **pure functions**: e.g. “put credit vertical: base, expiry, short strike, width → legs.”
+1. **Universe** — For each operator (currencies, **OKX**), fetch or cache **listed options** via **OKX public APIs** (instrument lists / option chains / tickers — exact endpoints and filters in the implementation plan). Bound work: **max expiries ahead**, **strikes near spot** (configurable bands), **liquidity pre-filters** (min OI/volume optional, v2).
+2. **Structure expansion** — For each **regime-resolved** allowed structure from policy (`AllowedStructures`), **expand** to concrete legs using **parameterized** builders (not fixed demo expiry/strikes). **`LegSpec` / instrument naming** must follow **OKX option identifiers** (implementation plan maps policy structures → OKX `instId` or equivalent). Strategy package grows **pure functions** parameterized by underlying, expiry, strikes, and width.
 3. **Market data** — Batch or throttle **order books** (and **greeks** from venue if available) per leg; reuse **`market.MarketSnapshot`** / quality flags where applicable.
 4. **Economics** — Derive **max loss / max profit** (defined-risk templates), **mid / bid / ask** aggregate for the structure, and an **expected edge** (or score) model documented in the implementation plan — e.g. credit received − estimated fair − haircuts, or a simpler v1 proxy (credit / width) **as long as** it feeds **`cost.ScoreCandidate`** honestly (no fake constant edge).
 5. **Ranking** — Sort/filter by a **documented primary key** (e.g. edge after costs, then liquidity). Cap **top N** opportunities exposed to UI and auto mode to control load.
@@ -78,7 +80,7 @@ Today, **`internal/strategy`** is strong at **building** defined-risk legs from 
 ### Code organization (suggested)
 
 - **`internal/strategy`** — Parameterized **structure builders** + validation; **remove or quarantine** hardcoded `BuildLegsForStructure` from the **live selector path** (keep for tests/certification if needed behind a test-only or explicit “example” entrypoint).
-- **`internal/opportunities`** (or `internal/runner/selector`) — **Orchestration**: universe query, loop, ranking, snapshot type consumed by runner + API. Depends on `strategy`, `cost`, `risk`, `regime`, `market`, `deribit`.
+- **`internal/opportunities`** (or `internal/runner/selector`) — **Orchestration**: universe query, loop, ranking, snapshot type consumed by runner + API. Depends on `strategy`, `cost`, `risk`, `regime`, `market`, **`okx`** (reuse or extend `internal/okx`); introduce a narrow **venue-facing interface** if the selector must stay testable without live RPC.
 - **Runner** — Ticks selector at operator cadence; merges **user-initiated** state (Opening / Active) with **fresh** candidate rows.
 
 ### Phasing inside the project
