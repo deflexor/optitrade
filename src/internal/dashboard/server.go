@@ -27,7 +27,10 @@ type Server struct {
 	// testXchg, when set, is used for all routes (unit tests); production leaves it nil.
 	testXchg exchangeReader
 
-	xchgMu   sync.Mutex
+	// runnerRunning reports whether the per-user trading runner loop is active (nil = always false).
+	runnerRunning func(username string) bool
+
+	xchgMu    sync.Mutex
 	xchgCache map[string]cachedExchange
 
 	started time.Time
@@ -46,6 +49,8 @@ type Options struct {
 	Settings       *OperatorSettingsStore
 	// TestExchange bypasses DB resolution (tests only).
 	TestExchange exchangeReader
+	// RunnerRunning is optional; when nil, GET /trading/status reports runner_running: false.
+	RunnerRunning func(username string) bool
 }
 
 // NewServer builds a dashboard HTTP handler tree.
@@ -62,6 +67,7 @@ func NewServer(opts Options) *Server {
 		settingsCrypto: opts.SettingsCrypto,
 		settings:       opts.Settings,
 		testXchg:       opts.TestExchange,
+		runnerRunning:  opts.RunnerRunning,
 		xchgCache:      map[string]cachedExchange{},
 		started:        time.Now(),
 		previews:       newPreviewStore(),
@@ -95,6 +101,8 @@ func NewServer(opts Options) *Server {
 	protected.Handle("POST /rebalance/confirm", http.HandlerFunc(s.handleRebalanceConfirm))
 	protected.Handle("GET /settings", http.HandlerFunc(s.handleSettingsGet))
 	protected.Handle("PUT /settings", http.HandlerFunc(s.handleSettingsPut))
+	protected.Handle("GET /trading/status", http.HandlerFunc(s.handleTradingStatus))
+	protected.Handle("PUT /trading/mode", http.HandlerFunc(s.handleTradingModePut))
 
 	api.Handle("/", s.requireAuth(protected))
 
