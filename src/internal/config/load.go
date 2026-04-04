@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -77,12 +78,59 @@ func PolicyPathFromEnv() string {
 }
 
 // LoadFile reads path, validates JSON against the embedded schema, and unmarshals into Policy.
+// Relative paths are resolved against the current working directory, then each parent directory
+// up to the filesystem root (so paths like config/examples/policy.example.json work when the
+// process cwd is a subdirectory such as src/).
 func LoadFile(path string) (*Policy, error) {
-	data, err := os.ReadFile(path)
+	resolved, err := resolvePolicyPath(strings.TrimSpace(path))
+	if err != nil {
+		return nil, err
+	}
+	data, err := os.ReadFile(resolved)
 	if err != nil {
 		return nil, fmt.Errorf("read policy file %q: %w", path, err)
 	}
 	return LoadBytes(data)
+}
+
+func resolvePolicyPath(path string) (string, error) {
+	if path == "" {
+		return "", fmt.Errorf("policy path is empty")
+	}
+	path = filepath.Clean(path)
+	if filepath.IsAbs(path) {
+		st, err := os.Stat(path)
+		if err != nil {
+			return "", fmt.Errorf("read policy file %q: %w", path, err)
+		}
+		if st.IsDir() {
+			return "", fmt.Errorf("read policy file %q: is a directory", path)
+		}
+		return path, nil
+	}
+	if st, err := os.Stat(path); err == nil && !st.IsDir() {
+		abs, absErr := filepath.Abs(path)
+		if absErr != nil {
+			return "", fmt.Errorf("read policy file %q: %w", path, absErr)
+		}
+		return abs, nil
+	}
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("read policy file %q: %w", path, err)
+	}
+	for d := wd; d != ""; {
+		candidate := filepath.Clean(filepath.Join(d, path))
+		if st, err := os.Stat(candidate); err == nil && !st.IsDir() {
+			return candidate, nil
+		}
+		parent := filepath.Dir(d)
+		if parent == d {
+			break
+		}
+		d = parent
+	}
+	return "", fmt.Errorf("read policy file %q: %w", path, os.ErrNotExist)
 }
 
 // LoadBytes validates raw policy JSON and unmarshals it.

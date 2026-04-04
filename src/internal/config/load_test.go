@@ -6,6 +6,20 @@ import (
 	"testing"
 )
 
+func TestLoadPolicySearchParents(t *testing.T) {
+	repoRoot := filepath.Clean(filepath.Join("..", "..", ".."))
+	srcDir := filepath.Join(repoRoot, "src")
+	t.Chdir(srcDir)
+	rel := filepath.Join("config", "examples", "policy.example.json")
+	p, err := LoadFile(rel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Version != "1.0.0" {
+		t.Fatalf("version: got %q", p.Version)
+	}
+}
+
 func TestLoadExamplePolicy(t *testing.T) {
 	root := filepath.Join("..", "..", "..", "config", "examples", "policy.example.json")
 	p, err := LoadFile(root)
