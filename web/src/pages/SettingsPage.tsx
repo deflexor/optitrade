@@ -42,6 +42,7 @@ export default function SettingsPage() {
     deribit_use_mainnet: boolean
     okx_demo: boolean
     currencies: string
+    max_loss_equity_pct: number
     deribit_client_id: string
     deribit_client_secret: string
     okx_api_key: string
@@ -59,11 +60,21 @@ export default function SettingsPage() {
         (v[k] as SecretView | undefined)?.configured
           ? ''
           : ((v[k] as SecretView | undefined)?.masked ?? '')
+      const rawMax = v.max_loss_equity_pct
+      let maxLoss = 10
+      if (typeof rawMax === 'number' && Number.isFinite(rawMax)) {
+        maxLoss = Math.round(rawMax)
+      } else if (typeof rawMax === 'string' && rawMax.trim() !== '') {
+        const p = parseInt(rawMax, 10)
+        if (!Number.isNaN(p)) maxLoss = p
+      }
+      maxLoss = Math.min(50, Math.max(1, maxLoss))
       setForm({
         provider: String(v.provider ?? 'deribit'),
         deribit_use_mainnet: Boolean(v.deribit_use_mainnet),
         okx_demo: Boolean(v.okx_demo),
         currencies: String(v.currencies ?? ''),
+        max_loss_equity_pct: maxLoss,
         deribit_client_id: sec('deribit_client_id'),
         deribit_client_secret: sec('deribit_client_secret'),
         okx_api_key: sec('okx_api_key'),
@@ -94,11 +105,13 @@ export default function SettingsPage() {
       if (form.okx_secret_key.trim()) secrets.okx_secret_key = form.okx_secret_key.trim()
       if (form.okx_passphrase.trim()) secrets.okx_passphrase = form.okx_passphrase.trim()
 
+      const maxLoss = Math.min(50, Math.max(1, Math.round(form.max_loss_equity_pct)))
       const { data } = await api.put<SettingsResp>('/settings', {
         provider: form.provider,
         deribit_use_mainnet: form.deribit_use_mainnet,
         okx_demo: form.okx_demo,
         currencies: form.currencies.trim(),
+        max_loss_equity_pct: maxLoss,
         secrets,
       })
       setPayload(data)
@@ -107,11 +120,21 @@ export default function SettingsPage() {
         (v[k] as SecretView | undefined)?.configured
           ? ''
           : ((v[k] as SecretView | undefined)?.masked ?? '')
+      const rawMaxAfter = v.max_loss_equity_pct
+      let maxLossAfter = 10
+      if (typeof rawMaxAfter === 'number' && Number.isFinite(rawMaxAfter)) {
+        maxLossAfter = Math.round(rawMaxAfter)
+      } else if (typeof rawMaxAfter === 'string' && rawMaxAfter.trim() !== '') {
+        const p = parseInt(rawMaxAfter, 10)
+        if (!Number.isNaN(p)) maxLossAfter = p
+      }
+      maxLossAfter = Math.min(50, Math.max(1, maxLossAfter))
       setForm({
         provider: String(v.provider ?? 'deribit'),
         deribit_use_mainnet: Boolean(v.deribit_use_mainnet),
         okx_demo: Boolean(v.okx_demo),
         currencies: String(v.currencies ?? ''),
+        max_loss_equity_pct: maxLossAfter,
         deribit_client_id: sec('deribit_client_id'),
         deribit_client_secret: sec('deribit_client_secret'),
         okx_api_key: sec('okx_api_key'),
@@ -298,6 +321,30 @@ export default function SettingsPage() {
           <p className="text-xs text-muted-foreground">
             Comma-separated; blank uses server default (env OPTITRADE_DASHBOARD_CURRENCIES or BTC,
             ETH).
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="max-loss-pct">Max loss % of equity</Label>
+          <Input
+            id="max-loss-pct"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={50}
+            className="max-w-[8rem] font-mono text-sm"
+            value={form.max_loss_equity_pct}
+            onChange={(e) => {
+              const p = parseInt(e.target.value, 10)
+              setForm({
+                ...form,
+                max_loss_equity_pct: Number.isNaN(p) ? form.max_loss_equity_pct : p,
+              })
+            }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Cap on max loss per opportunity vs account equity (1–50). Used for opportunity ranking
+            and gates.
           </p>
         </div>
 

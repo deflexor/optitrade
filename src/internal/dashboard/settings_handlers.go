@@ -70,6 +70,10 @@ func settingsFieldCatalog() []settingsFieldDef {
 			ID: "currencies", Label: "Overview currencies", Kind: "string", Required: false,
 			Help: "Comma-separated list (e.g. BTC, ETH) for P/L rollup. Blank uses server default or OPTITRADE_DASHBOARD_CURRENCIES.",
 		},
+		{
+			ID: "max_loss_equity_pct", Label: "Max loss % of equity", Kind: "number", Required: false,
+			Help: "Upper bound on max loss per opportunity as a percentage of account equity (1–50). Used when ranking and gating opportunities.",
+		},
 	}
 }
 
@@ -109,11 +113,13 @@ func (s *Server) writeSettingsJSON(w http.ResponseWriter, ctx context.Context, u
 	dm := false
 	od := false
 	cur := ""
+	maxLossPct := 10
 	if row != nil {
 		prov = string(row.Provider)
 		dm = row.DeribitUseMainnet
 		od = row.OKXDemo
 		cur = row.Currencies
+		maxLossPct = row.MaxLossEquityPct
 	}
 
 	sec := rowSecrets(row)
@@ -122,6 +128,7 @@ func (s *Server) writeSettingsJSON(w http.ResponseWriter, ctx context.Context, u
 		"deribit_use_mainnet":   dm,
 		"okx_demo":              od,
 		"currencies":            cur,
+		"max_loss_equity_pct":   maxLossPct,
 		"deribit_client_id":     maskSecret(sec.DeribitClientID),
 		"deribit_client_secret": maskSecret(sec.DeribitClientSecret),
 		"okx_api_key":           maskSecret(sec.OKXAPIKey),
@@ -172,11 +179,12 @@ func (s *Server) handleSettingsPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var body struct {
-		Provider          *string           `json:"provider"`
-		DeribitUseMainnet *bool             `json:"deribit_use_mainnet"`
-		OKXDemo           *bool             `json:"okx_demo"`
-		Currencies        *string           `json:"currencies"`
-		Secrets           map[string]string `json:"secrets"`
+		Provider           *string           `json:"provider"`
+		DeribitUseMainnet  *bool             `json:"deribit_use_mainnet"`
+		OKXDemo            *bool             `json:"okx_demo"`
+		Currencies         *string           `json:"currencies"`
+		MaxLossEquityPct   *int              `json:"max_loss_equity_pct"`
+		Secrets            map[string]string `json:"secrets"`
 	}
 	if err := json.Unmarshal(raw, &body); err != nil {
 		writeAPIError(w, http.StatusBadRequest, "invalid_body", "expected JSON")
@@ -184,11 +192,12 @@ func (s *Server) handleSettingsPut(w http.ResponseWriter, r *http.Request) {
 	}
 
 	patch := OperatorSettingsPatch{
-		Provider:          body.Provider,
-		DeribitUseMainnet: body.DeribitUseMainnet,
-		OKXDemo:           body.OKXDemo,
-		Currencies:        body.Currencies,
-		Secrets:           body.Secrets,
+		Provider:           body.Provider,
+		DeribitUseMainnet:  body.DeribitUseMainnet,
+		OKXDemo:            body.OKXDemo,
+		Currencies:         body.Currencies,
+		MaxLossEquityPct:   body.MaxLossEquityPct,
+		Secrets:            body.Secrets,
 	}
 	if _, err := s.settings.Put(r.Context(), user, s.settingsCrypto, patch); err != nil {
 		writeAPIError(w, http.StatusBadRequest, "invalid_settings", err.Error())
