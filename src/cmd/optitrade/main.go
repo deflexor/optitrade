@@ -83,6 +83,7 @@ Env:
   OPTITRADE_DASHBOARD_LISTEN                 Dashboard listen addr (e.g. 127.0.0.1:8080)
   OPTITRADE_DASHBOARD_AUTH_PATH              Dashboard allowlist JSON (username + password_hash)
   OPTITRADE_DASHBOARD_SESSION_PATH           SQLite file for dashboard sessions
+  OPTITRADE_DASHBOARD_ADMIN_USER             If set, this username may PATCH account_status via PUT /api/v1/settings
   OPTITRADE_SETTINGS_SECRET                  32-byte key: base64, hex, or raw (or use OPTITRADE_SETTINGS_KEY_FILE)
   OPTITRADE_SETTINGS_KEY_FILE                File with raw 32-byte key for encrypting operator API settings
 

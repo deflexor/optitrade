@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -184,11 +185,24 @@ func (s *Server) handleSettingsPut(w http.ResponseWriter, r *http.Request) {
 		OKXDemo            *bool             `json:"okx_demo"`
 		Currencies         *string           `json:"currencies"`
 		MaxLossEquityPct   *int              `json:"max_loss_equity_pct"`
+		AccountStatus      *string           `json:"account_status"`
 		Secrets            map[string]string `json:"secrets"`
 	}
 	if err := json.Unmarshal(raw, &body); err != nil {
 		writeAPIError(w, http.StatusBadRequest, "invalid_body", "expected JSON")
 		return
+	}
+
+	if body.AccountStatus != nil {
+		adminUser := strings.TrimSpace(os.Getenv("OPTITRADE_DASHBOARD_ADMIN_USER"))
+		if adminUser == "" {
+			writeAPIError(w, http.StatusForbidden, "forbidden", "account_status cannot be set via API (OPTITRADE_DASHBOARD_ADMIN_USER is not configured)")
+			return
+		}
+		if user != adminUser {
+			writeAPIError(w, http.StatusForbidden, "forbidden", "only the configured dashboard admin may set account_status")
+			return
+		}
 	}
 
 	patch := OperatorSettingsPatch{
@@ -197,6 +211,7 @@ func (s *Server) handleSettingsPut(w http.ResponseWriter, r *http.Request) {
 		OKXDemo:            body.OKXDemo,
 		Currencies:         body.Currencies,
 		MaxLossEquityPct:   body.MaxLossEquityPct,
+		AccountStatus:      body.AccountStatus,
 		Secrets:            body.Secrets,
 	}
 	if _, err := s.settings.Put(r.Context(), user, s.settingsCrypto, patch); err != nil {
