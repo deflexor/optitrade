@@ -33,6 +33,9 @@ type OperatorSettingsRow struct {
 	DeribitUseMainnet bool
 	OKXDemo           bool
 	Currencies        string // comma-separated, empty = use server default
+	AccountStatus     string // active|disabled
+	BotMode           string // manual|auto|paused
+	MaxLossEquityPct  int    // 1-50
 	Secrets           OperatorSecrets
 	UpdatedAtMs       int64
 }
@@ -50,7 +53,8 @@ func NewOperatorSettingsStore(db *sql.DB) *OperatorSettingsStore {
 // GetDecrypting loads and decrypts secrets. Returns (nil, nil) if no row.
 func (st *OperatorSettingsStore) GetDecrypting(ctx context.Context, username string, crypto *SettingsCrypto) (*OperatorSettingsRow, error) {
 	row := st.db.QueryRowContext(ctx, `
-SELECT username, provider, deribit_use_mainnet, okx_demo, currencies, secrets_blob, updated_at
+SELECT username, provider, deribit_use_mainnet, okx_demo, currencies, secrets_blob, updated_at,
+       account_status, bot_mode, max_loss_equity_pct
 FROM dashboard_operator_settings WHERE username = ?`, username)
 
 	var prov string
@@ -59,7 +63,9 @@ FROM dashboard_operator_settings WHERE username = ?`, username)
 	var blob []byte
 	var updated int64
 	var u string
-	err := row.Scan(&u, &prov, &mainnet, &okxDemo, &currencies, &blob, &updated)
+	var accountStatus, botMode string
+	var maxLoss sql.NullInt64
+	err := row.Scan(&u, &prov, &mainnet, &okxDemo, &currencies, &blob, &updated, &accountStatus, &botMode, &maxLoss)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -75,6 +81,19 @@ FROM dashboard_operator_settings WHERE username = ?`, username)
 	}
 	if currencies.Valid {
 		out.Currencies = currencies.String
+	}
+	out.AccountStatus = strings.ToLower(strings.TrimSpace(accountStatus))
+	if out.AccountStatus == "" {
+		out.AccountStatus = "active"
+	}
+	out.BotMode = strings.ToLower(strings.TrimSpace(botMode))
+	if out.BotMode == "" {
+		out.BotMode = "manual"
+	}
+	if maxLoss.Valid && maxLoss.Int64 > 0 {
+		out.MaxLossEquityPct = int(maxLoss.Int64)
+	} else {
+		out.MaxLossEquityPct = 10
 	}
 	if len(blob) == 0 {
 		return out, nil
@@ -102,7 +121,13 @@ func (st *OperatorSettingsStore) Put(ctx context.Context, username string, crypt
 		return nil, err
 	}
 	if existing == nil {
-		existing = &OperatorSettingsRow{Username: username, Provider: ProviderDeribit}
+		existing = &OperatorSettingsRow{
+			Username:         username,
+			Provider:         ProviderDeribit,
+			AccountStatus:    "active",
+			BotMode:          "manual",
+			MaxLossEquityPct: 10,
+		}
 	}
 	if patch.Provider != nil {
 		p := OperatorProvider(strings.ToLower(strings.TrimSpace(*patch.Provider)))
@@ -119,6 +144,27 @@ func (st *OperatorSettingsStore) Put(ctx context.Context, username string, crypt
 	}
 	if patch.Currencies != nil {
 		existing.Currencies = strings.TrimSpace(*patch.Currencies)
+	}
+	if patch.AccountStatus != nil {
+		s := strings.ToLower(strings.TrimSpace(*patch.AccountStatus))
+		if s != "active" && s != "disabled" {
+			return nil, fmt.Errorf("invalid account_status %q (want active or disabled)", *patch.AccountStatus)
+		}
+		existing.AccountStatus = s
+	}
+	if patch.BotMode != nil {
+		s := strings.ToLower(strings.TrimSpace(*patch.BotMode))
+		if s != "manual" && s != "auto" && s != "paused" {
+			return nil, fmt.Errorf("invalid bot_mode %q (want manual, auto, or paused)", *patch.BotMode)
+		}
+		existing.BotMode = s
+	}
+	if patch.MaxLossEquityPct != nil {
+		v := *patch.MaxLossEquityPct
+		if v < 1 || v > 50 {
+			return nil, fmt.Errorf("max_loss_equity_pct must be between 1 and 50 inclusive, got %d", v)
+		}
+		existing.MaxLossEquityPct = v
 	}
 	se := existing.Secrets
 	if patch.Secrets != nil {
@@ -154,15 +200,18 @@ func (st *OperatorSettingsStore) Put(ctx context.Context, username string, crypt
 	}
 	now := time.Now().UnixMilli()
 	_, err = st.db.ExecContext(ctx, `
-INSERT INTO dashboard_operator_settings(username, provider, deribit_use_mainnet, okx_demo, currencies, secrets_blob, updated_at)
-VALUES(?,?,?,?,?,?,?)
+INSERT INTO dashboard_operator_settings(username, provider, deribit_use_mainnet, okx_demo, currencies, secrets_blob, updated_at, account_status, bot_mode, max_loss_equity_pct)
+VALUES(?,?,?,?,?,?,?,?,?,?)
 ON CONFLICT(username) DO UPDATE SET
   provider = excluded.provider,
   deribit_use_mainnet = excluded.deribit_use_mainnet,
   okx_demo = excluded.okx_demo,
   currencies = excluded.currencies,
   secrets_blob = excluded.secrets_blob,
-  updated_at = excluded.updated_at`,
+  updated_at = excluded.updated_at,
+  account_status = excluded.account_status,
+  bot_mode = excluded.bot_mode,
+  max_loss_equity_pct = excluded.max_loss_equity_pct`,
 		username,
 		string(existing.Provider),
 		boolAsInt(existing.DeribitUseMainnet),
@@ -170,6 +219,9 @@ ON CONFLICT(username) DO UPDATE SET
 		nullStr(existing.Currencies),
 		blob,
 		now,
+		existing.AccountStatus,
+		existing.BotMode,
+		existing.MaxLossEquityPct,
 	)
 	if err != nil {
 		return nil, err
@@ -184,6 +236,9 @@ type OperatorSettingsPatch struct {
 	DeribitUseMainnet *bool
 	OKXDemo           *bool
 	Currencies        *string
+	AccountStatus     *string
+	BotMode           *string
+	MaxLossEquityPct  *int
 	Secrets           map[string]string
 }
 
@@ -202,6 +257,9 @@ func nullStr(s string) any {
 }
 
 func validateOperatorSettings(r *OperatorSettingsRow) error {
+	if err := validateTradingPrefsRow(r); err != nil {
+		return err
+	}
 	switch r.Provider {
 	case ProviderDeribit:
 		if strings.TrimSpace(r.Secrets.DeribitClientID) == "" || strings.TrimSpace(r.Secrets.DeribitClientSecret) == "" {
@@ -213,6 +271,21 @@ func validateOperatorSettings(r *OperatorSettingsRow) error {
 		}
 	default:
 		return fmt.Errorf("unknown provider %q", r.Provider)
+	}
+	return nil
+}
+
+func validateTradingPrefsRow(r *OperatorSettingsRow) error {
+	a := strings.ToLower(strings.TrimSpace(r.AccountStatus))
+	if a != "active" && a != "disabled" {
+		return fmt.Errorf("invalid account_status %q", r.AccountStatus)
+	}
+	b := strings.ToLower(strings.TrimSpace(r.BotMode))
+	if b != "manual" && b != "auto" && b != "paused" {
+		return fmt.Errorf("invalid bot_mode %q", r.BotMode)
+	}
+	if r.MaxLossEquityPct < 1 || r.MaxLossEquityPct > 50 {
+		return fmt.Errorf("max_loss_equity_pct must be between 1 and 50 inclusive, got %d", r.MaxLossEquityPct)
 	}
 	return nil
 }
