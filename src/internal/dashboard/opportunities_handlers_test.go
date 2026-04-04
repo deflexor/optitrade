@@ -9,7 +9,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/dfr/optitrade/src/internal/opportunities"
 	"github.com/dfr/optitrade/src/internal/state/sqlite"
@@ -277,6 +279,89 @@ func TestOpportunitiesGet_mergesDBAndSnapshot(t *testing.T) {
 	}
 	if _, ok := ids["cand-btc"]; !ok {
 		t.Fatal("missing snapshot row")
+	}
+}
+
+func TestOpportunitiesStream_firstChunkHasRows(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	db, err := sqlite.Open(filepath.Join(dir, "sse.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = db.Close() })
+
+	crypto := testOperatorSettingsCrypto(t)
+	st := NewOperatorSettingsStore(db)
+	ctx := context.Background()
+	prov := "deribit"
+	mainnet := false
+	_, err = st.Put(ctx, "op1", crypto, OperatorSettingsPatch{
+		Provider:          &prov,
+		DeribitUseMainnet: &mainnet,
+		Secrets: map[string]string{
+			"deribit_client_id":     "cid",
+			"deribit_client_secret": "csec",
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.MinCost)
+	if err != nil {
+		t.Fatal(err)
+	}
+	auth := &DashboardAuthFile{
+		Version: "1",
+		Users:   []AuthUserRecord{{Username: "op1", PasswordHash: string(hash)}},
+	}
+	log := slog.New(slog.NewTextHandler(io.Discard, nil))
+	srv := NewServer(Options{
+		Logger:         log,
+		Auth:           auth,
+		Sessions:       NewSessionStore(db),
+		SettingsCrypto: crypto,
+		Settings:       st,
+		OpportunitySnapshot: func(string) opportunities.Snapshot {
+			return opportunities.Snapshot{UpdatedAtMs: 1, Rows: []opportunities.Row{
+				{ID: "s1", StrategyName: "credit_spread", Status: opportunities.StatusCandidate},
+			}}
+		},
+	})
+	h := srv.Handler()
+	cookie := loginCookie(t, h, "op1", "secret")
+
+	reqCtx, cancel := context.WithCancel(context.Background())
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/opportunities/stream", nil).WithContext(reqCtx)
+	req.AddCookie(cookie)
+
+	done := make(chan struct{})
+	go func() {
+		h.ServeHTTP(rec, req)
+		close(done)
+	}()
+
+	deadline := time.After(2 * time.Second)
+	for {
+		select {
+		case <-deadline:
+			cancel()
+			<-done
+			t.Fatalf("timeout; body=%q", rec.Body.String())
+		default:
+			body := rec.Body.String()
+			if strings.Contains(body, "data: ") && strings.Contains(body, `"rows"`) {
+				cancel()
+				<-done
+				if ct := rec.Header().Get("Content-Type"); !strings.Contains(ct, "text/event-stream") {
+					t.Fatalf("content-type %q", ct)
+				}
+				return
+			}
+			time.Sleep(15 * time.Millisecond)
+		}
 	}
 }
 

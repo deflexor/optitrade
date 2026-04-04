@@ -124,6 +124,7 @@ func NewServer(opts Options) *Server {
 	protected.Handle("GET /trading/status", http.HandlerFunc(s.handleTradingStatus))
 	protected.Handle("PUT /trading/mode", http.HandlerFunc(s.handleTradingModePut))
 	protected.Handle("GET /opportunities", http.HandlerFunc(s.handleOpportunitiesGet))
+	protected.Handle("GET /opportunities/stream", http.HandlerFunc(s.handleOpportunitiesStream))
 
 	api.Handle("/", s.requireAuth(protected))
 

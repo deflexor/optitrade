@@ -1,6 +1,9 @@
 package dashboard
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -11,22 +14,14 @@ import (
 // opportunitySnapshot returns live runner candidates for the user (nil = empty snapshot).
 type opportunitySnapshot func(username string) opportunities.Snapshot
 
-func (s *Server) handleOpportunitiesGet(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
+// buildOpportunitiesView returns the same JSON-shaped map as GET /opportunities (200 body).
+func (s *Server) buildOpportunitiesView(ctx context.Context, user string) (map[string]any, error) {
+	if s.settings == nil || s.settingsCrypto == nil {
+		return nil, fmt.Errorf("settings unavailable")
 	}
-	user, ok := requestUser(r.Context())
-	if !ok || s.settings == nil || s.settingsCrypto == nil {
-		writeAPIError(w, http.StatusInternalServerError, "server_error", "settings unavailable")
-		return
-	}
-	ctx := r.Context()
 	row, err := s.settings.GetDecrypting(ctx, user, s.settingsCrypto)
 	if err != nil {
-		logHandlerError(s.log, "opportunities_get", err)
-		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not load settings")
-		return
+		return nil, err
 	}
 
 	nowMs := time.Now().UnixMilli()
@@ -42,24 +37,22 @@ func (s *Server) handleOpportunitiesGet(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if accountStatus == "disabled" {
-		writeJSON(w, http.StatusOK, map[string]any{
+		return map[string]any{
 			"paused":         false,
 			"disabled":       true,
 			"message":        "Trading is disabled for this account. Contact an administrator.",
 			"updated_at_ms":  nowMs,
 			"rows":           []any{},
-		})
-		return
+		}, nil
 	}
 	if botMode == "paused" {
-		writeJSON(w, http.StatusOK, map[string]any{
+		return map[string]any{
 			"paused":         true,
 			"disabled":       false,
 			"updated_at_ms":  nowMs,
 			"rows":           []any{},
 			"resume_hint":    "Switch bot mode away from paused to resume market scanning.",
-		})
-		return
+		}, nil
 	}
 
 	var snap opportunities.Snapshot
@@ -73,12 +66,9 @@ func (s *Server) handleOpportunitiesGet(w http.ResponseWriter, r *http.Request) 
 	if s.opportunities != nil {
 		recs, err := s.opportunities.ListByUser(ctx, user)
 		if err != nil {
-			logHandlerError(s.log, "opportunities_list", err)
-			writeAPIError(w, http.StatusInternalServerError, "server_error", "could not load opportunities")
-			return
+			return nil, err
 		}
 		for i := range recs {
-			// Only merge persisted lifecycle rows; candidates come from the runner snapshot.
 			st := strings.ToLower(strings.TrimSpace(recs[i].Status))
 			if st == string(opportunities.StatusCandidate) {
 				continue
@@ -106,10 +96,91 @@ func (s *Server) handleOpportunitiesGet(w http.ResponseWriter, r *http.Request) 
 		updated = nowMs
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	return map[string]any{
 		"paused":         false,
 		"disabled":       false,
 		"updated_at_ms":  updated,
 		"rows":           merged,
-	})
+	}, nil
+}
+
+func (s *Server) handleOpportunitiesGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	user, ok := requestUser(r.Context())
+	if !ok || s.settings == nil || s.settingsCrypto == nil {
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "settings unavailable")
+		return
+	}
+	payload, err := s.buildOpportunitiesView(r.Context(), user)
+	if err != nil {
+		logHandlerError(s.log, "opportunities_get", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not load opportunities")
+		return
+	}
+	writeJSON(w, http.StatusOK, payload)
+}
+
+func (s *Server) handleOpportunitiesStream(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	user, ok := requestUser(r.Context())
+	if !ok || s.settings == nil || s.settingsCrypto == nil {
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "settings unavailable")
+		return
+	}
+	fl, ok := w.(http.Flusher)
+	if !ok {
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "streaming not supported")
+		return
+	}
+
+	payload, err := s.buildOpportunitiesView(r.Context(), user)
+	if err != nil {
+		logHandlerError(s.log, "opportunities_stream", err)
+		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not load opportunities")
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.WriteHeader(http.StatusOK)
+
+	if err := writeSSEEvent(w, payload); err != nil {
+		return
+	}
+	fl.Flush()
+
+	tick := time.NewTicker(1 * time.Second)
+	defer tick.Stop()
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case <-tick.C:
+			payload, err := s.buildOpportunitiesView(r.Context(), user)
+			if err != nil {
+				logHandlerError(s.log, "opportunities_stream_tick", err)
+				return
+			}
+			if err := writeSSEEvent(w, payload); err != nil {
+				return
+			}
+			fl.Flush()
+		}
+	}
+}
+
+func writeSSEEvent(w http.ResponseWriter, v any) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintf(w, "data: %s\n\n", b)
+	return err
 }
