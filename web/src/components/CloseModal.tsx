@@ -91,7 +91,7 @@ export default function CloseModal({
             {busy ? 'Loading…' : 'Preview close'}
           </Button>
         ) : (
-          <div className="space-y-2 rounded-md border border-border bg-muted/40 p-3 text-sm">
+          <div className="space-y-2 rounded-md border border-border bg-muted/70 p-3 text-sm">
             <p>
               Est. exit P/L (floating){' '}
               <span className="font-mono">{preview.estimated_exit_pnl}</span>

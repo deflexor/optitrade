@@ -14,7 +14,7 @@ function Shell() {
   const { username, logout } = useAuthStore()
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-card/80 px-6 py-4 backdrop-blur">
+      <header className="border-b border-border bg-card px-6 py-4 shadow-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <h1 className="text-lg font-semibold tracking-tight">
             <Link

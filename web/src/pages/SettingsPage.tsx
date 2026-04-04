@@ -194,7 +194,7 @@ export default function SettingsPage() {
         <Separator />
 
         {prov === 'deribit' ? (
-          <div className="space-y-4 rounded-lg border border-border bg-card/40 p-4">
+          <div className="space-y-4 rounded-lg border border-border bg-muted/60 p-4">
             <div className="flex items-center gap-2">
               <Switch
                 id="deribit-mainnet"
@@ -235,7 +235,7 @@ export default function SettingsPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-4 rounded-lg border border-border bg-card/40 p-4">
+          <div className="space-y-4 rounded-lg border border-border bg-muted/60 p-4">
             <div className="flex items-center gap-2">
               <Switch
                 id="okx-demo"

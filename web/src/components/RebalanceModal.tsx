@@ -74,7 +74,7 @@ export default function RebalanceModal({ onClose }: { onClose: () => void }) {
             {busy ? 'Loading…' : 'Run preview'}
           </Button>
         ) : (
-          <div className="space-y-3 rounded-md border border-border bg-muted/40 p-3 text-sm">
+          <div className="space-y-3 rounded-md border border-border bg-muted/70 p-3 text-sm">
             <p>
               Suggested legs: {preview.suggested_adjustments.length} (empty in v0).
             </p>
