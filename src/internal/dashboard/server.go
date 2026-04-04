@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/dfr/optitrade/src/internal/opportunities"
 )
 
 // Server is the dashboard BFF (API + static assets).
@@ -23,6 +25,9 @@ type Server struct {
 
 	settingsCrypto *SettingsCrypto
 	settings       *OperatorSettingsStore
+
+	opportunities        *OpportunityStore
+	opportunitySnapshot  opportunitySnapshot
 
 	// testXchg, when set, is used for all routes (unit tests); production leaves it nil.
 	testXchg exchangeReader
@@ -51,6 +56,10 @@ type Options struct {
 	TestExchange exchangeReader
 	// RunnerRunning is optional; when nil, GET /trading/status reports runner_running: false.
 	RunnerRunning func(username string) bool
+	// Opportunities persists opening/active/partial rows; optional.
+	Opportunities *OpportunityStore
+	// OpportunitySnapshot supplies live candidate rows from the runner; optional.
+	OpportunitySnapshot func(username string) opportunities.Snapshot
 }
 
 // NewServer builds a dashboard HTTP handler tree.
@@ -66,9 +75,11 @@ func NewServer(opts Options) *Server {
 		sessions:       opts.Sessions,
 		settingsCrypto: opts.SettingsCrypto,
 		settings:       opts.Settings,
-		testXchg:       opts.TestExchange,
-		runnerRunning:  opts.RunnerRunning,
-		xchgCache:      map[string]cachedExchange{},
+		testXchg:              opts.TestExchange,
+		runnerRunning:         opts.RunnerRunning,
+		opportunities:         opts.Opportunities,
+		opportunitySnapshot:   opts.OpportunitySnapshot,
+		xchgCache:             map[string]cachedExchange{},
 		started:        time.Now(),
 		previews:       newPreviewStore(),
 	}
@@ -103,6 +114,7 @@ func NewServer(opts Options) *Server {
 	protected.Handle("PUT /settings", http.HandlerFunc(s.handleSettingsPut))
 	protected.Handle("GET /trading/status", http.HandlerFunc(s.handleTradingStatus))
 	protected.Handle("PUT /trading/mode", http.HandlerFunc(s.handleTradingModePut))
+	protected.Handle("GET /opportunities", http.HandlerFunc(s.handleOpportunitiesGet))
 
 	api.Handle("/", s.requireAuth(protected))
 

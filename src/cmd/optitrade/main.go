@@ -193,6 +193,7 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 		Sessions:       dashboard.NewSessionStore(db),
 		SettingsCrypto: crypto,
 		Settings:       dashboard.NewOperatorSettingsStore(db),
+		Opportunities:  dashboard.NewOpportunityStore(db),
 	})
 
 	if p := strings.TrimSpace(authPath); p != "" {
