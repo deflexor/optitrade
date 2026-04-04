@@ -71,7 +71,7 @@ func TestRunnerManager_Reconcile_OKXLifecycle(t *testing.T) {
 	}
 
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
-	rm := NewRunnerManager(log, st, crypto, nil)
+	rm := NewRunnerManager(log, st, crypto, nil, nil)
 	rm.Reconcile(ctx)
 	if !rm.IsRunning("opx") {
 		t.Fatal("expected runner for OKX user")

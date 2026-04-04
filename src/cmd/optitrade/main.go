@@ -200,7 +200,8 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 	} else {
 		log.Warn("OPTITRADE_POLICY_PATH unset; trading runner will not publish opportunity candidates")
 	}
-	runnerMgr := dashboard.NewRunnerManager(log, settingsStore, crypto, policy)
+	oppStore := dashboard.NewOpportunityStore(db)
+	runnerMgr := dashboard.NewRunnerManager(log, settingsStore, crypto, policy, oppStore)
 	h := dashboard.NewServer(dashboard.Options{
 		Logger:         log,
 		Auth:           auth,
@@ -208,7 +209,7 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 		SettingsCrypto: crypto,
 		Settings:       settingsStore,
 		RunnerManager:  runnerMgr,
-		Opportunities:  dashboard.NewOpportunityStore(db),
+		Opportunities:  oppStore,
 		OpportunitySnapshot: func(u string) opportunities.Snapshot {
 			return runnerMgr.Snapshot(u)
 		},

@@ -18,6 +18,11 @@ type RunnerManager struct {
 	crypto   *SettingsCrypto
 	policy   *config.Policy
 
+	// oppStore persists opening/active rows; when nil, auto-open is skipped.
+	oppStore *OpportunityStore
+	// AutoOpenHook, when non-nil, replaces OKX batch place + DB upsert in auto mode (tests only).
+	AutoOpenHook func(ctx context.Context, user, id string, cand opportunities.Row) error
+
 	mu          sync.Mutex
 	runners     map[string]context.CancelFunc
 	snapMu      sync.RWMutex
@@ -26,17 +31,19 @@ type RunnerManager struct {
 
 // NewRunnerManager builds a manager; log/settings/crypto must be non-nil for Reconcile.
 // policy may be nil; the runner will not populate opportunity snapshots until a policy is loaded.
-func NewRunnerManager(log *slog.Logger, settings *OperatorSettingsStore, crypto *SettingsCrypto, policy *config.Policy) *RunnerManager {
+// opp may be nil; auto-open and DB-backed flows are skipped when nil.
+func NewRunnerManager(log *slog.Logger, settings *OperatorSettingsStore, crypto *SettingsCrypto, policy *config.Policy, opp *OpportunityStore) *RunnerManager {
 	if log == nil {
 		log = slog.Default()
 	}
 	return &RunnerManager{
-		log:       log,
-		settings:  settings,
-		crypto:    crypto,
-		policy:    policy,
-		runners:   map[string]context.CancelFunc{},
-		snapshots: map[string]opportunities.Snapshot{},
+		log:           log,
+		settings:      settings,
+		crypto:        crypto,
+		policy:        policy,
+		oppStore:      opp,
+		runners:       map[string]context.CancelFunc{},
+		snapshots:     map[string]opportunities.Snapshot{},
 	}
 }
 

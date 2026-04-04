@@ -306,10 +306,59 @@ func (rm *RunnerManager) runTick(parent context.Context, user string) {
 	if len(rows) > runnerTopN {
 		rows = rows[:runnerTopN]
 	}
-	rm.setSnapshot(user, opportunities.Snapshot{
+	snap := opportunities.Snapshot{
 		UpdatedAtMs: time.Now().UnixMilli(),
 		Rows:        rows,
-	})
+	}
+	rm.setSnapshot(user, snap)
+	rm.maybeAutoOpenAfterTick(ctx, user, row, rows)
+}
+
+// maybeAutoOpenAfterTick opens the top ranked opportunity when bot_mode is auto (spec Task 16).
+func (rm *RunnerManager) maybeAutoOpenAfterTick(ctx context.Context, user string, settingsRow *OperatorSettingsRow, rankedRows []opportunities.Row) {
+	if rm == nil || rm.oppStore == nil || settingsRow == nil {
+		return
+	}
+	if !strings.EqualFold(strings.TrimSpace(settingsRow.BotMode), "auto") {
+		return
+	}
+	if blocked, _, _ := tradingPausedOrDisabled(settingsRow); blocked {
+		return
+	}
+	if len(rankedRows) == 0 {
+		return
+	}
+	top := rankedRows[0]
+	if !strings.EqualFold(strings.TrimSpace(top.Recommend), "open") {
+		return
+	}
+	id := strings.TrimSpace(top.ID)
+	if id == "" {
+		return
+	}
+	existing, err := rm.oppStore.Get(ctx, id, user)
+	if err != nil {
+		rm.log.Warn("runner auto-open get", "user", user, "err", err)
+		return
+	}
+	if existing != nil {
+		return
+	}
+	candCopy := top
+	if rm.AutoOpenHook != nil {
+		if err := rm.AutoOpenHook(ctx, user, id, candCopy); err != nil {
+			rm.log.Warn("runner auto-open hook", "user", user, "id", id, "err", err)
+		}
+		return
+	}
+	xchg, err := newOKXExchange(settingsRow)
+	if err != nil {
+		rm.log.Warn("runner auto-open exchange", "user", user, "err", err)
+		return
+	}
+	if _, err := persistOpportunityOpen(ctx, user, id, &candCopy, rm.oppStore, xchg); err != nil {
+		rm.log.Warn("runner auto-open", "user", user, "id", id, "err", err)
+	}
 }
 
 func (rm *RunnerManager) setSnapshot(user string, snap opportunities.Snapshot) {

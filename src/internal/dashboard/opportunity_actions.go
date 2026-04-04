@@ -78,6 +78,52 @@ func legSidesForCreditSpread(row *opportunities.Row) ([]legSideMeta, error) {
 	}, nil
 }
 
+// persistOpportunityOpen places OKX batch legs for a credit spread and upserts status opening (shared by HTTP open and runner auto-open).
+func persistOpportunityOpen(ctx context.Context, user, id string, cand *opportunities.Row, opp *OpportunityStore, xchg *okxExchange) ([]string, error) {
+	if cand == nil || opp == nil || xchg == nil {
+		return nil, fmt.Errorf("persist opportunity open: nil argument")
+	}
+	legs, err := legSidesForCreditSpread(cand)
+	if err != nil {
+		return nil, err
+	}
+	orders := make([]okx.BatchPlaceOrderItem, 0, len(legs))
+	for _, lg := range legs {
+		orders = append(orders, okx.BatchPlaceOrderItem{
+			InstID:  lg.Instrument,
+			Side:    strings.ToLower(lg.Side),
+			OrdType: "market",
+			Sz:      "1",
+		})
+	}
+	rpcCtx, cancel := rpcTimeout(ctx)
+	defer cancel()
+	ordIDs, err := xchg.BatchPlaceOrders(rpcCtx, orders)
+	if err != nil {
+		return nil, err
+	}
+	persist := *cand
+	persist.Status = opportunities.StatusOpening
+	exec := &opportunityExecPersist{OrderIDs: ordIDs, LegSides: legs}
+	legsJ, metaJ, err := encodeOpportunityRowPersist(persist, exec)
+	if err != nil {
+		return nil, err
+	}
+	rec := &OpportunityRecord{
+		ID:           id,
+		Username:     user,
+		Status:       string(persist.Status),
+		StrategyName: persist.StrategyName,
+		LegsJSON:     legsJ,
+		MetaJSON:     metaJ,
+		CreatedAtMs:  time.Now().UnixMilli(),
+	}
+	if err := opp.Upsert(ctx, rec); err != nil {
+		return nil, err
+	}
+	return ordIDs, nil
+}
+
 func oppositeSide(side string) string {
 	switch strings.ToLower(strings.TrimSpace(side)) {
 	case "buy":
@@ -178,59 +224,27 @@ func (s *Server) handleOpportunityOpen(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	legs, err := legSidesForCreditSpread(cand)
-	if err != nil {
-		writeAPIError(w, http.StatusBadRequest, "invalid_request", err.Error())
-		return
-	}
-
 	xchg, err := s.okxExchangeForOpportunities(ctx, user)
 	if err != nil {
 		writeAPIError(w, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
 
-	orders := make([]okx.BatchPlaceOrderItem, 0, len(legs))
-	for _, lg := range legs {
-		orders = append(orders, okx.BatchPlaceOrderItem{
-			InstID:  lg.Instrument,
-			Side:    strings.ToLower(lg.Side),
-			OrdType: "market",
-			Sz:      "1",
-		})
-	}
-	rpcCtx, cancel := rpcTimeout(ctx)
-	defer cancel()
-	ordIDs, err := xchg.BatchPlaceOrders(rpcCtx, orders)
+	ordIDs, err := persistOpportunityOpen(ctx, user, id, cand, s.opportunities, xchg)
 	if err != nil {
-		logHandlerError(s.log, "opportunity_open_batch", err)
-		writeAPIError(w, http.StatusBadGateway, "exchange_error", err.Error())
+		logHandlerError(s.log, "opportunity_open_persist", err)
+		msg := err.Error()
+		switch {
+		case strings.Contains(msg, "credit spread") || strings.Contains(msg, "unsupported strategy") || strings.Contains(msg, "nil argument"):
+			writeAPIError(w, http.StatusBadRequest, "invalid_request", msg)
+		case strings.Contains(msg, "okx") || strings.Contains(msg, "batch order"):
+			writeAPIError(w, http.StatusBadGateway, "exchange_error", msg)
+		default:
+			writeAPIError(w, http.StatusInternalServerError, "server_error", msg)
+		}
 		return
 	}
-
-	persist := *cand
-	persist.Status = opportunities.StatusOpening
-	exec := &opportunityExecPersist{OrderIDs: ordIDs, LegSides: legs}
-	legsJ, metaJ, err := encodeOpportunityRowPersist(persist, exec)
-	if err != nil {
-		writeAPIError(w, http.StatusInternalServerError, "server_error", "encode opportunity")
-		return
-	}
-	rec := &OpportunityRecord{
-		ID:           id,
-		Username:     user,
-		Status:       string(persist.Status),
-		StrategyName: persist.StrategyName,
-		LegsJSON:     legsJ,
-		MetaJSON:     metaJ,
-		CreatedAtMs:  time.Now().UnixMilli(),
-	}
-	if err := s.opportunities.Upsert(ctx, rec); err != nil {
-		logHandlerError(s.log, "opportunity_open_upsert", err)
-		writeAPIError(w, http.StatusInternalServerError, "server_error", "could not save opportunity")
-		return
-	}
-	writeJSON(w, http.StatusOK, map[string]any{"id": id, "status": string(persist.Status), "order_ids": ordIDs})
+	writeJSON(w, http.StatusOK, map[string]any{"id": id, "status": string(opportunities.StatusOpening), "order_ids": ordIDs})
 }
 
 func classifyOpportunityVenueErr(err error) (status int, code, msg string) {
