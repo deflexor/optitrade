@@ -38,6 +38,10 @@ type Server struct {
 
 	runnerManager *RunnerManager
 
+	// okxExecBaseURL / okxExecHTTP override OKX client for opportunity actions (httptest in unit tests).
+	okxExecBaseURL string
+	okxExecHTTP    *http.Client
+
 	xchgMu    sync.Mutex
 	xchgCache map[string]cachedExchange
 
@@ -65,6 +69,9 @@ type Options struct {
 	Opportunities *OpportunityStore
 	// OpportunitySnapshot supplies live candidate rows from the runner; optional.
 	OpportunitySnapshot func(username string) opportunities.Snapshot
+	// OKXExecBaseURL / OKXExecHTTP (tests only) point opportunity OKX batch calls at a mock server.
+	OKXExecBaseURL string
+	OKXExecHTTP    *http.Client
 }
 
 // NewServer builds a dashboard HTTP handler tree.
@@ -85,6 +92,8 @@ func NewServer(opts Options) *Server {
 		opportunities:         opts.Opportunities,
 		opportunitySnapshot:   opts.OpportunitySnapshot,
 		runnerManager:           opts.RunnerManager,
+		okxExecBaseURL:          strings.TrimSpace(opts.OKXExecBaseURL),
+		okxExecHTTP:             opts.OKXExecHTTP,
 		xchgCache:             map[string]cachedExchange{},
 		started:        time.Now(),
 		previews:       newPreviewStore(),
@@ -125,6 +134,9 @@ func NewServer(opts Options) *Server {
 	protected.Handle("PUT /trading/mode", http.HandlerFunc(s.handleTradingModePut))
 	protected.Handle("GET /opportunities", http.HandlerFunc(s.handleOpportunitiesGet))
 	protected.Handle("GET /opportunities/stream", http.HandlerFunc(s.handleOpportunitiesStream))
+	protected.Handle("POST /opportunities/{id}/open", http.HandlerFunc(s.handleOpportunityOpen))
+	protected.Handle("POST /opportunities/{id}/cancel", http.HandlerFunc(s.handleOpportunityCancel))
+	protected.Handle("POST /opportunities/{id}/close", http.HandlerFunc(s.handleOpportunityClose))
 
 	api.Handle("/", s.requireAuth(protected))
 

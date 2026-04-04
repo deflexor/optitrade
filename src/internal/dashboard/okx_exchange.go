@@ -33,6 +33,14 @@ func (o *okxExchange) GetServerTime(ctx context.Context) (int64, error) {
 	return o.c.GetServerTime(ctx)
 }
 
+func (o *okxExchange) BatchPlaceOrders(ctx context.Context, orders []okx.BatchPlaceOrderItem) ([]string, error) {
+	return o.c.BatchPlaceOrders(ctx, orders)
+}
+
+func (o *okxExchange) BatchCancelOrders(ctx context.Context, items []okx.BatchCancelItem) error {
+	return o.c.BatchCancelOrders(ctx, items)
+}
+
 func (o *okxExchange) GetAccountSummaries(ctx context.Context, p *deribit.GetAccountSummariesParams) ([]deribit.AccountSummary, error) {
 	rows, err := o.c.GetBalances(ctx)
 	if err != nil {

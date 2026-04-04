@@ -132,6 +132,21 @@ WHERE id = ? AND username = ?`,
 	return nil
 }
 
+// Delete removes a row owned by username.
+func (st *OpportunityStore) Delete(ctx context.Context, id, username string) error {
+	if st == nil || st.db == nil {
+		return fmt.Errorf("opportunity: nil store")
+	}
+	_, err := st.db.ExecContext(ctx, `DELETE FROM dashboard_opportunity WHERE id = ? AND username = ?`, id, username)
+	return err
+}
+
+// legSideMeta records exchange side used when placing the spread.
+type legSideMeta struct {
+	Instrument string `json:"instrument"`
+	Side       string `json:"side"` // buy | sell
+}
+
 // opportunityMetaJSON holds row fields stored beside legs_json.
 type opportunityMetaJSON struct {
 	GreeksNote   string  `json:"greeks_note,omitempty"`
@@ -141,9 +156,16 @@ type opportunityMetaJSON struct {
 	Rationale    string  `json:"rationale"`
 	ExpectedEdge string  `json:"expected_edge"`
 	EdgeAfter    float64 `json:"edge_after_costs"`
+	OrderIDs     []string       `json:"order_ids,omitempty"`
+	LegSides     []legSideMeta  `json:"leg_sides,omitempty"`
 }
 
 func encodeOpportunityRow(row opportunities.Row) (legsJSON, metaJSON string, err error) {
+	return encodeOpportunityRowPersist(row, nil)
+}
+
+// encodeOpportunityRowPersist extends meta with execution fields when exec is non-nil.
+func encodeOpportunityRowPersist(row opportunities.Row, exec *opportunityExecPersist) (legsJSON, metaJSON string, err error) {
 	legs, err := json.Marshal(row.Legs)
 	if err != nil {
 		return "", "", err
@@ -157,11 +179,21 @@ func encodeOpportunityRow(row opportunities.Row) (legsJSON, metaJSON string, err
 		ExpectedEdge: row.ExpectedEdge,
 		EdgeAfter:    row.EdgeAfter,
 	}
+	if exec != nil {
+		meta.OrderIDs = exec.OrderIDs
+		meta.LegSides = exec.LegSides
+	}
 	mb, err := json.Marshal(meta)
 	if err != nil {
 		return "", "", err
 	}
 	return string(legs), string(mb), nil
+}
+
+// opportunityExecPersist is optional persistence for open/cancel/close.
+type opportunityExecPersist struct {
+	OrderIDs []string
+	LegSides []legSideMeta
 }
 
 func decodeOpportunityRow(rec *OpportunityRecord) (opportunities.Row, error) {
