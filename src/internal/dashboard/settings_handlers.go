@@ -204,5 +204,6 @@ func (s *Server) handleSettingsPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.invalidateExchangeCache(user)
+	s.reconcileRunnersAsync()
 	s.writeSettingsJSON(w, r.Context(), user)
 }

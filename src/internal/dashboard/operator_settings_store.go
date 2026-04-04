@@ -111,6 +111,27 @@ FROM dashboard_operator_settings WHERE username = ?`, username)
 	return out, nil
 }
 
+// ListUsernames returns every username with a dashboard_operator_settings row.
+func (st *OperatorSettingsStore) ListUsernames(ctx context.Context) ([]string, error) {
+	if st == nil || st.db == nil {
+		return nil, fmt.Errorf("operator settings: nil store")
+	}
+	rows, err := st.db.QueryContext(ctx, `SELECT username FROM dashboard_operator_settings ORDER BY username`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var u string
+		if err := rows.Scan(&u); err != nil {
+			return nil, err
+		}
+		out = append(out, u)
+	}
+	return out, rows.Err()
+}
+
 // Put merges secrets (empty string keeps previous value) and upserts the row.
 func (st *OperatorSettingsStore) Put(ctx context.Context, username string, crypto *SettingsCrypto, patch OperatorSettingsPatch) (*OperatorSettingsRow, error) {
 	if crypto == nil {

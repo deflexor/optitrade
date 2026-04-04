@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"context"
 	"io/fs"
 	"log/slog"
 	"net/http"
@@ -35,6 +36,8 @@ type Server struct {
 	// runnerRunning reports whether the per-user trading runner loop is active (nil = always false).
 	runnerRunning func(username string) bool
 
+	runnerManager *RunnerManager
+
 	xchgMu    sync.Mutex
 	xchgCache map[string]cachedExchange
 
@@ -56,6 +59,8 @@ type Options struct {
 	TestExchange exchangeReader
 	// RunnerRunning is optional; when nil, GET /trading/status reports runner_running: false.
 	RunnerRunning func(username string) bool
+	// RunnerManager owns per-user runner goroutines; when set, overrides RunnerRunning for status.
+	RunnerManager *RunnerManager
 	// Opportunities persists opening/active/partial rows; optional.
 	Opportunities *OpportunityStore
 	// OpportunitySnapshot supplies live candidate rows from the runner; optional.
@@ -79,9 +84,13 @@ func NewServer(opts Options) *Server {
 		runnerRunning:         opts.RunnerRunning,
 		opportunities:         opts.Opportunities,
 		opportunitySnapshot:   opts.OpportunitySnapshot,
+		runnerManager:           opts.RunnerManager,
 		xchgCache:             map[string]cachedExchange{},
 		started:        time.Now(),
 		previews:       newPreviewStore(),
+	}
+	if opts.RunnerManager != nil {
+		s.runnerRunning = opts.RunnerManager.IsRunning
 	}
 
 	s.mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -134,6 +143,18 @@ func (s *Server) ReloadAuth(auth *DashboardAuthFile) {
 // Handler returns the root HTTP handler.
 func (s *Server) Handler() http.Handler {
 	return s.mux
+}
+
+func (s *Server) reconcileRunnersAsync() {
+	if s == nil || s.runnerManager == nil {
+		return
+	}
+	rm := s.runnerManager
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		rm.Reconcile(ctx)
+	}()
 }
 
 func (s *Server) mountStatic() {

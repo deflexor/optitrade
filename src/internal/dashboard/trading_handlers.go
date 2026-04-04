@@ -72,5 +72,6 @@ func (s *Server) handleTradingModePut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.invalidateExchangeCache(user)
+	s.reconcileRunnersAsync()
 	writeJSON(w, http.StatusOK, map[string]string{"bot_mode": mode})
 }

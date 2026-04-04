@@ -187,14 +187,22 @@ func runDashboardCmdFull(log *slog.Logger, addr, authPath, sessionPath string) e
 	if err != nil {
 		return fmt.Errorf("dashboard: %w", err)
 	}
+	settingsStore := dashboard.NewOperatorSettingsStore(db)
+	runnerMgr := dashboard.NewRunnerManager(log, settingsStore, crypto)
 	h := dashboard.NewServer(dashboard.Options{
 		Logger:         log,
 		Auth:           auth,
 		Sessions:       dashboard.NewSessionStore(db),
 		SettingsCrypto: crypto,
-		Settings:       dashboard.NewOperatorSettingsStore(db),
+		Settings:       settingsStore,
+		RunnerManager:  runnerMgr,
 		Opportunities:  dashboard.NewOpportunityStore(db),
 	})
+	go func() {
+		rctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		runnerMgr.Reconcile(rctx)
+	}()
 
 	if p := strings.TrimSpace(authPath); p != "" {
 		hup := make(chan os.Signal, 1)
