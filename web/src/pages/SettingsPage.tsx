@@ -29,7 +29,8 @@ type SecretView = { masked: string; configured: boolean }
 type SettingsResp = {
   fields: FieldDef[]
   values: Record<string, unknown>
-  warnings: string[]
+  /** Present as [] from server; null if older server or malformed JSON */
+  warnings?: string[] | null
 }
 
 export default function SettingsPage() {
@@ -153,13 +154,13 @@ export default function SettingsPage() {
         </Link>
       </div>
 
-      {payload.warnings.length > 0 ? (
+      {(payload.warnings?.length ?? 0) > 0 ? (
         <Alert
           variant="default"
           className="border-amber-500/40 bg-amber-950/30 text-amber-100"
         >
           <AlertDescription className="space-y-2 text-amber-100">
-            {payload.warnings.map((w) => (
+            {(payload.warnings ?? []).map((w) => (
               <p key={w}>{w}</p>
             ))}
           </AlertDescription>

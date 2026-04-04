@@ -129,7 +129,8 @@ func (s *Server) writeSettingsJSON(w http.ResponseWriter, ctx context.Context, u
 		"okx_passphrase":        maskSecret(sec.OKXPassphrase),
 	}
 
-	var warnings []string
+	// Non-nil slice so JSON encodes as [] not null (clients expect an array).
+	warnings := make([]string, 0)
 	switch OperatorProvider(prov) {
 	case ProviderDeribit:
 		if !maskSecret(sec.DeribitClientID).Configured || !maskSecret(sec.DeribitClientSecret).Configured {
